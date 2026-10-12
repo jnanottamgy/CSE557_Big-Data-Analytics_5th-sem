@@ -1,0 +1,128 @@
+
+<!-- ============ UNIT 2 ============ -->
+<section class="u2" style="margin-top:4mm">
+<div class="band"><b>Unit 2</b><span>Data Analytics with Hadoop — Tom White, <i>Hadoop: The Definitive Guide</i></span></div>
+<div class="cols">
+<span class="sec">Ch 1 · Basics of Hadoop</span>
+<h4>Data! · storage &amp; analysis (U2 §1.1–1.2)</h4>
+<ul>
+<li>NYSE 1 TB/day · Facebook 10 bn photos ≈ 1 PB · Ancestry 2.5 PB · Internet Archive 2 PB (+20 TB/month) · LHC 15 PB/yr · MyLifeBits ≈ 1 GB/month. Machines (logs, RFID, sensors, GPS) generate even more.</li>
+<li><b>Problem:</b> disk <b>capacity</b> grew much faster than <b>transfer speed</b> → read from <b>100 disks in parallel</b>.</li>
+<li>New problems: <b>hardware failure</b> → solved by <b>replication</b> (HDFS) · <b>combining data</b> → solved by <b>MapReduce</b>.</li>
+</ul>
+<h4>Hadoop (U2 §1.3)</h4>
+<div class="def"><span class="dt">Definition</span><p>Open-source framework to <b>store and process large data sets in a parallel and distributed manner</b>. Hadoop = reliable shared storage + reliable distributed analysis.</p></div>
+<ul>
+<li>Written in <b>Java</b>; by <b>Doug Cutting &amp; Mike Cafarella</b>; named after a <b>toy elephant</b> (not an acronym).</li>
+<li><b>Components:</b> HDFS (storage) · MapReduce (processing) · YARN (resource management) · Common (utilities).</li>
+<li>History: Nutch 2002 → Google GFS 2003 → NDFS 2004 → MapReduce paper 2004 → Nutch + MR 2005 → <b>Hadoop Feb 2006</b>. Yahoo! scaled it (24,000 nodes by 2009).</li>
+<li><b>Why:</b> ~90% market, scalable, fault tolerant, flexible with data.</li>
+<li>Ecosystem: Hive, Pig, Mahout, Spark (SQL, Streaming, MLlib, GraphX), HBase, Cassandra, ZooKeeper, Flume, Kafka, Sqoop, Storm.</li>
+</ul>
+<h4>NCDC weather data (U2 §1.4)</h4>
+<p><b>Semi-structured, record-oriented</b>, fixed-width ASCII line per observation: station ID, date, time, … <b>air temperature (°C × 10)</b>, pressure. 9999 = missing. Many small gzipped station files → <b>preprocess</b> into one file per year.</p>
+<h4>Map &amp; Reduce (U2 §1.5–1.6)</h4>
+<ul>
+<li><b>Two phases</b>, each with <b>key–value</b> input/output; programmer writes <b>map</b> and <b>reduce</b> functions.</li>
+<li><b>Map</b> = extract (year, temp), filter bad records · <b>Shuffle &amp; sort</b> = group by key: 1949 → [111, 78] · <b>Reduce</b> = max → (1949, 111), (1950, 22).</li>
+<li><code>Mapper&lt;LongWritable, Text, Text, IntWritable&gt;</code> = (offset, line) → (year, temp). <code>Reducer&lt;Text, IntWritable, Text, IntWritable&gt;</code>.</li>
+<li><b>Driver:</b> Job, setJarByClass, input/output paths (output dir must not exist), setMapperClass, setReducerClass, output key/value classes, <code>waitForCompletion</code>. Output: <code>part-r-00000</code>.</li>
+<li>Test run on 5 records: <code>hadoop MaxTemperature input/ncdc/sample.txt output</code>.</li>
+</ul>
+<h4>Scaling out &amp; data flow (U2 §1.7)</h4>
+<ul>
+<li><b>Job</b> = input + program + config. <b>Tasks</b> = map + reduce, scheduled by <b>YARN</b>; failed tasks rescheduled.</li>
+<li><b>Input split</b> → one map task per split; small splits = better load balancing.</li>
+<li><b>Data locality:</b> data-local → rack-local → off-rack. <b>Optimal split = block size</b> (largest input guaranteed on one node).</li>
+<li>Map output → <b>local disk</b> (intermediate); reduce output → <b>HDFS</b>.</li>
+<li>Multiple reducers: map output <b>partitioned</b> (one partition per reducer, default <b>hash partitioner</b>) → "<b>the shuffle</b>". Zero reducers possible. <b>Combiner</b> = mini-reducer on map output.</li>
+</ul>
+
+<span class="sec">Ch 2 · HDFS</span>
+<h4>Design (U2 §2.1–2.2)</h4>
+<div class="def"><span class="dt">Definition</span><p>HDFS is a file system designed for storing <b>very large files</b> with <b>streaming data access patterns</b>, running on clusters of <b>commodity hardware</b>.</p></div>
+<ul>
+<li><b>Good at (LSC):</b> very large files (MB→PB) · streaming = <b>write once, read many</b> · cheap commodity hardware (keeps working when nodes fail).</li>
+<li><b>Bad at (LSM):</b> <b>low-latency</b> access (use <b>HBase</b>) · <b>lots of small files</b> (NameNode memory: millions OK, billions not) · <b>multiple writers / arbitrary modifications</b> (single writer, append at end).</li>
+</ul>
+<h4>Blocks (U2 §2.3)</h4>
+<p><b>128 MB</b> default; a 1 MB file uses 1 MB. <b>Benefits:</b> file can be larger than any disk · simpler storage subsystem · fits <b>replication</b> (3 copies on separate machines).</p>
+<h4>NameNode &amp; DataNodes (U2 §2.4)</h4>
+<ul>
+<li><b>Master–worker.</b> <b>NameNode</b>: namespace, file tree, metadata — persisted as <b>namespace image + edit log</b>; block locations rebuilt from DataNode reports. <b>DataNodes</b>: store/retrieve blocks, send <b>block reports</b>.</li>
+<li>Lose the NameNode = lose the file system. Protect it by: (1) writing metadata to <b>multiple file systems</b> (local + <b>NFS</b>, synchronous &amp; atomic); (2) <b>Secondary NameNode</b> — periodically <b>merges image + edit log</b> (checkpoint); <b>not</b> a backup.</li>
+</ul>
+<h4>Federation &amp; HA (U2 §2.5–2.6)</h4>
+<ul>
+<li><b>Federation</b> (2.x): NameNode memory limits scaling → <b>add NameNodes</b>, each owns part of the namespace (/user, /share). <b>Namespace volume</b> = metadata + <b>block pool</b>; independent; one failing doesn't affect others.</li>
+<li><b>HA:</b> NameNode = <b>SPOF</b>. Cold start needs (i) load image (ii) replay edit log (iii) block reports → leave safe mode = <b>30+ min</b>. Fix: <b>active–standby</b> pair: shared edit log (HA storage) · DataNodes report to <b>both</b> · client failover · standby does checkpoints.</li>
+</ul>
+<h4>File read — 6 steps (U2 §2.7)</h4>
+<ol>
+<li><code>open()</code> on <b>DistributedFileSystem</b>.</li>
+<li>RPC to <b>NameNode</b> → block locations, DataNodes <b>sorted by proximity</b>; returns <b>FSDataInputStream</b> (wraps DFSInputStream).</li>
+<li><code>read()</code> → connect to <b>closest DataNode</b> for block 1.</li>
+<li>Data <b>streamed</b> to client.</li>
+<li>End of block → close, find best DataNode for <b>next block</b> (asks NN for next batch).</li>
+<li><code>close()</code>.</li>
+</ol>
+<p><b>Failure:</b> try next closest DN, remember bad DNs · <b>checksum</b> fails → read another replica + report corrupt block to NN.</p>
+<h4>File write — 7 steps (U2 §2.8)</h4>
+<ol>
+<li><code>create()</code> on DistributedFileSystem.</li>
+<li>RPC to NN to <b>create</b> file (no blocks); checks <b>exists? permission?</b> else <b>IOException</b>; returns <b>FSDataOutputStream</b>.</li>
+<li><code>write()</code> → <b>packets</b> → <b>data queue</b> → <b>DataStreamer</b> asks NN for blocks → <b>pipeline</b> of 3 DNs.</li>
+<li><b>Write packet</b>: DN1 stores &amp; forwards → DN2 → DN3.</li>
+<li><b>Ack packet</b> back; removed from <b>ack queue</b> when all DNs ack.</li>
+<li><code>close()</code> flushes remaining packets, waits for acks.</li>
+<li>Tell NN file <b>complete</b>.</li>
+</ol>
+<p><b>Failure:</b> close pipeline · ack-queue packets to front of data queue · good block gets <b>new identity</b> (partial one deleted later) · remove failed DN, new pipeline from 2 good DNs.</p>
+<div class="box mem"><div class="bt">🧠 HDFS tricks</div><b>LSC</b> strengths / <b>LSM</b> weaknesses · library: NameNode = catalogue, DataNodes = shelves · read "<b>O</b>nly <b>G</b>ood <b>R</b>eaders <b>R</b>eally <b>R</b>ead <b>C</b>arefully" · write "<b>C</b>ute <b>C</b>ats <b>W</b>rite <b>P</b>oems <b>A</b>nd <b>C</b>lose <b>C</b>arefully".</div>
+
+<span class="sec">Ch 3 · Developing a MapReduce Application</span>
+<h4>Workflows · MRUnit · job run (U2 §3.1–3.3)</h4>
+<ul>
+<li>Complex problem → <b>more jobs</b>, not more complex jobs (or Pig, Hive, Cascading, Crunch, Spark). Mean-max = Job 1 (station, date → max) + Job 2 (station, day-month → mean).</li>
+<li>Linear chain: <code>JobClient.runJob()</code> one after another; <b>DAG</b> → <b>JobControl</b> (stores jobs, dependencies, order, monitors, skips dependents on failure).</li>
+<li><b>MRUnit</b> + JUnit: <b>MapDriver</b> (record → (1950, −11)), <b>ReduceDriver</b> ([10, 5] → 10), whole job via <b>local job runner</b>.</li>
+<li><code>submit()</code> / <code>waitForCompletion()</code>; <code>mapreduce.framework.name</code> = <b>local</b> (one JVM) / <b>classic</b> (MR1) / <b>yarn</b> (MR2).</li>
+</ul>
+<h4>Classic MapReduce (MR1) — 10 steps (U2 §3.4)</h4>
+<p><b>Entities:</b> Client · <b>JobTracker</b> (coordinates) · <b>TaskTrackers</b> (run tasks) · DFS.</p>
+<ul>
+<li><b>Submission 1–4:</b> JobSubmitter · new job ID from JobTracker · check output dir · compute splits · copy JAR (high replication), config, splits to shared FS · <code>submitJob()</code>.</li>
+<li><b>Initialisation 5–6:</b> internal queue → scheduler creates job object · retrieve splits · <b>one map task per split</b>, reducers = <code>mapred.reduce.tasks</code>.</li>
+<li><b>Assignment 7:</b> TaskTracker <b>heartbeat</b> → gets a task.</li>
+<li><b>Execution 8–10:</b> localise JAR + distributed cache · <b>TaskRunner launches new JVM</b> · run task (user bugs can't crash TaskTracker).</li>
+</ul>
+<h4>YARN (MR2) — 11 steps (U2 §3.5)</h4>
+<p><b>Why:</b> MR1 bottleneck at ~<b>4,000 nodes</b>; JobTracker did scheduling + monitoring → split into <b>ResourceManager</b> + per-app <b>ApplicationMaster</b>. YARN = <b>Yet Another Resource Negotiator</b> (Yahoo!, 2010). <b>Entities:</b> Client · ResourceManager · NodeManagers · MRAppMaster · DFS.</p>
+<ul>
+<li><b>Submission 1–4:</b> application ID from RM · checks · copy resources · <code>submitApplication()</code>.</li>
+<li><b>Init 5a/5b–7:</b> scheduler allocates container, RM launches <b>MRAppMaster</b> · AM initialises job · retrieves splits.</li>
+<li><b>Assignment 8:</b> AM requests containers — maps first (higher priority); reduces after <b>5%</b> maps done (uber task = tiny job in AM's JVM).</li>
+<li><b>Execution 9a/9b–11:</b> AM asks NodeManager to start container · <b>YarnChild</b> localises resources · runs task. Tasks report progress to the AM.</li>
+</ul>
+<h4>Failures (U2 §3.6)</h4>
+<table class="t">
+<tr><th></th><th>MR1</th><th>YARN</th></tr>
+<tr><td>Task</td><td>Runtime exception / JVM exit → TaskTracker marks failed</td><td>Reported to AM; hang = no ping; failed after <b>4 attempts</b></td></tr>
+<tr><td>Worker</td><td>TaskTracker stops heartbeats → removed; <b>blacklisted</b> if &gt;4 tasks of a job fail</td><td>NodeManager no heartbeat <b>10 min</b> → removed; AM blacklists if &gt;3 fail</td></tr>
+<tr><td>Coordinator</td><td>—</td><td>AM fails → RM restarts it in new container</td></tr>
+<tr><td>Master</td><td><b>JobTracker = SPOF → job fails</b></td><td>RM recovers from <b>checkpointed state</b></td></tr>
+</table>
+<h4>Scheduling (U2 §3.7)</h4>
+<ul>
+<li><b>FIFO</b> (MR1 default). <b>Fair</b>: every user a fair share over time; <b>pools</b> (one per user); single job gets whole cluster; short jobs finish; <b>preemption</b>. <b>Capacity</b>: hierarchical <b>queues</b> with fixed capacity; <b>FIFO within queue</b>; like a separate cluster per org.</li>
+<li><b>Preemption</b> = forcefully take resources from one job and give to a higher-priority one.</li>
+</ul>
+<h4>Shuffle &amp; sort (U2 §3.8)</h4>
+<ul>
+<li>Guarantee: <b>reducer input sorted by key</b>; sort + transfer of map output = <b>shuffle</b> ("heart of MapReduce").</li>
+<li><b>Map side:</b> <b>100 MB circular buffer</b> → spill at <b>80%</b> (round-robin to mapred.local.dir) → <b>partition</b> → <b>in-memory sort</b> → <b>combiner</b> → merge spills into one sorted, partitioned file → (compress) → served over <b>HTTP</b>.</li>
+<li><b>Reduce side:</b> <b>copy phase</b> (5 threads, starts as each map finishes) → <b>merge ("sort") phase</b> in rounds → <b>reduce phase</b> per key → output to HDFS.</li>
+</ul>
+<div class="box mem"><div class="bt">🧠 Ch 3 tricks</div>Phases "<b>S</b>tudents <b>I</b>n <b>A</b>n <b>E</b>xam" (Submission, Init, Assignment, Execution) · MR1 "<b>C</b>lient <b>J</b>ust <b>T</b>alks to <b>D</b>FS" · YARN "<b>C</b>an <b>R</b>ahul <b>N</b>ot <b>A</b>ttend <b>D</b>aily?" · failures MR1 "<b>T</b>wo <b>T</b>ired <b>J</b>ugglers", YARN "<b>T</b>he <b>A</b>nts <b>N</b>ever <b>R</b>est" · Fair = Pools, Capacity = Queues · map side "<b>B</b>ig <b>S</b>pills <b>P</b>lease <b>S</b>weep, <b>C</b>lean, <b>M</b>op" · reduce side Copy → Merge → Reduce.</div>
+</div>
+</section>

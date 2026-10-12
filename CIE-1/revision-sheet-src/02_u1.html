@@ -1,0 +1,122 @@
+
+<!-- ============ UNIT 1 ============ -->
+<section class="u1" style="margin-top:4mm">
+<div class="band"><b>Unit 1</b><span>Types of Digital Data · Introduction to Big Data · Big Data Analytics — Seema Acharya &amp; Subhashini C</span></div>
+<div class="cols">
+<span class="sec">Ch 1 · Types of Digital Data</span>
+<h4>Data (U1 §1.1)</h4>
+<p><b>Data</b> = quantities, characters or symbols on which operations are performed by a computer; stored &amp; transmitted as electrical signals; recorded on magnetic, optical or mechanical media. <b>Data → Information → Insights.</b> Types: <b>Quantitative</b> (discrete = counted, continuous = measured) vs <b>Qualitative</b> (descriptive). Sources: internal &amp; external (outside the firewall); homogeneous &amp; heterogeneous.</p>
+<h4>3 types of digital data (U1 §1.2)</h4>
+<table class="t">
+<tr><th></th><th>Structured ~10%</th><th>Semi ~10%</th><th>Unstructured 80–90%</th></tr>
+<tr><td>Meaning</td><td>Rows &amp; columns; easily used by programs</td><td>No data model, but has some structure (tags); self-describing</td><td>No data model; not easily used by programs</td></tr>
+<tr><td>Examples</td><td>RDBMS, Excel, MS Access</td><td>XML, JSON, HTML, email</td><td>Images, video, chats, PPTs, body of email</td></tr>
+</table>
+<h4>Structured data (U1 §1.3)</h4>
+<ul>
+<li>Stored in <b>RDBMS</b> (relational model). <b>Cardinality</b> = no. of rows; <b>degree</b> = no. of columns.</li>
+<li>Design: fields + data types → constraints (<b>UNIQUE, NOT NULL</b>, business rule e.g. ≥ 50, permissible values e.g. CS/IS/MS) → relate tables by common column (PRIMARY KEY / FK).</li>
+<li>Sources: Oracle, DB2, SQL Server, Teradata, MySQL, PostgreSQL, MS Access, Excel, OLTP.</li>
+<li><b>Ease of working (ISIST):</b> <b>I</b>nsert/update/delete (DML) · <b>S</b>ecurity (encryption, tokenization) · <b>I</b>ndexing (faster SELECT) · <b>S</b>calability (scale up the server) · <b>T</b>ransactions (<b>ACID</b>).</li>
+<li><b>ACID:</b> Atomicity (all or nothing) · Consistency (valid state → valid state) · Isolation (as if alone) · Durability (permanent).</li>
+</ul>
+<h4>Semi-structured data (U1 §1.4)</h4>
+<ul>
+<li><b>5 features:</b> not a relational data model · <b>tags</b> segregate semantic elements · tags enforce <b>hierarchies</b> · <b>no separation of data &amp; schema</b> · same-class entities may have different attributes / order.</li>
+<li><b>4 characteristics:</b> inconsistent structure · self-describing (label/value pairs) · schema blended with data · attributes not known beforehand.</li>
+<li><b>XML ↔ SOAP · JSON ↔ REST</b> · MongoDB &amp; Couchbase/CouchDB store <b>JSON</b> natively.</li>
+</ul>
+<h4>Unstructured data (U1 §1.5–1.6)</h4>
+<ul>
+<li>No data model; can't be stored in rows/columns; difficult to search; e.g. Aadhaar images, CCTV, social media.</li>
+<li><b>Machine-generated:</b> satellite images, atmospheric data, radar, CCTV, medical imaging. <b>Human-generated:</b> emails, office docs, text messages, audio, social media.</li>
+<li><b>Terminology issues (3):</b> structure may be implied · structure not helpful for the task · structure unanticipated.</li>
+<li><b>7 techniques:</b> <b>Data mining</b> (= KDD; association rules — bread &amp; butter, regression — marks from study hours, collaborative filtering — recommendations) · <b>Text analytics</b> (categorisation, clustering, sentiment, entity extraction) · <b>NLP</b> (understand human language) · <b>Noisy text analytics</b> ("u coming tmrw??") · <b>Manual tagging with metadata</b> · <b>POS tagging</b> (noun/verb…) · <b>UIMA</b> (open-source, by IBM, content analytics).</li>
+</ul>
+<h4>Comparison — 7 properties (U1 §1.7)</h4>
+<table class="t">
+<tr><th></th><th>Structured</th><th>Semi</th><th>Unstructured</th></tr>
+<tr><td>Technology</td><td>Relational tables</td><td>XML / RDF</td><td>Character &amp; binary</td></tr>
+<tr><td>Transactions</td><td>Matured, concurrency</td><td>Adapted, not matured</td><td>None</td></tr>
+<tr><td>Versioning</td><td>Tuples/rows/tables</td><td>Tuples or graph</td><td>As a whole</td></tr>
+<tr><td>Flexibility</td><td>Schema-dependent, least</td><td>Medium</td><td>Most (no schema)</td></tr>
+<tr><td>Scalability</td><td>Very difficult</td><td>Simpler</td><td>Most scalable</td></tr>
+<tr><td>Robustness</td><td>Very robust</td><td>New, less widespread</td><td>—</td></tr>
+<tr><td>Query</td><td>Complex joins</td><td>Anonymous nodes</td><td>Only textual</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Ch 1 tricks</div><b>ISIST</b> (5 eases) · "<b>D</b>ark <b>T</b>ea <b>N</b>ever <b>N</b>eeds <b>M</b>ore <b>P</b>ure <b>U</b>pgrades" (7 techniques) · "<b>T</b>he <b>T</b>iny <b>V</b>ampire <b>F</b>lew <b>S</b>wiftly, <b>R</b>arely <b>Q</b>uerying" (7 properties). Structured → Unstructured: flexibility &amp; scalability ↑, robustness/transactions/query ↓.</div>
+
+<span class="sec">Ch 2 · Introduction to Big Data</span>
+<h4>Characteristics &amp; evolution (U1 §2.1–2.2)</h4>
+<ul>
+<li><b>3 Cs:</b> <b>Composition</b> (structure, sources, granularity, types, static/streaming) · <b>Condition</b> (usable as is or needs cleansing?) · <b>Context</b> (where/why generated).</li>
+<li><b>Evolution:</b> ≤1970s <b>mainframes</b> — primitive &amp; structured → 1980s–90s <b>RDBMS</b> — complex &amp; relational → 2000s+ <b>WWW &amp; IoT</b> — complex &amp; unstructured (data explosion).</li>
+</ul>
+<h4>Definition (U1 §2.3)</h4>
+<div class="def"><span class="dt">Gartner</span><p>"Big Data is <b>high-volume, high-velocity and high-variety</b> information assets that demand <b>cost-effective, innovative forms of information processing</b> for <b>enhanced insight and decision making</b>."</p></div>
+<p>Data → Information → Actionable intelligence → Better decisions → Enhanced business value. Informal: beyond human/technical infrastructure · today's BIG is tomorrow's NORMAL · TB/PB/ZB · 3 Vs.</p>
+<h4>Challenges with Big Data (U1 §2.4)</h4>
+<p><b>6:</b> huge <b>growth</b> (useful vs noise) · <b>cloud</b> &amp; virtualisation · data <b>retention</b> (how long) · <b>lack of skilled</b> people · <b>capture/storage/processing/security</b> · <b>visualisation</b> (+ shortage of experts). Figure: capture, storage, curation, search, analysis, transfer, visualisation, privacy.</p>
+<h4>3 Vs + others (U1 §2.5–2.6)</h4>
+<ul>
+<li><b>Volume</b> — KB→MB→GB→TB→PB→EB→ZB→YB (×1024). Sources: <b>internal</b> (file systems, SQL, NoSQL, archives) · <b>external</b> (public web: Wikipedia, weather, census) · <b>both</b> (sensors, machine logs, social media, business apps, media, docs).</li>
+<li><b>Velocity</b> — batch → periodic → near real time → real time.</li>
+<li><b>Variety</b> — structured + semi-structured + unstructured.</li>
+<li>Not definitional: <b>Veracity</b> (trustworthiness: noise, bias) &amp; <b>Validity</b> (accuracy for the problem) · <b>Volatility</b> (how long data stays valid) · <b>Variability</b> (inconsistent flow, sudden peaks).</li>
+</ul>
+<h4>Why Big Data · BI vs Big Data (U1 §2.7–2.8)</h4>
+<p>More data → more accurate analysis → more confidence → operational efficiency (cost ↓, time ↓, new products, smart decisions).</p>
+<table class="t">
+<tr><th></th><th>Traditional BI</th><th>Big Data</th></tr>
+<tr><td>Storage</td><td>Central server</td><td>Distributed file system</td></tr>
+<tr><td>Scaling</td><td>Vertical (scale up)</td><td>Horizontal (scale out)</td></tr>
+<tr><td>Mode</td><td>Offline</td><td>Real-time + offline</td></tr>
+<tr><td>Data / movement</td><td>Structured; data → processing</td><td>Variety; processing → data</td></tr>
+<tr><td>Schema</td><td>Schema-on-write</td><td>Schema-on-read</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Ch 2 tricks</div><b>3 Cs</b> · river = 3 Vs (how much, how fast, how many kinds) · "<b>G</b>iant <b>C</b>louds <b>R</b>arely <b>L</b>ack <b>S</b>ome <b>V</b>iews" (6 challenges) · "<b>K</b>ind <b>M</b>en <b>G</b>ive <b>T</b>ea, <b>P</b>lease <b>E</b>at <b>Z</b>esty <b>Y</b>ogurt" (units).</div>
+
+<span class="sec">Ch 3 · Big Data Analytics</span>
+<h4>What BDA is (U1 §3.1–3.2)</h4>
+<ul>
+<li>Examples: <b>Amazon recommendations</b>; <b>500-truck</b> urgent delivery. Large data → analyse → patterns → better decisions.</li>
+<li>Pyramid: Data (collect) → Information (organise) → Knowledge (summarise, analyse) → Actionable insights (synthesise) → Decision.</li>
+<li>Data from: websites, billing (POS), ERP, CRM, RFID, social media.</li>
+<li><b>Is (6):</b> technology-enabled · deeper insights · competitive edge · handshake of <b>IT + data scientists + business users</b> · large &amp; varied data · <b>moving code to data</b>.</li>
+<li><b>Isn't (6):</b> only volume · just technology · replacement for RDBMS · replacement for data warehouse · only for Google/Amazon · one-size-fits-all RDBMS.</li>
+<li><b>Hype (3):</b> data growth · cheaper storage · tools available.</li>
+</ul>
+<h4>Classification (U1 §3.3)</h4>
+<p><b>School 1 (BOAM):</b> Basic (reports, slicing) · Operationalised (in business processes) · Advanced (predictive/prescriptive) · Monetised (direct revenue).</p>
+<table class="t">
+<tr><th></th><th>1.0 (1950s–2009)</th><th>2.0 (2005–2012)</th><th>3.0 (2012–)</th></tr>
+<tr><td>Type</td><td>Descriptive</td><td>+ Predictive</td><td>+ Prescriptive</td></tr>
+<tr><td>Question</td><td>What happened?</td><td>What will happen?</td><td>What should we do?</td></tr>
+<tr><td>Data</td><td>Small, structured, internal (DW)</td><td>Big, unstructured, external (Hadoop)</td><td>Blend, internal + external</td></tr>
+<tr><td>Tech</td><td>RDBMS</td><td>Hadoop, appliances</td><td>In-memory, in-DB, ML</td></tr>
+</table>
+<p>Descriptive → Diagnostic → Predictive → Prescriptive = hindsight → insight → foresight.</p>
+<h4>Top challenges · importance (U1 §3.4–3.5)</h4>
+<ul>
+<li><b>7 top challenges:</b> Scale · Security · Schema (dynamic) · Continuous availability (24/7) · Consistency · Partition tolerance · Data quality.</li>
+<li><b>4 approaches:</b> Reactive–BI · Reactive–BDA (huge but static) · Proactive–analytics (traditional DB limits) · <b>Proactive–BDA</b> ★ (TB/PB/EB, high-performance).</li>
+</ul>
+<h4>Data science &amp; data scientist (U1 §3.6–3.7)</h4>
+<ul>
+<li><b>Data science</b> = science of extracting knowledge from data (maths, statistics, IT, ML, pattern recognition). Uses: weather, oil drilling, seismic, fraud, social media, retail.</li>
+<li><b>Skills (BTM):</b> <b>Business acumen</b> (domain, strategy, problem solving, communication, presentation, inquisitiveness) · <b>Technology</b> (RDBMS, NoSQL, programming, DW, data mining, visualisation) · <b>Mathematics</b> (maths, statistics, algorithms, ML, pattern recognition, NLP).</li>
+<li>Process: collect → prepare → analyse → visualise → communicate → decide.</li>
+<li><b>4 responsibilities:</b> data management · analytical techniques · business/domain expertise · communication &amp; presentation.</li>
+</ul>
+<h4>Terminologies (U1 §3.8–3.9)</h4>
+<ul>
+<li><b>In-memory analytics:</b> keep relevant data in <b>RAM</b> → faster, rapid deployment, better insights, minimal IT.</li>
+<li><b>In-database processing:</b> OLTP → ETL → EDW; run computations <b>inside the DB</b> → no export.</li>
+<li><b>SMP:</b> shared main memory, <b>one OS</b>, tightly coupled, caches + system bus. <b>MPP:</b> each processor own memory + OS, messaging, harder to program.</li>
+<li><b>Parallel:</b> tightly coupled, user unaware. <b>Distributed:</b> loosely coupled machines, own users, data spread.</li>
+<li><b>Shared memory / shared disk / shared nothing.</b> SN advantages: <b>fault isolation</b> + <b>scalability</b>.</li>
+<li><b>CAP (Brewer):</b> Consistency (read = last write) · Availability (always a response) · Partition tolerance (works despite network break) → pick <b>2</b>. <b>CA</b>: RDBMS (MySQL, PostgreSQL) · <b>CP</b>: HBase, MongoDB, Redis, MemcacheDB, BigTable · <b>AP</b>: Riak, Cassandra, CouchDB, Dynamo. Prefer C for bank balance; A for feeds/caches.</li>
+</ul>
+<div class="box mem"><div class="bt">🧠 Ch 3 tricks</div>"<b>T</b>he <b>D</b>eep <b>C</b>ompetitive <b>H</b>andshake <b>W</b>ith <b>M</b>ovement" (6 is) · <b>BOAM</b> · "<b>D</b>o <b>D</b>octors <b>P</b>rescribe <b>P</b>roperly?" · "<b>S</b>ix <b>S</b>tudents <b>S</b>at <b>C</b>almly, <b>C</b>opying <b>P</b>ast <b>Q</b>uizzes" (7 challenges) · <b>BTM</b> · "<b>M</b>y <b>A</b>unt <b>B</b>akes <b>C</b>akes" (4 roles) · SMP "Same Memory, Please" / MPP "My Private Partition" · CP "<b>H</b>appy <b>M</b>onkeys <b>R</b>un <b>M</b>any <b>B</b>ananas" · AP "<b>R</b>eal <b>C</b>ats <b>C</b>hase <b>D</b>ogs".</div>
+</div>
+</section>

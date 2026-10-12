@@ -1,0 +1,75 @@
+
+<!-- ============ PAGE 1 ============ -->
+<section class="nv">
+<div style="background:#16244a;color:#fff;border-radius:4mm;padding:6mm 7mm 5mm;position:relative;overflow:hidden;margin-bottom:4mm">
+ <div style="position:absolute;right:-20mm;top:-25mm;width:70mm;height:70mm;border-radius:50%;background:rgba(255,255,255,.07)"></div>
+ <div style="font-size:9pt;letter-spacing:.18em;text-transform:uppercase;opacity:.8">CSE557 · Big Data Analytics · CIE-1 (30 marks · CO1–CO3)</div>
+ <div style="font-family:'Inter Display','Inter';font-size:26pt;font-weight:800;line-height:1.1;margin:2mm 0 1mm">Last-Minute <span style="color:#ffd166">Revision Sheet</span></div>
+ <div style="font-size:10pt;color:#cfd8f5">Everything for CIE-1 on a few pages: definitions, lists, step orders, numbers, comparisons, memory tricks and the diagrams to draw.</div>
+ <div style="display:flex;gap:3mm;margin-top:4mm;font-size:9pt">
+  <span style="background:#0f8b8d;padding:1.2mm 3.5mm;border-radius:10mm"><b>Unit 1</b> · Digital data · Big Data · Analytics</span>
+  <span style="background:#6a3fb5;padding:1.2mm 3.5mm;border-radius:10mm"><b>Unit 2</b> · Hadoop · HDFS · MapReduce · YARN</span>
+  <span style="background:#d9622b;padding:1.2mm 3.5mm;border-radius:10mm"><b>Unit 3</b> · Spark architecture &amp; installation</span>
+ </div>
+</div>
+
+<div class="two" style="grid-template-columns:1fr 1fr;gap:4mm">
+ <div class="box tip" style="margin:0"><div class="bt">💡 How to use this sheet</div>
+  <b>30 min before the exam:</b> read every <span class="k">bold</span> word and every 🧠 box.<br>
+  <b>2 hours before:</b> read it all once, then redraw the <b>15 must-draw diagrams</b> (last pages) from memory.<br>
+  <b>Stuck on a detail?</b> Each line has a § reference to your full Unit guide (U1 §2.5 = Unit 1 guide, section 2.5).
+ </div>
+ <div class="box exam" style="margin:0"><div class="bt">🎯 Answer formula for every long question</div>
+  <b>1. Definition</b> (exact textbook words) → <b>2. Diagram</b> (neat, labelled, numbered arrows) → <b>3. Points/steps</b> (one heading each, 1–2 lines) → <b>4. Example</b> (weather data, Amazon, bank…) → <b>5. One-line conclusion</b>.<br>A clean diagram alone is often worth 1–2 marks.
+ </div>
+</div>
+
+<h3 style="margin-top:4mm">🔥 Most likely CIE-1 questions</h3>
+<div class="qgrid">
+ <div class="card" style="border-top-color:#0f8b8d"><h5 style="color:#0f8b8d">Unit 1</h5><ol>
+  <li>Classify digital data with examples + comparison table.</li>
+  <li>Techniques to deal with unstructured data.</li>
+  <li>Define Big Data (Gartner) + 3 Vs + other Vs.</li>
+  <li>Challenges with Big Data / top challenges facing Big Data.</li>
+  <li>Traditional BI vs Big Data.</li>
+  <li>What is BDA? Classification (Analytics 1.0/2.0/3.0).</li>
+  <li>Data science, data scientist skills &amp; responsibilities.</li>
+  <li>SMP vs MPP; shared-nothing; CAP theorem.</li>
+ </ol></div>
+ <div class="card" style="border-top-color:#6a3fb5"><h5 style="color:#6a3fb5">Unit 2</h5><ol>
+  <li>MapReduce for max temperature (data flow + code).</li>
+  <li>Design of HDFS; blocks; NameNode/DataNode.</li>
+  <li>Anatomy of a file read (6 steps).</li>
+  <li>Anatomy of a file write (7 steps).</li>
+  <li>HDFS Federation &amp; High Availability.</li>
+  <li>Job run in classic MapReduce (MR1) vs YARN.</li>
+  <li>Failures in MR1 &amp; YARN; Fair vs Capacity scheduler.</li>
+  <li>Shuffle and sort.</li>
+ </ol></div>
+ <div class="card" style="border-top-color:#d9622b"><h5 style="color:#d9622b">Unit 3 (CIE-1 part)</h5><ol>
+  <li>Spark architecture with a neat diagram.</li>
+  <li>Spark components (stack).</li>
+  <li>SparkContext; job, stage, task.</li>
+  <li>Internals of job execution / run-time flow (10 steps).</li>
+  <li>Cluster manager types + client vs cluster mode.</li>
+  <li>Spark vs Hadoop MapReduce.</li>
+  <li>Installing Spark &amp; first Spark program.</li>
+ </ol></div>
+</div>
+
+<h3 style="margin-top:4mm">🔢 Numbers to remember</h3>
+<table class="t" style="font-size:8.3pt">
+<tr><th>Fact</th><th>Value</th><th>Fact</th><th>Value</th></tr>
+<tr><td>Unstructured share of enterprise data</td><td><b>80–90%</b> (Gartner 80%)</td><td>HDFS block size (default)</td><td><b>128 MB</b> (old: 64 MB)</td></tr>
+<tr><td>Digital universe 2006 → 2011</td><td><b>0.18 ZB → 1.8 ZB</b> (10×)</td><td>Replication factor</td><td><b>3</b></td></tr>
+<tr><td>1 ZB</td><td><b>10<sup>21</sup> B</b> = 1 billion TB</td><td>Disk block / FS block</td><td>512 B / few KB</td></tr>
+<tr><td>Disk 1990 / ~20 yrs later</td><td>1,370 MB @ 4.4 MB/s (5 min) / 1 TB @ 100 MB/s (&gt;2.5 h)</td><td>NameNode cold start</td><td><b>30+ min</b></td></tr>
+<tr><td>1 TB over 100 disks</td><td><b>&lt; 2 min</b></td><td>Map-side buffer / spill threshold</td><td><b>100 MB / 80%</b></td></tr>
+<tr><td>Hadoop market share</td><td>~<b>90%</b></td><td>Reduce copier threads</td><td><b>5</b></td></tr>
+<tr><td>Hadoop born / Apache top-level</td><td><b>Feb 2006</b> / Jan 2008</td><td>Task attempts before failing</td><td><b>4</b></td></tr>
+<tr><td>1 TB sort record</td><td><b>209 s on 900 nodes</b> (Apr 2008)</td><td>NodeManager heartbeat timeout</td><td><b>10 min</b></td></tr>
+<tr><td>Yahoo! cluster (Mar 2009)</td><td><b>24,000 nodes</b></td><td>Reduce slow start</td><td><b>5%</b> maps done</td></tr>
+<tr><td>MR1 scalability limit</td><td>~<b>4,000 nodes</b></td><td>Spark speed vs MapReduce</td><td>up to <b>100×</b> (memory), ~10× (disk)</td></tr>
+<tr><td>Temperature format (NCDC)</td><td>°C × 10 (−0128 = −12.8 °C); 9999 = missing</td><td>Spark Web UI / Standalone master</td><td>port <b>4040</b> / <b>7077</b> (UI 8080)</td></tr>
+</table>
+</section>
