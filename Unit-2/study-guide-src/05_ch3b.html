@@ -1,0 +1,223 @@
+
+<!-- ================= CHAPTER 3 (B) ================= -->
+<section class="ch3">
+
+<!-- 3.6 -->
+<h2 id="s3-6"><span class="no">3.6</span>Failures<span class="marker">@@s3-6@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>In a cluster of thousands of cheap machines, <b>something is always breaking</b>: user code crashes, a machine dies, a network link fails. Hadoop is designed to <b>notice failures (via missing heartbeats) and retry the work elsewhere</b>, so the job still finishes.</div>
+
+<h3>Failures in Classic MapReduce (MR1) — 3 failure modes</h3>
+<div class="cards c3">
+ <div class="card"><h5>1 · Task failure</h5>
+ <ul style="margin:0;font-size:9pt">
+ <li>Most common: <b>user code in the map/reduce task throws a runtime exception</b>. The child JVM reports the error to its parent <b>TaskTracker</b> before it exits; the error ends up in the <b>user logs</b>.</li>
+ <li>The TaskTracker <b>marks the task attempt as failed</b>, freeing a slot for another task.</li>
+ <li><b>Streaming tasks:</b> if the Streaming process exits with a <b>non-zero exit code</b>, it's marked as failed.</li>
+ <li><b>Sudden exit of the child JVM</b> (e.g., a JVM bug): the TaskTracker notices the process has exited and marks the attempt as failed.</li>
+ <li>(Textbook: hanging tasks are noticed by a missing progress update after a timeout — default 10 min.)</li>
+ </ul></div>
+ <div class="card"><h5>2 · TaskTracker failure</h5>
+ <ul style="margin:0;font-size:9pt">
+ <li>If a TaskTracker <b>crashes or runs very slowly</b>, it <b>stops sending heartbeats</b> to the JobTracker (or sends them very infrequently).</li>
+ <li>The JobTracker notices and <b>removes it from its pool</b> of TaskTrackers to schedule tasks on.</li>
+ <li><mark>Blacklisting:</mark> a TaskTracker can be blacklisted even if it hasn't failed. If <b>more than four tasks from the same job fail</b> on it, the JobTracker records a <b>fault</b>. It's blacklisted if its faults exceed a minimum threshold and are <b>significantly higher than the cluster average</b>.</li>
+ </ul></div>
+ <div class="card" style="border-top-color:#d6334a"><h5 style="color:#d6334a">3 · JobTracker failure</h5>
+ <ul style="margin:0;font-size:9pt">
+ <li>The <mark>most serious</mark> failure mode.</li>
+ <li>Hadoop has <b>no mechanism</b> for dealing with it — the JobTracker is a <mark>single point of failure</mark> — so the <b>job fails</b>.</li>
+ <li>Low chance of occurring (one particular machine failing is unlikely).</li>
+ <li>Good news: improved in <b>YARN</b>, one of whose design goals is to <b>eliminate single points of failure</b>.</li>
+ </ul></div>
+</div>
+
+<h3>Failures in YARN — 4 entities can fail</h3>
+<table class="t">
+<tr><th style="width:18%">What fails</th><th>How it's detected</th><th>What happens</th></tr>
+<tr><td>Task</td><td>Runtime exceptions &amp; sudden JVM exits are <b>propagated back to the ApplicationMaster</b>. Hanging tasks are noticed by the <b>absence of a ping over the umbilical channel</b> (timeout: <code>mapreduce.task.timeout</code>).</td><td>Task attempt marked as <b>failed</b>. Same rules as classic: a task is marked failed after <mark>four attempts</mark>.</td></tr>
+<tr><td>Application Master</td><td>The AM sends <b>periodic heartbeats to the ResourceManager</b>; the RM detects the failure.</td><td>RM <b>starts a new AM instance in a new container</b> (managed by a NodeManager). By default an application is marked failed if it fails <b>once</b>; increase with <code>yarn.resourcemanager.am.max-retries</code>.</td></tr>
+<tr><td>Node Manager</td><td>Stops sending <b>heartbeats to the ResourceManager</b>. RM waits <code>yarn.resourcemanager.nm.liveness-monitor.expiry-interval-ms</code> (default <b>600000 ms = 10 minutes</b>).</td><td>Removed from the RM's pool of available nodes. NodeManagers may be <b>blacklisted by the ApplicationMaster</b> if failures are high — the AM reschedules tasks on other nodes if <b>more than three tasks fail</b> on a NodeManager.</td></tr>
+<tr><td>Resource Manager</td><td>—</td><td><b>Serious</b>: without it, neither jobs nor task containers can be launched. Designed to <b>recover from crashes</b> using <b>checkpointing</b> — saving its state to persistent storage. After a crash, a new RM instance is brought up (by an administrator) and <b>recovers from the saved state</b> (the NodeManagers and running applications).</td></tr>
+</table>
+<div class="fig">
+<svg viewBox="0 0 620 120" width="620" font-family="Inter" font-size="9.5">
+ <defs><marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d9622b"/></marker></defs>
+ <rect x="10" y="40" width="110" height="40" rx="6" fill="#f6b100"/><text x="65" y="64" text-anchor="middle" font-weight="700">Task</text>
+ <rect x="175" y="40" width="130" height="40" rx="6" fill="#d9622b"/><text x="240" y="58" text-anchor="middle" fill="#fff" font-weight="700">ApplicationMaster</text><text x="240" y="71" text-anchor="middle" fill="#fff" font-size="8.4">(per job)</text>
+ <rect x="360" y="40" width="120" height="40" rx="6" fill="#6a3fb5"/><text x="420" y="64" text-anchor="middle" fill="#fff" font-weight="700">ResourceManager</text>
+ <rect x="510" y="70" width="100" height="40" rx="6" fill="#2a9df4"/><text x="560" y="94" text-anchor="middle" fill="#fff" font-weight="700">NodeManager</text>
+ <line x1="120" y1="60" x2="173" y2="60" stroke="#d9622b" stroke-width="2" marker-end="url(#f1)"/><text x="147" y="34" text-anchor="middle" font-size="8.4">ping /</text><text x="147" y="46" text-anchor="middle" font-size="8.4">progress</text>
+ <line x1="305" y1="60" x2="358" y2="60" stroke="#d9622b" stroke-width="2" marker-end="url(#f1)"/><text x="332" y="46" text-anchor="middle" font-size="8.4">heartbeat</text>
+ <path d="M510 88 C 470 100, 450 95, 430 82" fill="none" stroke="#d9622b" stroke-width="2" marker-end="url(#f1)"/><text x="470" y="113" text-anchor="middle" font-size="8.4">heartbeat</text>
+ <text x="310" y="14" text-anchor="middle" font-weight="700" fill="#16244a">Who watches whom in YARN: a missing signal = failure detected</text>
+</svg>
+<div class="cap">Figure 3.5 — Failure detection in YARN</div>
+</div>
+<table class="t">
+<tr><th style="width:22%">Failure of…</th><th>Classic MR1</th><th>YARN</th></tr>
+<tr><td>Task</td><td>TaskTracker marks attempt failed</td><td>ApplicationMaster marks attempt failed (after 4 attempts → task fails)</td></tr>
+<tr><td>Worker node</td><td>TaskTracker stops heartbeats → removed; blacklisting by JobTracker</td><td>NodeManager stops heartbeats → removed after 10 min; blacklisting by AM</td></tr>
+<tr><td>Job coordinator</td><td>— (JobTracker does this)</td><td>ApplicationMaster restarts in a new container</td></tr>
+<tr><td>Master</td><td><b>JobTracker = SPOF → job fails</b></td><td>ResourceManager recovers from checkpointed state</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>MR1 failures: "<b>T T J</b>" — <b>T</b>ask, <b>T</b>askTracker, <b>J</b>obTracker ("<b>T</b>wo <b>T</b>ired <b>J</b>ugglers"). YARN failures: "<b>T A N R</b>" — <b>T</b>ask, <b>A</b>pplication master, <b>N</b>ode manager, <b>R</b>esource manager ("<b>T</b>he <b>A</b>nts <b>N</b>ever <b>R</b>est").</div>
+
+<!-- 3.7 -->
+<h2 id="s3-7"><span class="no">3.7</span>Job scheduling<span class="marker">@@s3-7@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Many users share one cluster. A <b>scheduler</b> decides <b>whose job gets the cluster's resources, and when</b> — like a teacher deciding the order students use the one computer lab.</div>
+<p>MapReduce in Hadoop comes with a choice of schedulers: the default in MapReduce 1 is the original <mark>FIFO queue-based scheduler</mark>, plus two <b>multi-user</b> schedulers: the <mark>Fair Scheduler</mark> and the <mark>Capacity Scheduler</mark>.</p>
+<div class="fig">
+<svg viewBox="0 0 640 165" width="640" font-family="Inter" font-size="9">
+ <text x="100" y="14" text-anchor="middle" font-weight="800" fill="#16244a" font-size="10.5">FIFO</text>
+ <rect x="10" y="22" width="180" height="120" rx="6" fill="#fafbfd" stroke="#c4cad6"/>
+ <rect x="20" y="32" width="160" height="22" rx="3" fill="#d9622b"/><text x="100" y="47" text-anchor="middle" fill="#fff" font-weight="700">Job 1 (gets everything)</text>
+ <rect x="20" y="60" width="160" height="22" rx="3" fill="#fbd5bf"/><text x="100" y="75" text-anchor="middle">Job 2 (waits…)</text>
+ <rect x="20" y="88" width="160" height="22" rx="3" fill="#fbd5bf"/><text x="100" y="103" text-anchor="middle">Job 3 (waits…)</text>
+ <text x="100" y="132" text-anchor="middle" font-size="8.4" fill="#5b6478">first in, first out — one queue</text>
+ <text x="320" y="14" text-anchor="middle" font-weight="800" fill="#16244a" font-size="10.5">Fair Scheduler</text>
+ <rect x="230" y="22" width="180" height="120" rx="6" fill="#fafbfd" stroke="#c4cad6"/>
+ <rect x="240" y="32" width="75" height="78" rx="3" fill="#e9f0ff" stroke="#2463eb"/><text x="277" y="46" text-anchor="middle" font-weight="700" fill="#2463eb">Pool: User A</text>
+ <rect x="325" y="32" width="75" height="78" rx="3" fill="#e8f7ee" stroke="#1f9d55"/><text x="362" y="46" text-anchor="middle" font-weight="700" fill="#1f9d55">Pool: User B</text>
+ <rect x="247" y="54" width="61" height="20" rx="3" fill="#2463eb"/><text x="277" y="68" text-anchor="middle" fill="#fff">long job</text>
+ <rect x="332" y="54" width="61" height="20" rx="3" fill="#1f9d55"/><text x="362" y="68" text-anchor="middle" fill="#fff">short job</text>
+ <text x="320" y="96" text-anchor="middle" font-weight="700">50% ⟷ 50%</text>
+ <text x="320" y="132" text-anchor="middle" font-size="8.4" fill="#5b6478">every user gets a fair share over time</text>
+ <text x="540" y="14" text-anchor="middle" font-weight="800" fill="#16244a" font-size="10.5">Capacity Scheduler</text>
+ <rect x="450" y="22" width="180" height="120" rx="6" fill="#fafbfd" stroke="#c4cad6"/>
+ <rect x="460" y="32" width="95" height="78" rx="3" fill="#f1ebfb" stroke="#6a3fb5"/><text x="507" y="46" text-anchor="middle" font-weight="700" fill="#6a3fb5">Queue: Team X</text><text x="507" y="58" text-anchor="middle" font-size="8">capacity 60%</text>
+ <rect x="560" y="32" width="62" height="78" rx="3" fill="#fff7dc" stroke="#f6b100"/><text x="591" y="46" text-anchor="middle" font-weight="700" fill="#9a6b00">Team Y</text><text x="591" y="58" text-anchor="middle" font-size="8">40%</text>
+ <g fill="#6a3fb5"><rect x="468" y="64" width="78" height="12" rx="2"/><rect x="468" y="80" width="78" height="12" rx="2" opacity=".6"/></g><g fill="#f6b100"><rect x="566" y="64" width="50" height="12" rx="2"/><rect x="566" y="80" width="50" height="12" rx="2" opacity=".6"/></g>
+ <text x="507" y="104" text-anchor="middle" font-size="7.6">FIFO inside queue</text><text x="591" y="104" text-anchor="middle" font-size="7.6">FIFO inside</text>
+ <text x="540" y="132" text-anchor="middle" font-size="8.4" fill="#5b6478">each queue = its own mini cluster</text>
+</svg>
+<div class="cap">Figure 3.6 — FIFO vs Fair vs Capacity scheduling</div>
+</div>
+<div class="two">
+<div class="card"><h5>⚖️ The Fair Scheduler</h5>
+<ul style="margin:0;font-size:9.4pt">
+<li>Aims to give <mark>every user a fair share of the cluster capacity over time</mark>.</li>
+<li>If a <b>single job</b> is running, it gets <b>all of the cluster</b>.</li>
+<li>As more jobs are submitted, free task slots are given to jobs so each user gets a fair share.</li>
+<li>A <b>short job</b> of one user completes in reasonable time even while another user's <b>long job</b> runs — and the long job still makes progress.</li>
+<li>Jobs are placed in <mark>pools</mark>; by default <b>each user gets their own pool</b>. A user who submits more jobs than another won't get more cluster resources, on average.</li>
+<li>Supports <mark>preemption</mark>: if a pool hasn't received its fair share for a certain time, the scheduler <b>kills tasks in pools running over capacity</b> to give slots to the pool running under capacity.</li>
+</ul></div>
+<div class="card"><h5>📦 The Capacity Scheduler</h5>
+<ul style="margin:0;font-size:9.4pt">
+<li>A slightly different approach to multi-user scheduling.</li>
+<li>A cluster is made up of a number of <mark>queues</mark> (like the Fair Scheduler's pools), which may be <b>hierarchical</b> (a queue may be the child of another queue). Each queue has an <b>allocated capacity</b>.</li>
+<li>Within each queue, jobs are scheduled using <b>FIFO scheduling (with priorities)</b>.</li>
+<li>In effect, it allows users or organisations (defined using queues) to <mark>simulate a separate MapReduce cluster with FIFO scheduling</mark> for each.</li>
+<li>Ideal for <b>shared clusters</b> where resource allocation among queues must follow <b>predefined capacities</b>.</li>
+</ul></div>
+</div>
+<div class="def"><span class="dt">Preemption</span><p>A process in resource scheduling where <mark>currently allocated resources are forcefully taken away from one task or job and reassigned to another with higher priority</mark>. This ensures critical or high-priority jobs get the resources they need, even if it means interrupting or delaying other tasks.</p></div>
+<table class="t">
+<tr><th style="width:18%">Feature</th><th>Fair Scheduler</th><th>Capacity Scheduler</th></tr>
+<tr><td>Purpose</td><td>Ensures fair resource sharing between users or jobs</td><td>Ensures cluster capacity is shared efficiently between multiple queues</td></tr>
+<tr><td>Resource allocation</td><td>Resources shared equally among jobs/users, allowing fairness</td><td>Resources allocated based on queues; each queue gets a configured share</td></tr>
+<tr><td>Within a group</td><td>Fair sharing within each pool (FIFO optional)</td><td>FIFO (with priorities) within each queue</td></tr>
+<tr><td>Preemption</td><td>Supports preemption — long-running jobs give up resources for higher-priority tasks</td><td>Supports preemption, generally used for queue-based preemption</td></tr>
+<tr><td>Configuration</td><td>Simpler — focuses on fairness &amp; balancing</td><td>More complex — set up queues and their capacities</td></tr>
+<tr><td>Use case</td><td>Multi-user environments that need fair access</td><td>Organisations with multiple teams/projects needing strict capacity limits</td></tr>
+<tr><td>Flexibility</td><td>Dynamic adjustment as jobs complete or arrive</td><td>Divided across queues with fixed minimum guarantees</td></tr>
+<tr><td>Performance</td><td>Balances performance by sharing resources equally</td><td>Maximises utilisation by distributing capacity optimally</td></tr>
+<tr><td>Fairness concept</td><td>Jobs get an equal share of resources over time</td><td>Queues get a predefined capacity; unused capacity can be shared</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick</div><b>F</b>air → <b>P</b>ools → "<b>F</b>riends <b>P</b>lay fair". <b>C</b>apacity → <b>Q</b>ueues → "<b>C</b>ompanies <b>Q</b>ueue up, each with its own share". FIFO = "first come, first served".</div>
+
+<!-- 3.8 -->
+<h2 id="s3-8"><span class="no">3.8</span>Shuffle and sort<span class="marker">@@s3-8@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>MapReduce guarantees that <mark>the input to every reducer is sorted by key</mark>. The process by which the system <b>performs the sort — and transfers the map outputs to the reducers as inputs</b> — is known as the <mark>shuffle</mark>.</p></div>
+<ul>
+<li>The shuffle is an area of the codebase where <b>refinements and improvements are continually being made</b>.</li>
+<li>The shuffle is <mark>the heart of MapReduce</mark> and is where <b>"the magic" happens</b>.</li>
+</ul>
+<div class="fig">
+<svg viewBox="0 0 640 245" width="640" font-family="Inter" font-size="8.8">
+ <defs><marker id="s1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d6334a"/></marker><marker id="s2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1f9d55"/></marker></defs>
+ <g font-weight="700" text-anchor="middle" fill="#16244a" font-size="9.5"><text x="385" y="14">Copy phase</text><text x="475" y="14">"Sort" phase</text><text x="575" y="14">Reduce phase</text></g>
+ <rect x="10" y="22" width="320" height="150" rx="6" fill="#dbeefa" stroke="#9fc9e6"/><text x="20" y="38" font-weight="800" font-size="10">map task</text>
+ <rect x="20" y="70" width="12" height="60" fill="#fff" stroke="#16244a"/><text x="26" y="145" text-anchor="middle" font-size="8">input</text><text x="26" y="155" text-anchor="middle" font-size="8">split</text>
+ <rect x="50" y="78" width="40" height="44" rx="3" fill="#2a9df4" stroke="#16244a"/><text x="70" y="104" text-anchor="middle" fill="#fff" font-weight="700">map</text>
+ <line x1="32" y1="100" x2="48" y2="100" stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#s1)"/>
+ <rect x="110" y="90" width="50" height="20" rx="3" fill="#2a9df4" stroke="#16244a"/><text x="135" y="72" text-anchor="middle" font-size="8">buffer in</text><text x="135" y="82" text-anchor="middle" font-size="8">memory (100 MB)</text>
+ <line x1="90" y1="100" x2="108" y2="100" stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#s1)"/>
+ <text x="205" y="40" text-anchor="middle" font-size="8">partition, sort, and</text><text x="205" y="50" text-anchor="middle" font-size="8">spill to disk (at 80%)</text>
+ <g fill="#2a9df4" stroke="#16244a"><rect x="190" y="56" width="10" height="16"/><rect x="200" y="56" width="10" height="16"/><rect x="210" y="56" width="10" height="16"/><rect x="190" y="92" width="10" height="16"/><rect x="200" y="92" width="10" height="16"/><rect x="210" y="92" width="10" height="16"/><rect x="190" y="128" width="10" height="16"/><rect x="200" y="128" width="10" height="16"/><rect x="210" y="128" width="10" height="16"/></g>
+ <text x="205" y="160" text-anchor="middle" font-size="8">partitions</text>
+ <g stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#s1)"><line x1="160" y1="96" x2="188" y2="66"/><line x1="160" y1="100" x2="188" y2="100"/><line x1="160" y1="104" x2="188" y2="134"/></g>
+ <text x="265" y="125" text-anchor="middle" font-size="8">merge on disk</text>
+ <g fill="#2a9df4" stroke="#16244a"><rect x="250" y="92" width="22" height="16"/><rect x="272" y="92" width="22" height="16"/><rect x="294" y="92" width="22" height="16"/></g>
+ <g stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#s1)"><line x1="220" y1="66" x2="248" y2="96"/><line x1="220" y1="100" x2="248" y2="100"/><line x1="220" y1="136" x2="248" y2="104"/></g>
+ <rect x="345" y="22" width="285" height="150" rx="6" fill="#dbeefa" stroke="#9fc9e6"/><text x="620" y="38" text-anchor="end" font-weight="800" font-size="10">reduce task</text>
+ <text x="350" y="66" font-size="8">fetch (HTTP)</text>
+ <line x1="316" y1="96" x2="372" y2="68" stroke="#d6334a" stroke-width="1.6" marker-end="url(#s1)"/>
+ <g fill="#2a9df4" stroke="#16244a"><rect x="375" y="58" width="22" height="12"/><rect x="375" y="88" width="22" height="12"/><rect x="375" y="118" width="22" height="12"/></g>
+ <text x="386" y="54" text-anchor="middle" font-size="8">merge</text>
+ <g fill="#2a9df4" stroke="#16244a"><rect x="430" y="88" width="50" height="12"/></g><text x="455" y="82" text-anchor="middle" font-size="8">merge</text>
+ <g stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#s1)"><line x1="397" y1="64" x2="428" y2="92"/><line x1="397" y1="94" x2="428" y2="94"/><line x1="397" y1="124" x2="428" y2="96"/></g>
+ <rect x="510" y="76" width="45" height="36" rx="3" fill="#2a9df4" stroke="#16244a"/><text x="532" y="98" text-anchor="middle" fill="#fff" font-weight="700">reduce</text>
+ <line x1="480" y1="94" x2="508" y2="94" stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#s1)"/>
+ <rect x="575" y="70" width="12" height="50" fill="#fff" stroke="#16244a"/><text x="600" y="134" text-anchor="middle" font-size="8">output</text>
+ <line x1="555" y1="94" x2="573" y2="94" stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#s1)"/>
+ <text x="455" y="160" text-anchor="middle" font-size="8" font-style="italic" fill="#5b6478">mixture of in-memory and on-disk data</text>
+ <g stroke="#1f9d55" stroke-width="1.4" marker-end="url(#s2)"><line x1="250" y1="225" x2="372" y2="126"/><line x1="260" y1="225" x2="372" y2="96"/></g>
+ <text x="235" y="237" font-size="8.5" fill="#1f9d55" font-weight="700">other maps</text>
+ <g stroke="#d6334a" stroke-width="1.4" stroke-dasharray="3 2" marker-end="url(#s1)"><line x1="316" y1="104" x2="450" y2="215"/></g>
+ <text x="455" y="230" font-size="8.5" fill="#d6334a" font-weight="700">other reduces</text>
+</svg>
+<div class="cap">Figure 3.7 — Shuffle and sort in MapReduce (Textbook Fig. 6-6)</div>
+</div>
+
+<h3>The map side</h3>
+<p>When the map function starts producing output, it is <b>not simply written to disk</b>. It uses <b>buffering writes in memory</b> and does some <b>presorting</b> for efficiency:</p>
+<ul class="stp">
+<li><span class="sn">1</span>Each map task has a <mark>circular memory buffer</mark> that it writes its output to. The buffer is <mark>100 MB by default</mark>.</li>
+<li><span class="sn">2</span>When the buffer reaches a threshold (<code>io.sort.spill.percent</code>, default <mark>0.80 = 80%</mark>), a <b>background thread starts to spill</b> the contents to disk. Map outputs continue to be written to the buffer during the spill, but if the buffer <b>fills up</b>, the map <b>blocks until the spill is complete</b>.</li>
+<li><span class="sn">3</span>Spills are written in <b>round-robin fashion</b> to the directories in the <code>mapred.local.dir</code> property, in a job-specific subdirectory.</li>
+<li><span class="sn">4</span>Before writing to disk, the thread first <mark>divides the data into partitions</mark> corresponding to the reducers they'll be sent to.</li>
+<li><span class="sn">5</span>Within each partition, the background thread performs an <mark>in-memory sort by key</mark>, and if there is a <b>combiner function</b>, it is run on the output of the sort. Running the combiner gives a <b>more compact map output</b> → less data to write to local disk and to transfer to the reducer.</li>
+<li><span class="sn">6</span>Each time the buffer reaches the spill threshold, a <b>new spill file</b> is created — so there could be several spill files. Before the task finishes, the spill files are <mark>merged into a single partitioned and sorted output file</mark>.</li>
+<li><span class="sn">7</span>It's often a good idea to <b>compress the map output</b> as it's written — faster to write, saves disk space, less data to transfer.</li>
+<li><span class="sn">8</span>The output file's partitions are made available to reducers <b>over HTTP</b>. The max number of worker threads serving them is set by <code>tasktracker.http.threads</code> — <b>per TaskTracker</b>, not per map slot.</li>
+</ul>
+<div class="box mem"><div class="bt">🧠 Memory trick — map side</div>"<b>B S P S C M</b>" → <b>B</b>uffer (100 MB) → <b>S</b>pill at 80% → <b>P</b>artition → <b>S</b>ort → <b>C</b>ombine → <b>M</b>erge — "<b>B</b>ig <b>S</b>pills <b>P</b>lease <b>S</b>weep, <b>C</b>lean, <b>M</b>op".</div>
+
+<h3>The reduce side</h3>
+<ul class="stp">
+<li><span class="sn">1</span>The map output file sits on the <b>local disk of the machine that ran the map task</b> (map outputs always go to local disk; reduce outputs may not). The reduce task needs the map output for <b>its particular partition</b> from <b>several map tasks</b> across the cluster.</li>
+<li><span class="sn">2</span><b>Copy phase:</b> map tasks finish at different times, so the reduce task <mark>starts copying their outputs as soon as each completes</mark>. It uses a small number of <b>copier threads</b> to fetch in parallel — default <mark>five threads</mark> (<code>mapred.reduce.parallel.copies</code>).</li>
+<li><span class="sn">3</span>Map outputs are copied into the reduce task JVM's <b>memory</b> if small enough; otherwise to <b>disk</b>. When the in-memory buffer reaches a threshold size or number of map outputs, it is <b>merged and spilled to disk</b> (the combiner runs during this merge if specified). As copies accumulate on disk, a background thread <b>merges them into larger, sorted files</b>. Compressed map outputs must be decompressed in memory to merge them.</li>
+<li><span class="sn">4</span><b>Sort phase</b> (really a <mark>merge phase</mark> — sorting was done on the map side): when all map outputs have been copied, the reduce task merges them <b>maintaining their sort order</b>. This is done in <b>rounds</b> (e.g., 50 map outputs with merge factor 10 → 5 rounds → 5 intermediate files).</li>
+<li><span class="sn">5</span>Instead of a final round merging those files into one sorted file, the merge <b>saves a trip to disk</b> by directly feeding the reduce function in the last phase.</li>
+<li><span class="sn">6</span><b>Reduce phase:</b> the reduce function is <mark>invoked for each key in the sorted output</mark>. The output is written directly to the output file system — typically <b>HDFS</b>.</li>
+</ul>
+<div class="box mem"><div class="bt">🧠 Memory trick — reduce side</div>"<b>Copy → Merge (sort) → Reduce</b>" = "<b>C M R</b>" — "<b>C</b>ollect, <b>M</b>ix, <b>R</b>esult". The reducer's "sort" phase is actually a <b>merge</b>.</div>
+<table class="t">
+<tr><th style="width:28%">Number to remember</th><th>Value</th><th>Property</th></tr>
+<tr><td>Map-side circular buffer</td><td><b>100 MB</b></td><td><code>io.sort.mb</code></td></tr>
+<tr><td>Spill threshold</td><td><b>0.80 (80%)</b></td><td><code>io.sort.spill.percent</code></td></tr>
+<tr><td>Reduce-side copier threads</td><td><b>5</b></td><td><code>mapred.reduce.parallel.copies</code></td></tr>
+<tr><td>Map output served over</td><td><b>HTTP</b></td><td><code>tasktracker.http.threads</code></td></tr>
+<tr><td>HDFS block size</td><td><b>128 MB</b></td><td><code>dfs.blocksize</code></td></tr>
+<tr><td>Replication factor</td><td><b>3</b></td><td><code>dfs.replication</code></td></tr>
+<tr><td>Task attempts before failing</td><td><b>4</b></td><td><code>mapreduce.map/reduce.maxattempts</code></td></tr>
+<tr><td>NodeManager expiry</td><td><b>10 min (600000 ms)</b></td><td><code>…nm.liveness-monitor.expiry-interval-ms</code></td></tr>
+<tr><td>Reduce slow start</td><td><b>5%</b> of maps done</td><td><code>mapreduce.job.reduce.slowstart.completedmaps</code></td></tr>
+</table>
+<div class="box exam"><div class="bt">🎯 Exam tip</div>"Explain shuffle and sort" = 10 marks. Start with the <b>definition</b> (input to every reducer is sorted by key; the process of sorting and transferring map outputs = shuffle). Draw <b>Fig 3.7</b>, then write <b>Map side</b> (buffer, spill, partition, sort, combiner, merge, HTTP) and <b>Reduce side</b> (copy, merge/sort, reduce) as numbered points.</div>
+
+<div class="check"><div class="bt">✅ Before you move on — can you…</div>
+<ul>
+<li>Explain why complex problems use more jobs, the mean-max example (2 jobs) and JobControl / DAG?</li>
+<li>Explain MRUnit with MapDriver, ReduceDriver and the local job runner test?</li>
+<li>List the 3 values of mapreduce.framework.name (local / classic / yarn)?</li>
+<li>Draw the MR1 job run (10 steps) and explain the 4 phases: submission, initialisation, assignment, execution?</li>
+<li>Explain why YARN was created and draw the YARN job run (11 steps)?</li>
+<li>Compare MR1 vs YARN in a table?</li>
+<li>Explain failures in MR1 (task, TaskTracker, JobTracker) and YARN (task, AM, NM, RM)?</li>
+<li>Explain FIFO, Fair (pools, preemption) and Capacity (queues) schedulers and compare them?</li>
+<li>Draw shuffle &amp; sort and explain the map side and reduce side?</li>
+</ul></div>
+</section>

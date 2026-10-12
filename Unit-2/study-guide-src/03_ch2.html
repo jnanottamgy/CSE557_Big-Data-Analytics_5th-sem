@@ -1,0 +1,351 @@
+
+<!-- ================= CHAPTER 2 ================= -->
+<section class="ch2">
+<div class="chapter-open" id="ch2"><p class="marker">@@ch2@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Chapter 2</div>
+  <h1>The Hadoop Distributed File System</h1>
+  <div class="learn"><b>What you'll learn</b>
+    <ol><li>What a distributed file system is</li><li>Design of HDFS — and where it fails</li><li>Blocks (128 MB) &amp; their benefits</li><li>NameNode, DataNode, Secondary NameNode</li><li>HDFS Federation</li><li>HDFS High Availability</li><li>Anatomy of a file read (6 steps)</li><li>Anatomy of a file write (7 steps)</li></ol>
+  </div>
+  <div class="meta"><span>⏱ ≈ 2 hours</span><span>Slides: Lecture 2 (pp. 67–88)</span><span>Tom White Ch. 3</span></div>
+</div>
+
+<!-- 2.1 -->
+<h2 id="s2-1"><span class="no">2.1</span>Distributed file systems<span class="marker">@@s2-1@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>When a file is too big for one computer, we <b>cut it into pieces and store the pieces on many computers</b> connected by a network. Software that manages files spread over many machines like this is called a <b>distributed file system</b>. Hadoop's one is called <b>HDFS</b>.</div>
+<div class="two" style="grid-template-columns:1.15fr .85fr">
+<div>
+<ul>
+<li>When a dataset <b>outgrows the storage capacity of a single physical machine</b>, it becomes necessary to <b>partition it across a number of separate machines</b>.</li>
+<li>File systems that manage the storage across a network of machines are called <mark>distributed file systems (DFS)</mark>. A DFS allows access to files from <b>multiple hosts sharing via a computer network</b>.</li>
+<li>Being network-based, they are <b>more complex</b> than regular disk file systems.</li>
+<li>One of the biggest challenges: making the file system <mark>tolerate node failure without suffering data loss</mark>.</li>
+<li>Hadoop's DFS is <b>HDFS</b>. Hadoop can also work with other storage (the <b>local file system</b>, <b>Amazon S3</b>).</li>
+</ul>
+</div>
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 250 190" width="250" font-family="Inter" font-size="9">
+ <rect x="5" y="5" width="240" height="85" rx="8" fill="#f1ebfb" stroke="#6a3fb5"/><text x="125" y="20" text-anchor="middle" font-weight="700" fill="#6a3fb5">Cluster</text>
+ <g fill="#6a3fb5"><rect x="18" y="28" width="22" height="30" rx="3"/><rect x="46" y="28" width="22" height="30" rx="3"/><rect x="74" y="28" width="22" height="30" rx="3"/><rect x="102" y="28" width="22" height="30" rx="3"/><rect x="130" y="28" width="22" height="30" rx="3"/><rect x="158" y="28" width="22" height="30" rx="3"/><rect x="186" y="28" width="22" height="30" rx="3"/><rect x="214" y="28" width="22" height="30" rx="3"/></g>
+ <g fill="#9f7ae0"><rect x="18" y="62" width="22" height="20" rx="3"/><rect x="46" y="62" width="22" height="20" rx="3"/><rect x="74" y="62" width="22" height="20" rx="3"/><rect x="102" y="62" width="22" height="20" rx="3"/><rect x="130" y="62" width="22" height="20" rx="3"/><rect x="158" y="62" width="22" height="20" rx="3"/><rect x="186" y="62" width="22" height="20" rx="3"/><rect x="214" y="62" width="22" height="20" rx="3"/></g>
+ <line x1="125" y1="90" x2="125" y2="110" stroke="#16244a" stroke-width="1.5"/>
+ <rect x="80" y="110" width="90" height="26" rx="5" fill="#16244a"/><text x="125" y="127" text-anchor="middle" fill="#fff" font-weight="700">Master access node</text>
+ <g stroke="#16244a" stroke-width="1.2"><line x1="125" y1="136" x2="50" y2="155"/><line x1="125" y1="136" x2="125" y2="155"/><line x1="125" y1="136" x2="200" y2="155"/></g>
+ <g fill="#e3e7ef" stroke="#7d879b"><rect x="25" y="155" width="50" height="20" rx="3"/><rect x="100" y="155" width="50" height="20" rx="3"/><rect x="175" y="155" width="50" height="20" rx="3"/></g>
+ <g text-anchor="middle" font-size="8"><text x="50" y="168">User PC</text><text x="125" y="168">User PC</text><text x="200" y="168">User PC</text></g>
+ <text x="125" y="187" text-anchor="middle" font-size="8.4" fill="#5b6478">users submitting jobs</text>
+</svg>
+<div class="cap">Figure 2.1 — A distributed file system</div>
+</div>
+</div>
+
+<!-- 2.2 -->
+<h2 id="s2-2"><span class="no">2.2</span>The design of HDFS<span class="marker">@@s2-2@@</span></h2>
+<div class="def"><span class="dt">Definition — learn word-for-word</span><p style="font-size:11pt">HDFS is a file system designed for storing <mark>very large files</mark> with <mark>streaming data access patterns</mark>, running on clusters of <mark>commodity hardware</mark>.</p></div>
+<div class="cards c3">
+ <div class="card"><h5>📦 Very large files</h5><p>Files that are <b>hundreds of MB, GB or TB</b> in size. Hadoop clusters today store <b>petabytes</b> of data.</p></div>
+ <div class="card"><h5>🌊 Streaming data access</h5><p>Built around <mark>write-once, read-many-times</mark>. A dataset is generated/copied once, then analysed many times. Each analysis reads a large part (or all) of the dataset, so the <b>time to read the whole dataset</b> matters more than the <b>latency of reading the first record</b>.</p></div>
+ <div class="card"><h5>🖥 Commodity hardware</h5><p>Doesn't need expensive, highly reliable hardware — runs on <b>commonly available hardware</b> from multiple vendors. Node failure is likely in large clusters, so HDFS is designed to <b>keep working without noticeable interruption</b>.</p></div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>HDFS is good at "<b>L S C</b>" → <b>L</b>arge files, <b>S</b>treaming access, <b>C</b>heap (commodity) hardware.</div>
+
+<h3>Where HDFS does NOT work well</h3>
+<div class="cards c3">
+ <div class="card" style="border-top-color:#d6334a"><h5 style="color:#d6334a">❌ 1. Low-latency data access</h5><p>Not suitable for apps needing access in the <b>tens of milliseconds</b>. HDFS is optimised for <b>high data throughput</b>, which may come at the expense of latency. → Use <mark>HBase</mark> instead for low-latency access.</p></div>
+ <div class="card" style="border-top-color:#d6334a"><h5 style="color:#d6334a">❌ 2. Lots of small files</h5><p>The <b>NameNode holds file-system metadata in memory</b>; every file, directory and block uses memory. So the number of files is limited by NameNode memory: <b>millions</b> of files are feasible, <b>billions</b> are beyond current hardware.</p><span class="ex">Rule of thumb (textbook): each file/dir/block ≈ 150 bytes of NameNode memory.</span></div>
+ <div class="card" style="border-top-color:#d6334a"><h5 style="color:#d6334a">❌ 3. Multiple writers, arbitrary file modifications</h5><p>A file is written by a <b>single writer</b>. Writes are always made <b>at the end of the file</b> (append-only). <b>No</b> multiple writers, <b>no</b> modifications at arbitrary offsets.</p></div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — HDFS weaknesses</div>"<b>L S M</b>": HDFS is <b>not</b> for <b>L</b>ow latency, <b>S</b>mall files, or <b>M</b>ultiple writers. (Opposite of its strengths: large files, streaming, one writer.)</div>
+
+<!-- 2.3 -->
+<h2 id="s2-3"><span class="no">2.3</span>HDFS concepts — Blocks<span class="marker">@@s2-3@@</span></h2>
+<ul>
+<li>A <b>disk</b> has a block size — the <b>minimum amount of data it can read or write</b>. Disk blocks are normally <b>512 bytes</b>.</li>
+<li>File systems for a single disk deal with data in blocks that are an integral multiple of the disk block size — typically <b>a few kilobytes</b>.</li>
+<li>This is usually transparent to the user, but tools like <code>df</code> and <code>fsck</code> ("file system check") work at block level.</li>
+<li>HDFS also has blocks, but a <mark>much larger unit — 128 MB by default</mark>. Files in HDFS are broken into <b>block-sized chunks</b>, stored as <b>independent units</b>.</li>
+<li>Unlike a single-disk file system, <mark>a file smaller than a block does not occupy a full block</mark> of storage — e.g., a <b>1 MB file</b> with a 128 MB block size uses <b>1 MB</b> of disk, not 128 MB.</li>
+</ul>
+<div class="fig">
+<svg viewBox="0 0 640 175" width="640" font-family="Inter" font-size="9.5">
+ <defs><marker id="h1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#6a3fb5"/></marker></defs>
+ <rect x="5" y="20" width="110" height="130" rx="6" fill="#16244a"/><text x="60" y="72" text-anchor="middle" fill="#fff" font-weight="700">File</text><text x="60" y="86" text-anchor="middle" fill="#ffd166">500 MB</text>
+ <text x="60" y="100" text-anchor="middle" fill="#c8d0ea" font-size="8.5">divided into</text><text x="60" y="112" text-anchor="middle" fill="#c8d0ea" font-size="8.5">blocks</text>
+ <g font-weight="700" text-anchor="middle">
+  <rect x="135" y="20" width="95" height="28" rx="4" fill="#2463eb"/><text x="182" y="38" fill="#fff">Block 1 · 128 MB</text>
+  <rect x="135" y="54" width="95" height="28" rx="4" fill="#1f9d55"/><text x="182" y="72" fill="#fff">Block 2 · 128 MB</text>
+  <rect x="135" y="88" width="95" height="28" rx="4" fill="#d9622b"/><text x="182" y="106" fill="#fff">Block 3 · 128 MB</text>
+  <rect x="135" y="122" width="95" height="28" rx="4" fill="#f6b100"/><text x="182" y="140" fill="#16244a">Block 4 · 116 MB</text>
+ </g>
+ <line x1="240" y1="85" x2="275" y2="85" stroke="#6a3fb5" stroke-width="2.5" marker-end="url(#h1)"/>
+ <g fill="#f1ebfb" stroke="#6a3fb5"><rect x="285" y="35" width="110" height="115" rx="6"/><rect x="405" y="35" width="110" height="115" rx="6"/><rect x="525" y="35" width="110" height="115" rx="6"/></g>
+ <g font-weight="700" text-anchor="middle" fill="#6a3fb5"><text x="340" y="28">DataNode 1</text><text x="460" y="28">DataNode 2</text><text x="580" y="28">DataNode 3</text></g>
+ <g font-weight="700" text-anchor="middle" font-size="8.6">
+  <rect x="295" y="45" width="90" height="20" rx="3" fill="#2463eb"/><text x="340" y="59" fill="#fff">Block 1</text>
+  <rect x="295" y="70" width="90" height="20" rx="3" fill="#1f9d55"/><text x="340" y="84" fill="#fff">Block 2</text>
+  <rect x="295" y="95" width="90" height="20" rx="3" fill="#f6b100"/><text x="340" y="109">Block 4</text>
+  <rect x="415" y="45" width="90" height="20" rx="3" fill="#2463eb"/><text x="460" y="59" fill="#fff">Block 1</text>
+  <rect x="415" y="70" width="90" height="20" rx="3" fill="#d9622b"/><text x="460" y="84" fill="#fff">Block 3</text>
+  <rect x="415" y="95" width="90" height="20" rx="3" fill="#f6b100"/><text x="460" y="109">Block 4</text>
+  <rect x="535" y="45" width="90" height="20" rx="3" fill="#1f9d55"/><text x="580" y="59" fill="#fff">Block 2</text>
+  <rect x="535" y="70" width="90" height="20" rx="3" fill="#d9622b"/><text x="580" y="84" fill="#fff">Block 3</text>
+  <rect x="535" y="95" width="90" height="20" rx="3" fill="#2463eb"/><text x="580" y="109" fill="#fff">Block 1</text>
+  <rect x="535" y="120" width="90" height="20" rx="3" fill="#1f9d55"/><text x="580" y="134" fill="#fff">Block 2</text>
+  <rect x="295" y="120" width="90" height="20" rx="3" fill="#d9622b"/><text x="340" y="134" fill="#fff">Block 3</text>
+  <rect x="415" y="120" width="90" height="20" rx="3" fill="#f6b100"/><text x="460" y="134">Block 4</text>
+ </g>
+ <text x="460" y="168" text-anchor="middle" font-size="9" fill="#5b6478">each block is stored 3 times on different DataNodes (replication factor 3)</text>
+</svg>
+<div class="cap">Figure 2.2 — A 500 MB file split into 128 MB blocks, each replicated 3 times across DataNodes. Note the last block is only 116 MB.</div>
+</div>
+
+<h3>Benefits of the block abstraction</h3>
+<div class="cards c3">
+ <div class="card"><h5>1 · File bigger than any disk</h5><p>A file can be <b>larger than any single disk</b> in the network — blocks don't need to be on the same disk, so they can use any disk in the cluster.</p></div>
+ <div class="card"><h5>2 · Simpler storage subsystem</h5><p>Making the unit a <b>block rather than a file</b> simplifies storage management (fixed size → easy to calculate how many fit on a disk; metadata handled separately). Simplicity matters in distributed systems where failure modes are varied.</p></div>
+ <div class="card"><h5>3 · Fits replication</h5><p>Blocks fit well with <b>replication</b> for fault tolerance and availability: each block is replicated to a small number of <b>physically separate machines (typically three)</b>, guarding against corrupted blocks and disk/machine failure.</p></div>
+</div>
+<div class="box warn"><div class="bt">⚠️ Common mistake</div>Older textbook editions/slides may say <b>64 MB</b> (Hadoop 1). Your slides say <mark>128 MB by default</mark> (Hadoop 2+) — write 128 MB. Also: HDFS block (128 MB) ≫ normal file system block (few KB) ≫ disk block (512 bytes).</div>
+
+<!-- 2.4 -->
+<h2 id="s2-4"><span class="no">2.4</span>NameNodes and DataNodes<span class="marker">@@s2-4@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Think of a <b>library</b>. The <b>NameNode</b> is the librarian's <b>catalogue</b>: it knows which book (file) is made of which pages (blocks) and which shelf (DataNode) holds each page — but it doesn't hold the pages itself. The <b>DataNodes</b> are the <b>shelves</b> that actually store the pages.</div>
+<p>An HDFS cluster has two types of nodes operating in a <mark>master–worker (master–slave) pattern</mark>: a <b>NameNode</b> (the master) and a number of <b>DataNodes</b> (workers).</p>
+<div class="two">
+<div class="card"><h5>👑 NameNode (master)</h5>
+<ul style="margin:0">
+<li>Manages the <mark>file system namespace</mark>.</li>
+<li>Maintains the <b>file system tree</b> and the <b>metadata</b> for all files and directories.</li>
+<li>Stored persistently on local disk as two files: the <mark>namespace image</mark> and the <mark>edit log</mark>.</li>
+<li>Knows which DataNodes hold the blocks of each file (this block-location map is rebuilt from DataNode reports at startup, kept in memory).</li>
+</ul></div>
+<div class="card"><h5>👷 DataNodes (workers)</h5>
+<ul style="margin:0">
+<li>The <mark>workhorses</mark> of the file system.</li>
+<li><b>Store and retrieve blocks</b> when told to (by clients or the NameNode).</li>
+<li><b>Report back to the NameNode periodically</b> with lists of blocks they are storing (block reports / heartbeats).</li>
+</ul></div>
+</div>
+<div class="fig">
+<svg viewBox="0 0 640 230" width="640" font-family="Inter" font-size="9.5">
+ <defs><marker id="h2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#16244a"/></marker></defs>
+ <rect x="250" y="8" width="140" height="40" rx="7" fill="#6a3fb5"/><text x="320" y="26" text-anchor="middle" fill="#fff" font-weight="800" font-size="11">NameNode</text><text x="320" y="40" text-anchor="middle" fill="#e5daf8" font-size="8.5">(master)</text>
+ <rect x="420" y="10" width="215" height="36" rx="5" fill="#fff" stroke="#6a3fb5" stroke-dasharray="3 2"/><text x="527" y="25" text-anchor="middle" font-size="8.6" font-weight="700">Metadata (name, replicas, …)</text><text x="527" y="38" text-anchor="middle" font-size="8.4" font-family="DejaVu Sans Mono">/home/foo/data, 3, …</text>
+ <line x1="390" y1="28" x2="418" y2="28" stroke="#6a3fb5" stroke-dasharray="3 2"/>
+ <rect x="20" y="10" width="70" height="30" rx="15" fill="#d9622b"/><text x="55" y="29" text-anchor="middle" fill="#fff" font-weight="700">Client</text>
+ <line x1="90" y1="25" x2="248" y2="25" stroke="#16244a" stroke-width="1.3" marker-end="url(#h2)"/><text x="170" y="19" text-anchor="middle" font-size="8.6">metadata ops</text>
+ <line x1="320" y1="48" x2="320" y2="80" stroke="#16244a" stroke-width="1.3" marker-end="url(#h2)"/><text x="326" y="68" font-size="8.6">block ops / instructions</text>
+ <g fill="#f1ebfb" stroke="#6a3fb5"><rect x="20" y="85" width="290" height="105" rx="8"/><rect x="330" y="85" width="290" height="105" rx="8"/></g>
+ <g font-weight="700" fill="#6a3fb5" text-anchor="middle"><text x="165" y="102">Rack 1</text><text x="475" y="102">Rack 2</text></g>
+ <g fill="#fff" stroke="#9aa3b5"><rect x="35" y="110" width="80" height="65" rx="5"/><rect x="125" y="110" width="80" height="65" rx="5"/><rect x="215" y="110" width="80" height="65" rx="5"/><rect x="345" y="110" width="80" height="65" rx="5"/><rect x="435" y="110" width="80" height="65" rx="5"/><rect x="525" y="110" width="80" height="65" rx="5"/></g>
+ <g text-anchor="middle" font-size="8.5" font-weight="700"><text x="75" y="124">DataNode</text><text x="165" y="124">DataNode</text><text x="255" y="124">DataNode</text><text x="385" y="124">DataNode</text><text x="475" y="124">DataNode</text><text x="565" y="124">DataNode</text></g>
+ <g fill="#cbe86b" stroke="#7a9a1a"><rect x="45" y="132" width="16" height="16"/><rect x="65" y="132" width="16" height="16"/><rect x="45" y="152" width="16" height="16"/><rect x="140" y="140" width="16" height="16"/><rect x="225" y="132" width="16" height="16"/><rect x="245" y="132" width="16" height="16"/><rect x="360" y="132" width="16" height="16"/><rect x="380" y="132" width="16" height="16"/><rect x="450" y="140" width="16" height="16"/><rect x="540" y="132" width="16" height="16"/><rect x="560" y="132" width="16" height="16"/><rect x="540" y="152" width="16" height="16"/></g>
+ <path d="M295 150 C 320 150, 320 150, 343 150" stroke="#16244a" stroke-width="1.3" fill="none" marker-end="url(#h2)"/><text x="319" y="143" text-anchor="middle" font-size="8">replication</text>
+ <rect x="285" y="200" width="70" height="26" rx="13" fill="#d9622b"/><text x="320" y="217" text-anchor="middle" fill="#fff" font-weight="700">Client</text>
+ <line x1="300" y1="200" x2="240" y2="177" stroke="#16244a" stroke-width="1.3" marker-end="url(#h2)"/><text x="248" y="196" font-size="8.6">write</text>
+ <line x1="80" y1="177" x2="285" y2="212" stroke="#16244a" stroke-width="1.3" marker-start="url(#h2)" fill="none"/><text x="150" y="203" font-size="8.6">read</text>
+</svg>
+<div class="cap">Figure 2.3 — HDFS architecture: one NameNode holds metadata; DataNodes in racks hold replicated blocks; clients read/write blocks directly from/to DataNodes</div>
+</div>
+<div class="box key"><div class="bt">🔑 Key point</div><mark>Without the NameNode, the file system cannot be used.</mark> If the machine running the NameNode were destroyed, <b>all files would be lost</b> — there'd be no way to know how to rebuild files from the blocks on the DataNodes. So the NameNode must be made <b>resilient to failure</b>.</div>
+
+<h3>Making the NameNode resilient — two mechanisms</h3>
+<div class="cards c2">
+ <div class="card"><h5>1 · Back up the metadata files</h5><p>Back up the files that make up the persistent state of the file-system metadata. Hadoop can be configured so the NameNode writes its persistent state to <b>multiple file systems</b>. These writes are <b>synchronous and atomic</b>. Usual choice: write to <b>local disk + a remote NFS mount</b> (Network File System).</p></div>
+ <div class="card"><h5>2 · Run a Secondary NameNode</h5><p>Despite its name, it <mark>does not act as a NameNode</mark>. Its main role is to <b>periodically merge the namespace image with the edit log</b> to stop the edit log becoming too large. Runs on a <b>separate machine</b> (needs lots of CPU and as much memory as the NameNode). Keeps a copy of the merged namespace image, usable if the NameNode fails.</p></div>
+</div>
+<div class="fig">
+<svg viewBox="0 0 600 95" width="600" font-family="Inter" font-size="9.5">
+ <defs><marker id="h3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#6a3fb5"/></marker></defs>
+ <rect x="5" y="10" width="115" height="34" rx="5" fill="#f1ebfb" stroke="#6a3fb5"/><text x="62" y="31" text-anchor="middle" font-weight="700">fsimage (old)</text>
+ <rect x="5" y="52" width="115" height="34" rx="5" fill="#fff7dc" stroke="#f6b100"/><text x="62" y="68" text-anchor="middle" font-weight="700">edit log</text><text x="62" y="80" text-anchor="middle" font-size="8">(growing list of changes)</text>
+ <line x1="122" y1="27" x2="200" y2="45" stroke="#6a3fb5" stroke-width="1.6" marker-end="url(#h3)"/><line x1="122" y1="69" x2="200" y2="52" stroke="#6a3fb5" stroke-width="1.6" marker-end="url(#h3)"/>
+ <rect x="205" y="25" width="170" height="45" rx="7" fill="#6a3fb5"/><text x="290" y="44" text-anchor="middle" fill="#fff" font-weight="700">Secondary NameNode</text><text x="290" y="59" text-anchor="middle" fill="#e5daf8" font-size="8.6">merges (checkpoint)</text>
+ <line x1="375" y1="48" x2="445" y2="48" stroke="#6a3fb5" stroke-width="1.6" marker-end="url(#h3)"/>
+ <rect x="450" y="25" width="145" height="45" rx="7" fill="#16244a"/><text x="522" y="44" text-anchor="middle" fill="#ffd166" font-weight="700">new fsimage</text><text x="522" y="59" text-anchor="middle" fill="#fff" font-size="8.6">+ fresh, empty edit log</text>
+</svg>
+<div class="cap">Figure 2.4 — The Secondary NameNode creates checkpoints by merging the namespace image (fsimage) with the edit log</div>
+</div>
+<div class="box warn"><div class="bt">⚠️ Common mistake</div>The <b>Secondary NameNode is NOT a backup/standby NameNode</b>. It only does <b>checkpointing</b> (merging). If the NameNode dies, the Secondary can't take over automatically — that's what the <b>Standby NameNode</b> in HDFS High Availability (§2.6) is for.</div>
+
+<h3>Working of HDFS (summary)</h3>
+<div class="flow">
+ <div class="st"><b>File</b>is divided into blocks (Block 1…4)</div><div class="ar">→</div>
+ <div class="st"><b>NameNode</b>decides which DataNodes store which block</div><div class="ar">→</div>
+ <div class="st"><b>DataNodes</b>store the blocks on their local disks (HDFS)</div><div class="ar">→</div>
+ <div class="st"><b>Replicas</b>copied between DataNodes for safety</div>
+</div>
+
+<!-- 2.5 -->
+<h2 id="s2-5"><span class="no">2.5</span>HDFS Federation<span class="marker">@@s2-5@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>One librarian can only remember so many books. In a huge library, <b>hire more librarians and give each one a section</b> (e.g., one handles <code>/user</code>, another handles <code>/share</code>). That's federation.</div>
+<ul>
+<li>The NameNode keeps a reference to <b>every file and block in memory</b> → on very large clusters with many files, <mark>memory becomes the limiting factor for scaling</mark>.</li>
+<li><b>HDFS Federation</b>, introduced in the <b>2.x release series</b>, allows a cluster to scale by <mark>adding NameNodes, each of which manages a portion of the file system namespace</mark>.</li>
+<li>Example: one NameNode manages all files under <code>/user</code>, a second handles files under <code>/share</code>.</li>
+<li>Each NameNode manages a <b>namespace volume</b> = the <b>metadata for the namespace</b> + a <b>block pool</b> containing all the blocks for the files in that namespace.</li>
+<li>Namespace volumes are <b>independent</b>: NameNodes <b>do not communicate</b> with one another, and <mark>the failure of one NameNode does not affect the availability of namespaces managed by others</mark>.</li>
+</ul>
+<div class="fig">
+<svg viewBox="0 0 600 170" width="600" font-family="Inter" font-size="9.5">
+ <g fill="#6a3fb5"><rect x="40" y="8" width="150" height="40" rx="6"/><rect x="225" y="8" width="150" height="40" rx="6"/><rect x="410" y="8" width="150" height="40" rx="6"/></g>
+ <g fill="#fff" text-anchor="middle" font-weight="700"><text x="115" y="25">NameNode 1</text><text x="300" y="25">NameNode 2</text><text x="485" y="25">NameNode k</text></g>
+ <g fill="#e5daf8" text-anchor="middle" font-size="8.6" font-family="DejaVu Sans Mono"><text x="115" y="40">/user</text><text x="300" y="40">/share</text><text x="485" y="40">/…</text></g>
+ <g fill="#f1ebfb" stroke="#6a3fb5"><rect x="40" y="56" width="150" height="22" rx="4"/><rect x="225" y="56" width="150" height="22" rx="4"/><rect x="410" y="56" width="150" height="22" rx="4"/></g>
+ <g text-anchor="middle" font-size="8.6"><text x="115" y="71">namespace volume 1</text><text x="300" y="71">namespace volume 2</text><text x="485" y="71">namespace volume k</text></g>
+ <rect x="20" y="90" width="560" height="74" rx="8" fill="#fafbfd" stroke="#c4cad6"/>
+ <text x="300" y="104" text-anchor="middle" font-weight="700" fill="#16244a">Common storage: DataNodes store blocks for ALL block pools</text>
+ <g fill="#fff" stroke="#9aa3b5"><rect x="45" y="112" width="150" height="44" rx="5"/><rect x="225" y="112" width="150" height="44" rx="5"/><rect x="405" y="112" width="150" height="44" rx="5"/></g>
+ <g text-anchor="middle" font-size="8.5" font-weight="700"><text x="120" y="124">DataNode 1</text><text x="300" y="124">DataNode 2</text><text x="480" y="124">DataNode m</text></g>
+ <g><rect x="60" y="132" width="34" height="16" rx="2" fill="#2463eb"/><rect x="100" y="132" width="34" height="16" rx="2" fill="#1f9d55"/><rect x="140" y="132" width="34" height="16" rx="2" fill="#d9622b"/>
+ <rect x="240" y="132" width="34" height="16" rx="2" fill="#2463eb"/><rect x="280" y="132" width="34" height="16" rx="2" fill="#1f9d55"/><rect x="320" y="132" width="34" height="16" rx="2" fill="#d9622b"/>
+ <rect x="420" y="132" width="34" height="16" rx="2" fill="#2463eb"/><rect x="460" y="132" width="34" height="16" rx="2" fill="#1f9d55"/><rect x="500" y="132" width="34" height="16" rx="2" fill="#d9622b"/></g>
+ <g font-size="7.4" fill="#fff" text-anchor="middle"><text x="77" y="143">pool 1</text><text x="117" y="143">pool 2</text><text x="157" y="143">pool k</text><text x="257" y="143">pool 1</text><text x="297" y="143">pool 2</text><text x="337" y="143">pool k</text><text x="437" y="143">pool 1</text><text x="477" y="143">pool 2</text><text x="517" y="143">pool k</text></g>
+</svg>
+<div class="cap">Figure 2.5 — HDFS Federation: several independent NameNodes, each with its own namespace volume (metadata + block pool)</div>
+</div>
+
+<!-- 2.6 -->
+<h2 id="s2-6"><span class="no">2.6</span>HDFS High Availability (HA)<span class="marker">@@s2-6@@</span></h2>
+<h3>The problem: the NameNode is a single point of failure</h3>
+<ul>
+<li>Backing up metadata to multiple file systems + a Secondary NameNode protects against <b>data loss</b>, but <mark>does not provide high availability</mark>.</li>
+<li>The NameNode is still a <mark>single point of failure (SPOF)</mark>. If it fails, <b>all clients — including MapReduce jobs — can't read, write, or list files</b>, because the NameNode is the sole repository of metadata and the file-to-block mapping. The whole Hadoop system is out of service until a new NameNode is online.</li>
+<li><b>Manual recovery:</b> an administrator starts a new primary NameNode with one of the metadata replicas and configures DataNodes and clients to use it. The new NameNode can't serve requests until it has:
+ <ol><li>(i) <b>loaded its namespace image</b> into memory,</li><li>(ii) <b>replayed its edit log</b>, and</li><li>(iii) <b>received enough block reports</b> from DataNodes to leave <b>safe mode</b>.</li></ol>
+ On large clusters this "cold start" can take <mark>30 minutes or more</mark>.</li>
+</ul>
+<h3>The solution: an active–standby pair of NameNodes</h3>
+<p>Hadoop 2 adds HA with a pair of NameNodes in an <b>active–standby</b> configuration. If the <b>active</b> NameNode fails, the <b>standby</b> takes over its duties and continues servicing client requests <b>without a significant interruption</b>. Architectural changes needed:</p>
+<div class="cards c2">
+ <div class="card"><h5>1 · Shared edit log</h5><p>NameNodes use <b>highly available shared storage</b> to share the edit log. When the standby comes up, it reads up to the end of the shared edit log to sync with the active one, then keeps reading new entries as the active writes them.</p></div>
+ <div class="card"><h5>2 · Block reports to both</h5><p>DataNodes must send <b>block reports to both NameNodes</b>, because block mappings are stored in a NameNode's <b>memory</b>, not on disk.</p></div>
+ <div class="card"><h5>3 · Client failover</h5><p>Clients must be configured to <b>handle NameNode failover</b>, using a mechanism that is <b>transparent to users</b>.</p></div>
+ <div class="card"><h5>4 · Standby replaces Secondary</h5><p>The Secondary NameNode's role is <b>subsumed by the standby</b>, which takes <b>periodic checkpoints</b> of the active NameNode's namespace.</p></div>
+</div>
+<div class="fig">
+<svg viewBox="0 0 600 165" width="600" font-family="Inter" font-size="9.5">
+ <defs><marker id="h4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#16244a"/></marker></defs>
+ <rect x="40" y="10" width="160" height="44" rx="7" fill="#1f9d55"/><text x="120" y="29" text-anchor="middle" fill="#fff" font-weight="800">Active NameNode</text><text x="120" y="44" text-anchor="middle" fill="#e8f7ee" font-size="8.5">serves all clients</text>
+ <rect x="400" y="10" width="160" height="44" rx="7" fill="#7d879b"/><text x="480" y="29" text-anchor="middle" fill="#fff" font-weight="800">Standby NameNode</text><text x="480" y="44" text-anchor="middle" fill="#eef1f8" font-size="8.5">ready to take over · checkpoints</text>
+ <rect x="225" y="14" width="150" height="36" rx="6" fill="#fff7dc" stroke="#f6b100"/><text x="300" y="30" text-anchor="middle" font-weight="700">Shared edit log</text><text x="300" y="43" text-anchor="middle" font-size="8.4">(highly available storage)</text>
+ <line x1="200" y1="32" x2="223" y2="32" stroke="#16244a" stroke-width="1.5" marker-end="url(#h4)"/><text x="211" y="26" text-anchor="middle" font-size="8">write</text>
+ <line x1="377" y1="32" x2="398" y2="32" stroke="#16244a" stroke-width="1.5" marker-end="url(#h4)"/><text x="388" y="26" text-anchor="middle" font-size="8">read</text>
+ <g fill="#f1ebfb" stroke="#6a3fb5"><rect x="60" y="105" width="110" height="40" rx="5"/><rect x="245" y="105" width="110" height="40" rx="5"/><rect x="430" y="105" width="110" height="40" rx="5"/></g>
+ <g text-anchor="middle" font-weight="700"><text x="115" y="129">DataNode</text><text x="300" y="129">DataNode</text><text x="485" y="129">DataNode</text></g>
+ <g stroke="#1f9d55" stroke-width="1.2" marker-end="url(#h4)"><line x1="115" y1="105" x2="120" y2="57"/><line x1="300" y1="105" x2="140" y2="57"/><line x1="485" y1="105" x2="160" y2="57"/></g>
+ <g stroke="#7d879b" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#h4)"><line x1="115" y1="105" x2="440" y2="57"/><line x1="300" y1="105" x2="460" y2="57"/><line x1="485" y1="105" x2="480" y2="57"/></g>
+ <text x="300" y="160" text-anchor="middle" font-size="8.8" fill="#5b6478">DataNodes send block reports to BOTH NameNodes (solid → active, dashed → standby)</text>
+</svg>
+<div class="cap">Figure 2.6 — HDFS High Availability with an active–standby NameNode pair</div>
+</div>
+<div class="box exam"><div class="bt">🎯 Exam tip</div>Typical question: "Explain HDFS Federation and High Availability." Federation solves <b>scaling</b> (memory limit → more NameNodes, each owning part of the namespace). HA solves the <b>single point of failure</b> (standby NameNode takes over). Write <b>problem → solution → diagram</b> for each.</div>
+
+<!-- 2.7 -->
+<h2 id="s2-7"><span class="no">2.7</span>Data flow — Anatomy of a file read<span class="marker">@@s2-7@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>To read a file, the client first <b>asks the NameNode "where are the blocks?"</b>, then <b>reads each block directly from the nearest DataNode</b>, one after another. The NameNode only gives directions — the actual data never passes through it.</div>
+<div class="fig">
+<svg viewBox="0 0 620 255" width="620" font-family="Inter" font-size="9.5">
+ <defs><marker id="r1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d6334a"/></marker></defs>
+ <rect x="10" y="10" width="330" height="125" rx="6" fill="#dbeefa" stroke="#9fc9e6"/>
+ <rect x="20" y="18" width="310" height="92" rx="4" fill="#fff" stroke="#16244a"/>
+ <text x="30" y="103" font-weight="700" font-size="9">client JVM</text><text x="25" y="127" font-weight="700" font-size="9.5">client node</text>
+ <rect x="30" y="36" width="70" height="38" rx="3" fill="#f6b100" stroke="#16244a"/><text x="65" y="52" text-anchor="middle" font-weight="800">HDFS</text><text x="65" y="65" text-anchor="middle" font-weight="800">client</text>
+ <rect x="200" y="24" width="120" height="34" rx="3" fill="#2a9df4" stroke="#16244a"/><text x="260" y="38" text-anchor="middle" fill="#fff" font-size="9">Distributed</text><text x="260" y="51" text-anchor="middle" fill="#fff" font-size="9">FileSystem</text>
+ <rect x="200" y="64" width="120" height="34" rx="3" fill="#2a9df4" stroke="#16244a"/><text x="260" y="78" text-anchor="middle" fill="#fff" font-size="9">FSData</text><text x="260" y="91" text-anchor="middle" fill="#fff" font-size="9">InputStream</text>
+ <g stroke="#d6334a" stroke-width="1.4" stroke-dasharray="4 2" marker-end="url(#r1)"><line x1="100" y1="44" x2="198" y2="40"/><line x1="100" y1="56" x2="198" y2="74"/><line x1="100" y1="66" x2="198" y2="88"/></g>
+ <g font-size="8.6" font-weight="700"><text x="115" y="38"><tspan fill="#6a3fb5">1:</tspan> open</text><text x="115" y="58"><tspan fill="#6a3fb5">3:</tspan> read</text><text x="115" y="85"><tspan fill="#6a3fb5">6:</tspan> close</text></g>
+ <rect x="470" y="15" width="140" height="70" rx="6" fill="#dbeefa" stroke="#9fc9e6"/><rect x="490" y="22" width="100" height="40" rx="3" fill="#2a9df4" stroke="#16244a"/><text x="540" y="46" text-anchor="middle" fill="#fff">NameNode</text><text x="540" y="78" text-anchor="middle" font-weight="700">namenode</text>
+ <line x1="320" y1="40" x2="488" y2="40" stroke="#d6334a" stroke-width="1.4" stroke-dasharray="4 2" marker-end="url(#r1)"/><text x="404" y="34" text-anchor="middle" font-size="8.6" font-weight="700"><tspan fill="#6a3fb5">2:</tspan> get block locations</text>
+ <g fill="#dbeefa" stroke="#9fc9e6"><rect x="180" y="170" width="120" height="75" rx="6"/><rect x="330" y="170" width="120" height="75" rx="6"/><rect x="480" y="170" width="120" height="75" rx="6"/></g>
+ <g fill="#2a9df4" stroke="#16244a"><rect x="200" y="178" width="80" height="38" rx="3"/><rect x="350" y="178" width="80" height="38" rx="3"/><rect x="500" y="178" width="80" height="38" rx="3"/></g>
+ <g text-anchor="middle"><text x="240" y="201" fill="#fff">DataNode</text><text x="390" y="201" fill="#fff">DataNode</text><text x="540" y="201" fill="#fff">DataNode</text><text x="240" y="236" font-weight="700">datanode</text><text x="390" y="236" font-weight="700">datanode</text><text x="540" y="236" font-weight="700">datanode</text></g>
+ <line x1="240" y1="98" x2="240" y2="176" stroke="#d6334a" stroke-width="1.4" stroke-dasharray="4 2" marker-end="url(#r1)"/><text x="230" y="150" text-anchor="end" font-size="8.6" font-weight="700"><tspan fill="#6a3fb5">4:</tspan> read</text>
+ <line x1="300" y1="98" x2="530" y2="176" stroke="#d6334a" stroke-width="1.4" stroke-dasharray="4 2" marker-end="url(#r1)"/><text x="430" y="145" font-size="8.6" font-weight="700"><tspan fill="#6a3fb5">5:</tspan> read</text>
+</svg>
+<div class="cap">Figure 2.7 — A client reading data from HDFS (Textbook Fig. 3-2). Follow steps 1 → 6.</div>
+</div>
+<ul class="stp">
+<li><span class="sn">1</span>The client <b>opens</b> the file by calling <code>open()</code> on the <code>FileSystem</code> object, which for HDFS is an instance of <b>DistributedFileSystem</b>.</li>
+<li><span class="sn">2</span>DistributedFileSystem calls the <b>NameNode</b>, using <b>remote procedure calls (RPCs)</b>, to get the <b>locations of the first few blocks</b> of the file. For each block, the NameNode returns the addresses of the DataNodes that have a copy, <mark>sorted by proximity to the client</mark> (based on the cluster's network topology). DistributedFileSystem returns an <b>FSDataInputStream</b> (supports file seeks) to the client, which wraps a <b>DFSInputStream</b> that manages DataNode and NameNode I/O.</li>
+<li><span class="sn">3</span>The client calls <code>read()</code> on the stream. DFSInputStream, which has stored the DataNode addresses for the first few blocks, <b>connects to the first (closest) DataNode</b> for the first block.</li>
+<li><span class="sn">4</span>Data is <b>streamed from the DataNode back to the client</b>, which calls <code>read()</code> repeatedly on the stream.</li>
+<li><span class="sn">5</span>When the end of the block is reached, DFSInputStream <b>closes the connection</b> to that DataNode, then <b>finds the best DataNode for the next block</b>. Blocks are read <b>in order</b>; DFSInputStream also asks the NameNode for the locations of the <b>next batch of blocks</b> as needed.</li>
+<li><span class="sn">6</span>When the client has finished reading, it calls <code>close()</code> on the FSDataInputStream.</li>
+</ul>
+<div class="cards c2">
+ <div class="card" style="border-top-color:#d6334a"><h5 style="color:#d6334a">🔧 If a DataNode fails during reading</h5><p>DFSInputStream <b>tries the next closest DataNode</b> for that block. It also <b>remembers failed DataNodes</b> so it doesn't needlessly retry them for later blocks.</p></div>
+ <div class="card" style="border-top-color:#d6334a"><h5 style="color:#d6334a">🧪 If a block is corrupted</h5><p>DFSInputStream <b>verifies checksums</b> for data transferred from DataNodes. If a corrupted block is found, it <b>reads a replica from another DataNode</b> and <b>reports the corrupted block to the NameNode</b>.</p></div>
+</div>
+<div class="box key"><div class="bt">🔑 Why this design is good</div>The client <b>contacts DataNodes directly</b> to get data, and the NameNode only answers <b>block-location requests</b> (held in memory → very fast). This lets HDFS <b>scale to many concurrent clients</b>, because data traffic is spread across all DataNodes and the NameNode doesn't become a bottleneck.</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — file read (6 steps)</div><b>"Open · Get · Read · Read · Read-next · Close"</b> → <b>O G R R R C</b> — "<b>O</b>nly <b>G</b>ood <b>R</b>eaders <b>R</b>eally <b>R</b>ead <b>C</b>arefully".</div>
+
+<!-- 2.8 -->
+<h2 id="s2-8"><span class="no">2.8</span>Data flow — Anatomy of a file write<span class="marker">@@s2-8@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>To write a file, the client asks the NameNode to <b>create</b> it, then sends data in small <b>packets</b> down a <b>chain (pipeline) of 3 DataNodes</b>: DataNode 1 saves and passes it to DataNode 2, which saves and passes it to DataNode 3. <b>Acknowledgements</b> flow back up the chain.</div>
+<div class="fig">
+<svg viewBox="0 0 620 265" width="620" font-family="Inter" font-size="9.5">
+ <defs><marker id="w1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d6334a"/></marker><marker id="w2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#16244a"/></marker></defs>
+ <rect x="10" y="10" width="330" height="125" rx="6" fill="#dbeefa" stroke="#9fc9e6"/>
+ <rect x="20" y="18" width="310" height="92" rx="4" fill="#fff" stroke="#16244a"/>
+ <text x="30" y="103" font-weight="700" font-size="9">client JVM</text><text x="25" y="127" font-weight="700" font-size="9.5">client node</text>
+ <rect x="30" y="36" width="70" height="38" rx="3" fill="#f6b100" stroke="#16244a"/><text x="65" y="52" text-anchor="middle" font-weight="800">HDFS</text><text x="65" y="65" text-anchor="middle" font-weight="800">client</text>
+ <rect x="200" y="24" width="120" height="34" rx="3" fill="#2a9df4" stroke="#16244a"/><text x="260" y="38" text-anchor="middle" fill="#fff" font-size="9">Distributed</text><text x="260" y="51" text-anchor="middle" fill="#fff" font-size="9">FileSystem</text>
+ <rect x="200" y="64" width="120" height="34" rx="3" fill="#2a9df4" stroke="#16244a"/><text x="260" y="78" text-anchor="middle" fill="#fff" font-size="9">FSData</text><text x="260" y="91" text-anchor="middle" fill="#fff" font-size="9">OutputStream</text>
+ <g stroke="#d6334a" stroke-width="1.4" stroke-dasharray="4 2" marker-end="url(#w1)"><line x1="100" y1="44" x2="198" y2="40"/><line x1="100" y1="56" x2="198" y2="74"/><line x1="100" y1="66" x2="198" y2="88"/></g>
+ <g font-size="8.6" font-weight="700"><text x="115" y="38"><tspan fill="#6a3fb5">1:</tspan> create</text><text x="115" y="58"><tspan fill="#6a3fb5">3:</tspan> write</text><text x="115" y="85"><tspan fill="#6a3fb5">6:</tspan> close</text></g>
+ <rect x="470" y="15" width="140" height="70" rx="6" fill="#dbeefa" stroke="#9fc9e6"/><rect x="490" y="22" width="100" height="40" rx="3" fill="#2a9df4" stroke="#16244a"/><text x="540" y="46" text-anchor="middle" fill="#fff">NameNode</text><text x="540" y="78" text-anchor="middle" font-weight="700">namenode</text>
+ <line x1="320" y1="34" x2="488" y2="34" stroke="#d6334a" stroke-width="1.4" stroke-dasharray="4 2" marker-end="url(#w1)"/><text x="404" y="28" text-anchor="middle" font-size="8.6" font-weight="700"><tspan fill="#6a3fb5">2:</tspan> create</text>
+ <line x1="320" y1="50" x2="488" y2="50" stroke="#d6334a" stroke-width="1.4" stroke-dasharray="4 2" marker-end="url(#w1)"/><text x="404" y="63" text-anchor="middle" font-size="8.6" font-weight="700"><tspan fill="#6a3fb5">7:</tspan> complete</text>
+ <text x="30" y="205" font-weight="700" font-size="9">Pipeline of</text><text x="30" y="217" font-weight="700" font-size="9">datanodes</text>
+ <g fill="#dbeefa" stroke="#9fc9e6"><rect x="120" y="170" width="120" height="75" rx="6"/><rect x="290" y="170" width="120" height="75" rx="6"/><rect x="460" y="170" width="120" height="75" rx="6"/></g>
+ <g fill="#2a9df4" stroke="#16244a"><rect x="140" y="178" width="80" height="38" rx="3"/><rect x="310" y="178" width="80" height="38" rx="3"/><rect x="480" y="178" width="80" height="38" rx="3"/></g>
+ <g text-anchor="middle"><text x="180" y="201" fill="#fff">DataNode</text><text x="350" y="201" fill="#fff">DataNode</text><text x="520" y="201" fill="#fff">DataNode</text><text x="180" y="236" font-weight="700">datanode</text><text x="350" y="236" font-weight="700">datanode</text><text x="520" y="236" font-weight="700">datanode</text></g>
+ <line x1="245" y1="98" x2="190" y2="176" stroke="#d6334a" stroke-width="1.4" stroke-dasharray="4 2" marker-end="url(#w1)"/><text x="165" y="150" text-anchor="end" font-size="8.6" font-weight="700"><tspan fill="#6a3fb5">4:</tspan> write packet</text>
+ <line x1="200" y1="176" x2="268" y2="102" stroke="#16244a" stroke-width="1.4" marker-end="url(#w2)"/><text x="248" y="150" font-size="8.6" font-weight="700"><tspan fill="#6a3fb5">5:</tspan> ack packet</text>
+ <g stroke="#d6334a" stroke-width="1.6" marker-end="url(#w1)"><line x1="240" y1="190" x2="288" y2="190"/><line x1="410" y1="190" x2="458" y2="190"/></g>
+ <g stroke="#16244a" stroke-width="1.6" marker-end="url(#w2)"><line x1="288" y1="205" x2="242" y2="205"/><line x1="458" y1="205" x2="412" y2="205"/></g>
+ <g font-size="9" font-weight="800"><text x="260" y="186" fill="#d6334a">4</text><text x="430" y="186" fill="#d6334a">4</text><text x="260" y="218" fill="#16244a">5</text><text x="430" y="218" fill="#16244a">5</text></g>
+</svg>
+<div class="cap">Figure 2.8 — A client writing data to HDFS (Textbook Fig. 3-4). Follow steps 1 → 7. Red = data packets; dark = acknowledgements.</div>
+</div>
+<ul class="stp">
+<li><span class="sn">1</span>The client <b>creates</b> the file by calling <code>create()</code> on <b>DistributedFileSystem</b>.</li>
+<li><span class="sn">2</span>DistributedFileSystem makes an <b>RPC call to the NameNode</b> to create a new file in the namespace, <b>with no blocks associated with it</b>. The NameNode performs <b>checks</b>: the file <b>doesn't already exist</b> and the client has the <b>right permissions</b>. If checks pass → it records the new file; otherwise file creation fails and the client gets an <b>IOException</b>. DistributedFileSystem returns an <b>FSDataOutputStream</b> (wrapping a <b>DFSOutputStream</b>).</li>
+<li><span class="sn">3</span>As the client <b>writes</b> data, DFSOutputStream splits it into <mark>packets</mark>, written to an internal queue called the <mark>data queue</mark>. The data queue is consumed by the <b>DataStreamer</b>, which asks the NameNode to <b>allocate new blocks</b> by picking a list of suitable DataNodes to store the replicas. The list of DataNodes forms a <mark>pipeline</mark> — with replication level 3, there are <b>three nodes</b> in the pipeline.</li>
+<li><span class="sn">4</span>The DataStreamer streams packets to the <b>first DataNode</b>, which stores each packet and <b>forwards it to the second</b>; the second stores it and forwards it to the <b>third (last)</b> DataNode.</li>
+<li><span class="sn">5</span>DFSOutputStream also keeps an internal queue of packets waiting to be acknowledged, called the <mark>ack queue</mark>. A packet is removed from the ack queue <b>only when it has been acknowledged by all DataNodes in the pipeline</b>.</li>
+<li><span class="sn">6</span>When the client has finished writing, it calls <code>close()</code> on the stream. This <b>flushes all remaining packets</b> to the pipeline and <b>waits for acknowledgements</b>…</li>
+<li><span class="sn">7</span>…before contacting the NameNode to signal that the <b>file is complete</b>.</li>
+</ul>
+<div class="phase" style="--acc:#d6334a"><b>🔧 If a DataNode fails while data is being written</b>
+<ol style="margin:0">
+<li>The <b>pipeline is closed</b>, and any packets in the <b>ack queue are added to the front of the data queue</b>, so DataNodes downstream of the failed node don't miss any packets.</li>
+<li>The current block on the <b>good DataNodes</b> is given a <b>new identity</b>, communicated to the NameNode, so the <b>partial block on the failed DataNode will be deleted</b> if it recovers later.</li>
+<li>The <b>failed DataNode is removed</b> from the pipeline, and a <b>new pipeline is built from the two good DataNodes</b>. The rest of the block is written to them. (The NameNode notices the block is under-replicated and arranges a further replica on another node.)</li>
+</ol></div>
+<table class="t">
+<tr><th style="width:22%"></th><th>File read</th><th>File write</th></tr>
+<tr><td>Starts with</td><td><code>open()</code> on DistributedFileSystem</td><td><code>create()</code> on DistributedFileSystem</td></tr>
+<tr><td>NameNode's job</td><td>Return block locations (sorted by closeness)</td><td>Check (exists? permission?), record file, allocate blocks/DataNodes, mark complete</td></tr>
+<tr><td>Stream class</td><td>FSDataInputStream → DFSInputStream</td><td>FSDataOutputStream → DFSOutputStream (+ DataStreamer)</td></tr>
+<tr><td>Data path</td><td>From the <b>closest</b> DataNode, block by block</td><td><b>Pipeline</b> of 3 DataNodes, packet by packet</td></tr>
+<tr><td>Queues</td><td>—</td><td><b>Data queue</b> + <b>ack queue</b></td></tr>
+<tr><td>Failure handling</td><td>Try next closest DataNode; checksum → read another replica, report corrupt block</td><td>Close pipeline, re-queue packets, new block ID, rebuild pipeline with good nodes</td></tr>
+<tr><td>Steps</td><td><b>6</b></td><td><b>7</b></td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick — file write (7 steps)</div><b>"Create · Create · Write · Packet · Ack · Close · Complete"</b> → "<b>C C W P A C C</b>": "<b>C</b>ute <b>C</b>ats <b>W</b>rite <b>P</b>oems <b>A</b>nd <b>C</b>lose <b>C</b>arefully". Steps 1 &amp; 2 are both "create", steps 6 &amp; 7 are close &amp; complete.</div>
+<div class="box exam"><div class="bt">🎯 Exam tip</div>"Explain the anatomy of a file read / write in HDFS" = 10-mark question. Draw the figure with <b>numbered arrows</b>, then write each numbered step in 1–2 lines, then add the <b>failure handling</b> paragraph. Mention class names (DistributedFileSystem, FSDataInputStream/OutputStream, DataStreamer) for full marks.</div>
+
+<div class="check"><div class="bt">✅ Before you move on — can you…</div>
+<ul>
+<li>Define a distributed file system and state the HDFS design definition word-for-word?</li>
+<li>Explain the 3 design goals (large files, streaming, commodity) and 3 weak spots (latency, small files, multiple writers)?</li>
+<li>Explain HDFS blocks (128 MB), the 1 MB-file example and the 3 benefits of blocks?</li>
+<li>Explain NameNode vs DataNode, namespace image &amp; edit log, and the 2 resilience mechanisms?</li>
+<li>Explain the Secondary NameNode and why it is NOT a backup?</li>
+<li>Explain Federation (namespace volume, block pool) and HA (SPOF, 30-min cold start, 4 changes)?</li>
+<li>Draw and explain the file read (6 steps) and file write (7 steps) including failure handling?</li>
+</ul></div>
+</section>

@@ -1,0 +1,576 @@
+
+<!-- ================= CHAPTER 1 ================= -->
+<section class="ch1">
+<div class="chapter-open" id="ch1"><p class="marker">@@ch1@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Chapter 1</div>
+  <h1>Basics of Hadoop</h1>
+  <div class="learn"><b>What you'll learn</b>
+    <ol><li>How much data the world creates</li><li>Why bigger disks didn't solve it</li><li>What Hadoop is &amp; its history</li><li>HDFS + MapReduce + YARN in brief</li><li>The NCDC weather data format</li><li>Map → Shuffle → Reduce, step by step</li><li>Mapper, Reducer &amp; Driver in Java</li><li>Splits, data locality &amp; data flow</li></ol>
+  </div>
+  <div class="meta"><span>⏱ ≈ 2 hours</span><span>Slides: Lecture 1 (pp. 1–66)</span><span>Tom White Ch. 1–2</span></div>
+</div>
+
+<!-- 1.1 -->
+<h2 id="s1-1"><span class="no">1.1</span>Data!<span class="marker">@@s1-1@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>We live in the <b>data age</b>. Every click, photo, message and sensor reading creates data. There is so much of it that <b>one computer can no longer store or analyse it</b> — that's the problem Hadoop solves.</div>
+<div class="two" style="grid-template-columns:1fr 1fr">
+<div>
+<h4>How big is Big Data?</h4>
+<ul>
+<li>In <b>2006</b> the "digital universe" was about <mark>0.18 zettabytes</mark>.</li>
+<li>By <b>2011</b> it was forecast to be <mark>1.8 zettabytes</mark> — a <b>10× growth</b>.</li>
+<li><b>1 zettabyte = 10<sup>21</sup> bytes</b> = 1,000 exabytes = 1 million petabytes = 1 billion terabytes.</li>
+<li>To imagine it: like <b>every person on Earth carrying a disk drive</b>.</li>
+</ul>
+</div>
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 300 120" width="300" font-family="Inter" font-size="10">
+ <g font-weight="800" fill="#fff" text-anchor="middle">
+  <rect x="2" y="30" width="62" height="40" rx="6" fill="#7fc7c8"/><text x="33" y="55">TB</text>
+  <rect x="80" y="30" width="62" height="40" rx="6" fill="#3fa9aa"/><text x="111" y="55">PB</text>
+  <rect x="158" y="30" width="62" height="40" rx="6" fill="#0f8b8d"/><text x="189" y="55">EB</text>
+  <rect x="236" y="30" width="62" height="40" rx="6" fill="#16244a"/><text x="267" y="55" fill="#ffd166">ZB</text>
+ </g>
+ <g fill="#0f8b8d" font-weight="800" font-size="13"><text x="66" y="55">→</text><text x="144" y="55">→</text><text x="222" y="55">→</text></g>
+ <g font-size="8.6" fill="#5b6478" text-anchor="middle"><text x="33" y="85">1,000 GB</text><text x="111" y="85">1,000 TB</text><text x="189" y="85">1,000 PB</text><text x="267" y="85">1,000 EB</text></g>
+ <text x="150" y="16" text-anchor="middle" font-weight="700" fill="#16244a">From terabytes to zettabytes (each ×1,000)</text>
+ <text x="150" y="110" text-anchor="middle" font-size="9" fill="#16244a">1 ZB = 10<tspan baseline-shift="super" font-size="6.5">21</tspan> bytes = 1 billion TB</text>
+</svg>
+</div>
+</div>
+
+<h4>Real-world examples (from your slides / textbook)</h4>
+<table class="t">
+<tr><th style="width:28%">Organisation</th><th>How much data</th></tr>
+<tr><td>New York Stock Exchange</td><td>≈ <b>1 terabyte</b> of new trade data <b>per day</b></td></tr>
+<tr><td>Facebook</td><td>≈ <b>10 billion photos</b> → about <b>1 petabyte</b> of storage</td></tr>
+<tr><td>Ancestry.com (genealogy site)</td><td>≈ <b>2.5 petabytes</b> of data</td></tr>
+<tr><td>Internet Archive</td><td>≈ <b>2 petabytes</b>, growing by <b>20 terabytes per month</b></td></tr>
+<tr><td>Large Hadron Collider (Geneva)</td><td>≈ <b>15 petabytes</b> of data <b>per year</b></td></tr>
+</table>
+
+<div class="two" style="grid-template-columns:1fr 1fr">
+<div class="card"><h5>🤖 Machines may generate even more data</h5><p>Many small streams become Big Data: <span class="pill">machine logs</span><span class="pill">RFID</span><span class="pill">sensors</span><span class="pill">GPS</span><span class="pill">retail transactions</span><span class="pill">email</span> + more. Machine data can be larger than people's data.</p></div>
+<div class="card"><h5>📷 MyLifeBits — archiving a whole life</h5><p>A Microsoft research project: store a photo <b>every minute</b>, all <b>phone calls</b>, <b>emails</b> and <b>documents</b> of one person → about <mark>1 GB of data per month</mark>. Add continuous audio/video and it becomes much larger.</p></div>
+</div>
+
+<div class="cards c2">
+ <div class="card" style="border-top-color:#1f9d55"><h5 style="color:#1f9d55">😀 The good news</h5><p><b>Big Data is here.</b> More data → more opportunities to discover patterns and value. ("More data usually beats better algorithms.")</p></div>
+ <div class="card" style="border-top-color:#d6334a"><h5 style="color:#d6334a">😟 The bad news</h5><p><b>How do we store and analyse it?</b> One machine eventually becomes <b>too small or too slow</b>.</p></div>
+</div>
+<div class="box key"><div class="bt">🔑 Bridge to Hadoop</div>The answer is to <mark>distribute storage + distribute processing</mark> across many machines. That is exactly what Hadoop does.</div>
+
+<!-- 1.2 -->
+<h2 id="s1-2"><span class="no">1.2</span>Data storage and analysis<span class="marker">@@s1-2@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Hard disks got <b>much bigger</b> over the years, but they did <b>not get much faster</b> at reading data. So reading a full modern disk takes hours. The challenge is not only <i>storing</i> more — it is <b>reading and processing</b> more.</div>
+<div class="fig">
+<svg viewBox="0 0 620 130" width="620" font-family="Inter" font-size="10.5">
+ <rect x="5" y="10" width="270" height="110" rx="10" fill="#e6f5f5" stroke="#0f8b8d"/>
+ <text x="140" y="32" text-anchor="middle" font-weight="800" fill="#0f8b8d" font-size="13">1990</text>
+ <text x="140" y="56" text-anchor="middle">Capacity: <tspan font-weight="700">1,370 MB</tspan></text>
+ <text x="140" y="76" text-anchor="middle">Transfer speed: <tspan font-weight="700">4.4 MB/s</tspan></text>
+ <text x="140" y="101" text-anchor="middle" fill="#1f9d55" font-weight="700">Read full disk ≈ 5 minutes</text>
+ <text x="310" y="72" text-anchor="middle" font-size="22" fill="#0f8b8d">→</text>
+ <rect x="345" y="10" width="270" height="110" rx="10" fill="#16244a"/>
+ <text x="480" y="32" text-anchor="middle" font-weight="800" fill="#ffd166" font-size="13">~20 years later</text>
+ <text x="480" y="56" text-anchor="middle" fill="#fff">Capacity: <tspan font-weight="700">1 TB</tspan> (≈ 730× bigger)</text>
+ <text x="480" y="76" text-anchor="middle" fill="#fff">Transfer speed: <tspan font-weight="700">~100 MB/s</tspan> (only ≈ 23× faster)</text>
+ <text x="480" y="101" text-anchor="middle" fill="#ffb4a6" font-weight="700">Read full disk &gt; 2.5 hours</text>
+</svg>
+<div class="cap">Figure 1.1 — Disk capacity grew much faster than disk speed: bigger capacity ≠ proportionally faster access</div>
+</div>
+
+<h3>The obvious idea: read from many disks at once</h3>
+<div class="two" style="grid-template-columns:1.05fr .95fr">
+<div>
+<div class="flow" style="margin-top:0">
+ <div class="st"><b>1 TB</b>total data</div><div class="ar">→</div>
+ <div class="st"><b>÷ 100</b>drives</div><div class="ar">→</div>
+ <div class="st"><b>10 GB</b>per drive</div>
+</div>
+<p>If 100 drives each hold 1/100th of the data and work <b>in parallel</b>, we can read the whole 1 TB in <mark>under 2 minutes</mark> instead of 2.5 hours.</p>
+<div class="def"><span class="dt">Parallelism</span><p>Divide a large job into smaller pieces and do them <b>simultaneously</b>.</p></div>
+</div>
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 270 120" width="270" font-family="Inter" font-size="10">
+ <rect x="5" y="15" width="85" height="85" rx="8" fill="#fff" stroke="#16244a" stroke-width="1.5"/>
+ <circle cx="47" cy="55" r="24" fill="none" stroke="#16244a" stroke-width="3"/>
+ <text x="47" y="112" text-anchor="middle" font-size="9">1 disk · 1 TB @ 100 MB/s</text><text x="47" y="10" text-anchor="middle" font-weight="700">1 DISK</text>
+ <text x="47" y="92" text-anchor="middle" font-size="8.5" fill="#d6334a">&gt; 2.5 hrs</text>
+ <text x="112" y="62" font-size="18" fill="#0f8b8d">→</text>
+ <rect x="135" y="15" width="130" height="85" rx="8" fill="#e6f5f5" stroke="#0f8b8d" stroke-width="1.5"/>
+ <text x="200" y="10" text-anchor="middle" font-weight="700" fill="#0f8b8d">100 DISKS</text>
+ <g fill="#0f8b8d">
+ <rect x="145" y="25" width="9" height="9" rx="2"/><rect x="157" y="25" width="9" height="9" rx="2"/><rect x="169" y="25" width="9" height="9" rx="2"/><rect x="181" y="25" width="9" height="9" rx="2"/><rect x="193" y="25" width="9" height="9" rx="2"/><rect x="205" y="25" width="9" height="9" rx="2"/><rect x="217" y="25" width="9" height="9" rx="2"/><rect x="229" y="25" width="9" height="9" rx="2"/><rect x="241" y="25" width="9" height="9" rx="2"/>
+ <rect x="145" y="38" width="9" height="9" rx="2"/><rect x="157" y="38" width="9" height="9" rx="2"/><rect x="169" y="38" width="9" height="9" rx="2"/><rect x="181" y="38" width="9" height="9" rx="2"/><rect x="193" y="38" width="9" height="9" rx="2"/><rect x="205" y="38" width="9" height="9" rx="2"/><rect x="217" y="38" width="9" height="9" rx="2"/><rect x="229" y="38" width="9" height="9" rx="2"/><rect x="241" y="38" width="9" height="9" rx="2"/>
+ <rect x="145" y="51" width="9" height="9" rx="2"/><rect x="157" y="51" width="9" height="9" rx="2"/><rect x="169" y="51" width="9" height="9" rx="2"/><rect x="181" y="51" width="9" height="9" rx="2"/><rect x="193" y="51" width="9" height="9" rx="2"/><rect x="205" y="51" width="9" height="9" rx="2"/><rect x="217" y="51" width="9" height="9" rx="2"/><rect x="229" y="51" width="9" height="9" rx="2"/><rect x="241" y="51" width="9" height="9" rx="2"/>
+ <rect x="145" y="64" width="9" height="9" rx="2"/><rect x="157" y="64" width="9" height="9" rx="2"/><rect x="169" y="64" width="9" height="9" rx="2"/><rect x="181" y="64" width="9" height="9" rx="2"/><rect x="193" y="64" width="9" height="9" rx="2"/><rect x="205" y="64" width="9" height="9" rx="2"/><rect x="217" y="64" width="9" height="9" rx="2"/><rect x="229" y="64" width="9" height="9" rx="2"/><rect x="241" y="64" width="9" height="9" rx="2"/></g>
+ <text x="200" y="92" text-anchor="middle" font-size="8.5" fill="#1f9d55" font-weight="700">all read in parallel → &lt; 2 min</text>
+</svg>
+<div class="cap">Figure 1.2 — Parallel reading changes the waiting time</div>
+</div>
+</div>
+<div class="box tip"><div class="bt">💡 "But aren't 100 disks wasteful?"</div>No — the 100 disks can hold <b>many datasets</b> (Dataset 1, 2, 3, 4, 5…). Many users <b>share the cluster</b> → shorter analysis times and better hardware utilisation.</div>
+
+<h3>Parallel disks create two new problems</h3>
+<div class="cards c2">
+ <div class="card" style="border-top-color:#d6334a"><h5 style="color:#d6334a">Problem 1 · Hardware can fail</h5><p>More machines → more chances that one disk, node or component fails. <b>Need: reliability.</b></p>
+ <p style="margin-top:1.5mm"><b>✅ Solution — Replication:</b> keep <b>redundant copies</b> of the data (Copy 1, Copy 2, Copy 3) so another copy can be used if hardware fails. <mark>HDFS uses replication.</mark></p></div>
+ <div class="card" style="border-top-color:#d6334a"><h5 style="color:#d6334a">Problem 2 · Data must be combined</h5><p>Results from many disks must be <b>mixed and combined</b> correctly. <b>Need: distributed analysis.</b></p>
+ <p style="margin-top:1.5mm"><b>✅ Solution — MapReduce:</b> a simpler programming model. Data from all disks → <b>MAP</b> → <b>shuffle</b> (bring keys + values together) → <b>REDUCE</b> → final result. <mark>Map + Reduce hide much of the distributed coordination complexity.</mark></p></div>
+</div>
+
+<!-- 1.3 -->
+<h2 id="s1-3"><span class="no">1.3</span>What is Hadoop?<span class="marker">@@s1-3@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>Hadoop is an <mark>open-source framework</mark> that allows us to <mark>store and process large data sets in a parallel and distributed manner</mark>. In a nutshell: <b>Hadoop = reliable shared storage + reliable distributed analysis.</b></p></div>
+<div class="two" style="grid-template-columns:1.1fr .9fr">
+<div>
+<ul>
+<li>Hadoop is basically written in <b>Java</b>.</li>
+<li>Created by <mark>Doug Cutting and Mike Cafarella</mark>.</li>
+<li>It contains <b>three core components</b>:
+ <ol>
+ <li><b>HDFS</b> — the primary data storage system used by Hadoop applications → <b>storage layer</b>.</li>
+ <li><b>MapReduce</b> — the processing unit of Hadoop → <b>processing layer</b>.</li>
+ <li><b>YARN</b> — <b>resource management layer</b>.</li>
+ </ol></li>
+<li>Plus <b>Hadoop Common</b> — shared utilities/libraries used by the other modules.</li>
+</ul>
+</div>
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 260 175" width="260" font-family="Inter" font-size="10">
+ <rect x="2" y="2" width="256" height="171" rx="10" fill="#fafbfd" stroke="#e3e7ef"/>
+ <text x="130" y="22" text-anchor="middle" font-weight="800" fill="#16244a" font-size="13">🐘 Hadoop</text>
+ <rect x="15" y="34" width="230" height="36" rx="6" fill="#d9622b"/><text x="130" y="50" text-anchor="middle" fill="#fff" font-weight="700">MapReduce</text><text x="130" y="63" text-anchor="middle" fill="#fff" font-size="8.6">distributed computation (processing)</text>
+ <rect x="15" y="78" width="150" height="36" rx="6" fill="#6a3fb5"/><text x="90" y="94" text-anchor="middle" fill="#fff" font-weight="700">YARN</text><text x="90" y="107" text-anchor="middle" fill="#fff" font-size="8.6">resource management</text>
+ <rect x="172" y="78" width="73" height="80" rx="6" fill="#7d879b"/><text x="208" y="112" text-anchor="middle" fill="#fff" font-weight="700" font-size="9.5">Common</text><text x="208" y="125" text-anchor="middle" fill="#fff" font-size="8.6">utilities</text>
+ <rect x="15" y="122" width="150" height="36" rx="6" fill="#0f8b8d"/><text x="90" y="138" text-anchor="middle" fill="#fff" font-weight="700">HDFS</text><text x="90" y="151" text-anchor="middle" fill="#fff" font-size="8.6">distributed storage</text>
+</svg>
+<div class="cap">Figure 1.3 — Core components of Hadoop</div>
+</div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick</div><b>"Hadoop has a HMY body"</b> → <b>H</b>DFS = the <b>storage</b> (stomach), <b>M</b>apReduce = the <b>processing</b> (brain), <b>Y</b>ARN = the <b>manager</b> who decides who gets resources.</div>
+
+<h3>A brief history of Hadoop</h3>
+<div class="fig">
+<svg viewBox="0 0 640 112" width="640" font-family="Inter" font-size="9">
+ <line x1="40" y1="40" x2="600" y2="40" stroke="#c4cad6" stroke-width="3"/>
+ <g>
+  <circle cx="55" cy="40" r="11" fill="#2463eb"/><circle cx="160" cy="40" r="11" fill="#0f8b8d"/><circle cx="265" cy="40" r="11" fill="#1f9d55"/><circle cx="370" cy="40" r="11" fill="#d9622b"/><circle cx="475" cy="40" r="11" fill="#6a3fb5"/><circle cx="585" cy="40" r="11" fill="#f6b100"/>
+ </g>
+ <g text-anchor="middle" font-weight="800" fill="#16244a" font-size="10"><text x="55" y="20">2002</text><text x="160" y="20">2003</text><text x="265" y="20">2004</text><text x="370" y="20">2004</text><text x="475" y="20">2005</text><text x="585" y="20">2006</text></g>
+ <g text-anchor="middle" font-weight="700" font-size="9.6"><text x="55" y="68" fill="#2463eb">Nutch</text><text x="160" y="68" fill="#0f8b8d">Google GFS</text><text x="265" y="68" fill="#1f9d55">NDFS</text><text x="370" y="68" fill="#d9622b">MapReduce</text><text x="475" y="68" fill="#6a3fb5">Nutch + MR</text><text x="585" y="68" fill="#9a6b00">Hadoop</text></g>
+ <g text-anchor="middle" font-size="8.2" fill="#5b6478">
+  <text x="55" y="82">open-source web</text><text x="55" y="93">search engine</text>
+  <text x="160" y="82">Google publishes its</text><text x="160" y="93">distributed file system</text>
+  <text x="265" y="82">Nutch Distributed</text><text x="265" y="93">File System</text>
+  <text x="370" y="82">Google publishes the</text><text x="370" y="93">MapReduce paper</text>
+  <text x="475" y="82">Nutch uses</text><text x="475" y="93">MapReduce + NDFS</text>
+  <text x="585" y="82">becomes an</text><text x="585" y="93">independent project</text></g>
+</svg>
+<div class="cap">Figure 1.4 — The journey to Hadoop: Nutch search problem → distributed storage → distributed processing → Hadoop</div>
+</div>
+<ul>
+<li>By <b>2005</b> Nutch was using MapReduce and NDFS. In <b>February 2006</b> they became a <b>separate project called Hadoop</b>.</li>
+<li><b>Why "Hadoop"?</b> The name is <mark>not an acronym</mark>. Doug Cutting named it after his <b>child's stuffed yellow toy elephant</b> — short, distinctive and easy to remember.</li>
+<li><b>2006 onward — Yahoo! helps Hadoop grow:</b> Yahoo!'s Grid team adopted Hadoop and provided people, clusters and real-world scale: May 2006 → 300 nodes · Oct 2006 → 600 · Jan 2007 → 900 · Apr 2007 → 1,000 · Mar 2009 → <b>24,000 nodes</b>.</li>
+</ul>
+<table class="t">
+<tr><th style="width:18%">When</th><th style="width:30%">Milestone</th><th>Detail</th></tr>
+<tr><td>Jan 2008</td><td>Apache top-level project</td><td>Hadoop becomes a major Apache project</td></tr>
+<tr><td>Apr 2008</td><td>1 TB sort</td><td>Sorted 1 terabyte in <b>209 seconds on 900 nodes</b> (world record)</td></tr>
+<tr><td>Mar 2009</td><td>24,000 nodes</td><td>17 Yahoo! clusters in total</td></tr>
+<tr><td>Apr 2009</td><td>500 GB / 59 sec</td><td>Minute-sort result on 1,400 nodes</td></tr>
+</table>
+<p class="small center" style="margin-top:-2mm">The story changed from "Can this work?" to "How large can this scale?"</p>
+
+<h3>Why should we use Hadoop?</h3>
+<div class="cards c4">
+ <div class="card"><h5>🏆 Popular</h5><p>Captured ~<b>90% of the Big Data market</b>; code contributed by IBM, Cloudera, Yahoo!.</p></div>
+ <div class="card"><h5>📈 Scalable</h5><p>Add more cheap machines to grow storage &amp; processing.</p></div>
+ <div class="card"><h5>🛡 Fault tolerant</h5><p>Replication keeps data safe when machines fail.</p></div>
+ <div class="card"><h5>🧩 Flexible with data</h5><p>Handles structured, semi-structured &amp; unstructured data.</p></div>
+</div>
+
+<h3>The Hadoop ecosystem</h3>
+<p>Around the core (HDFS, YARN, MapReduce) there are many related projects. Your slide shows these:</p>
+<div class="fig">
+<svg viewBox="0 0 640 215" width="640" font-family="Inter" font-size="9.5">
+ <rect x="80" y="160" width="480" height="28" rx="5" fill="#0f8b8d"/><text x="320" y="178" text-anchor="middle" fill="#fff" font-weight="800">HDFS — distributed storage</text>
+ <rect x="80" y="126" width="480" height="28" rx="5" fill="#6a3fb5"/><text x="320" y="144" text-anchor="middle" fill="#fff" font-weight="800">YARN — resource management</text>
+ <rect x="80" y="92" width="235" height="28" rx="5" fill="#d9622b"/><text x="197" y="110" text-anchor="middle" fill="#fff" font-weight="800">MapReduce (batch processing)</text>
+ <rect x="325" y="92" width="235" height="28" rx="5" fill="#e0533a"/><text x="442" y="110" text-anchor="middle" fill="#fff" font-weight="800">Spark (in-memory processing)</text>
+ <g fill="#fdf0e8" stroke="#d9622b"><rect x="80" y="20" width="55" height="66" rx="5"/><rect x="140" y="20" width="55" height="66" rx="5"/><rect x="200" y="20" width="55" height="66" rx="5"/><rect x="260" y="20" width="55" height="66" rx="5"/></g>
+ <g text-anchor="middle" font-weight="700"><text x="107" y="50">Hive</text><text x="167" y="50">Pig</text><text x="227" y="50">Mahout</text><text x="287" y="44">Lucene/</text><text x="287" y="56">Solr</text></g>
+ <g text-anchor="middle" font-size="7.6" fill="#5b6478"><text x="107" y="64">SQL-like</text><text x="107" y="74">queries</text><text x="167" y="64">dataflow</text><text x="167" y="74">scripts</text><text x="227" y="64">machine</text><text x="227" y="74">learning</text><text x="287" y="70">search</text></g>
+ <g fill="#fdecee" stroke="#e0533a"><rect x="325" y="20" width="55" height="66" rx="5"/><rect x="385" y="20" width="55" height="66" rx="5"/><rect x="445" y="20" width="55" height="66" rx="5"/><rect x="505" y="20" width="55" height="66" rx="5"/></g>
+ <g text-anchor="middle" font-weight="700"><text x="352" y="44">Spark</text><text x="352" y="56">SQL</text><text x="412" y="44">Spark</text><text x="412" y="56">Streaming</text><text x="472" y="44">Spark</text><text x="472" y="56">MLlib</text><text x="532" y="50">GraphX</text></g>
+ <g text-anchor="middle" font-size="7.6" fill="#5b6478"><text x="352" y="72">queries</text><text x="412" y="72">live data</text><text x="472" y="72">ML</text><text x="532" y="66">graph</text><text x="532" y="76">processing</text></g>
+ <rect x="5" y="20" width="68" height="168" rx="5" fill="#e6f5f5" stroke="#0f8b8d"/><text x="39" y="98" text-anchor="middle" font-weight="700">ZooKeeper</text><text x="39" y="112" text-anchor="middle" font-size="7.6" fill="#5b6478">coordination</text>
+ <rect x="567" y="20" width="68" height="80" rx="5" fill="#e6f5f5" stroke="#0f8b8d"/><text x="601" y="58" text-anchor="middle" font-weight="700">HBase</text><text x="601" y="72" text-anchor="middle" font-size="7.6" fill="#5b6478">NoSQL DB</text>
+ <rect x="567" y="108" width="68" height="80" rx="5" fill="#e6f5f5" stroke="#0f8b8d"/><text x="601" y="146" text-anchor="middle" font-weight="700">Cassandra</text><text x="601" y="160" text-anchor="middle" font-size="7.6" fill="#5b6478">NoSQL DB</text>
+ <rect x="5" y="195" width="68" height="18" rx="4" fill="#fff7dc" stroke="#f6b100"/><text x="39" y="208" text-anchor="middle" font-weight="700" font-size="8.5">Storm</text>
+ <rect x="80" y="195" width="480" height="18" rx="4" fill="#fff7dc" stroke="#f6b100"/><text x="320" y="208" text-anchor="middle" font-size="8.6"><tspan font-weight="700">Data ingestion:</tspan> Flume (logs) · Kafka (messages/streams) · Sqoop (to/from RDBMS)</text>
+</svg>
+<div class="cap">Figure 1.5 — The Hadoop ecosystem (layers are simplified)</div>
+</div>
+
+<h3>HDFS and MapReduce — first look</h3>
+<div class="two">
+<div class="card"><h5>🗄 HDFS — Hadoop Distributed File System</h5>
+<ul style="margin:0">
+<li>Has a <mark>master–slave architecture</mark>.</li>
+<li>Data files are <b>divided into multiple blocks</b>.</li>
+<li>Blocks are stored in a distributed manner on the cluster of <b>slave nodes</b>; the <b>master</b> stores all the <b>metadata</b>.</li>
+<li>HDFS has two daemons: <b>NameNode</b> (master) and <b>DataNode</b> (slave).</li>
+</ul><p class="small" style="margin-top:1mm">Full details in Chapter 2.</p></div>
+<div class="card"><h5>⚙️ MapReduce</h5>
+<ul style="margin:0">
+<li>The <mark>data processing layer</mark> of Hadoop.</li>
+<li>A programming model for processing large datasets by doing work <b>in parallel</b>.</li>
+<li>Processes data in two phases: <b>Map phase</b> and <b>Reduce phase</b>.</li>
+<li><b>MAP</b>: read pieces of data, produce key–value pairs → <b>SHUFFLE</b>: bring values with the same key together → <b>REDUCE</b>: combine each group into the final result.</li>
+</ul></div>
+</div>
+<div class="fig">
+<svg viewBox="0 0 640 175" width="640" font-family="DejaVu Sans Mono, monospace" font-size="9">
+ <defs><marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5b6478"/></marker></defs>
+ <rect x="0" y="0" width="640" height="18" fill="#16244a"/>
+ <g fill="#fff" font-family="Inter" font-weight="700" font-size="9" text-anchor="middle"><text x="45" y="13">INPUT</text><text x="150" y="13">SPLIT</text><text x="260" y="13">MAP</text><text x="380" y="13">SHUFFLE / SORT</text><text x="500" y="13">REDUCE</text><text x="595" y="13">OUTPUT</text></g>
+ <rect x="10" y="62" width="70" height="66" rx="5" fill="#1f9d55"/><g fill="#fff" text-anchor="middle"><text x="45" y="84">X B B</text><text x="45" y="98">C B A</text><text x="45" y="112">X A C</text></g>
+ <g fill="#16244a"><rect x="120" y="35" width="60" height="22" rx="4"/><rect x="120" y="85" width="60" height="22" rx="4"/><rect x="120" y="135" width="60" height="22" rx="4"/></g>
+ <g fill="#fff" text-anchor="middle"><text x="150" y="50">X B B</text><text x="150" y="100">C B A</text><text x="150" y="150">X A C</text></g>
+ <g fill="#2a9df4"><rect x="225" y="26" width="70" height="40" rx="4"/><rect x="225" y="76" width="70" height="40" rx="4"/><rect x="225" y="126" width="70" height="40" rx="4"/></g>
+ <g fill="#fff" text-anchor="middle" font-size="8.4"><text x="260" y="40">(X,1)(B,1)</text><text x="260" y="54">(B,1)</text><text x="260" y="90">(C,1)(B,1)</text><text x="260" y="104">(A,1)</text><text x="260" y="140">(X,1)(A,1)</text><text x="260" y="154">(C,1)</text></g>
+ <g fill="#d9622b"><rect x="340" y="26" width="80" height="28" rx="4"/><rect x="340" y="60" width="80" height="28" rx="4"/><rect x="340" y="94" width="80" height="28" rx="4"/><rect x="340" y="128" width="80" height="28" rx="4"/></g>
+ <g fill="#fff" text-anchor="middle" font-size="8.4"><text x="380" y="44">A → [1,1]</text><text x="380" y="78">B → [1,1,1]</text><text x="380" y="112">C → [1,1]</text><text x="380" y="146">X → [1,1]</text></g>
+ <g fill="#6a3fb5"><rect x="465" y="26" width="70" height="28" rx="4"/><rect x="465" y="60" width="70" height="28" rx="4"/><rect x="465" y="94" width="70" height="28" rx="4"/><rect x="465" y="128" width="70" height="28" rx="4"/></g>
+ <g fill="#fff" text-anchor="middle"><text x="500" y="44">(A, 2)</text><text x="500" y="78">(B, 3)</text><text x="500" y="112">(C, 2)</text><text x="500" y="146">(X, 2)</text></g>
+ <rect x="565" y="50" width="65" height="84" rx="5" fill="#f6b100"/><g text-anchor="middle" fill="#16244a" font-weight="700"><text x="597" y="74">A 2</text><text x="597" y="88">B 3</text><text x="597" y="102">C 2</text><text x="597" y="116">X 2</text></g>
+ <g stroke="#5b6478" stroke-width="1.1" fill="none" marker-end="url(#m1)">
+  <path d="M80 80 L118 46"/><path d="M80 95 L118 96"/><path d="M80 110 L118 146"/>
+  <path d="M180 46 L223 46"/><path d="M180 96 L223 96"/><path d="M180 146 L223 146"/>
+  <path d="M295 40 L338 40"/><path d="M295 46 L338 74"/><path d="M295 90 L338 108"/><path d="M295 96 L338 78"/><path d="M295 104 L338 44"/><path d="M295 140 L338 140"/><path d="M295 146 L338 44"/><path d="M295 154 L338 112"/>
+  <path d="M420 40 L463 40"/><path d="M420 74 L463 74"/><path d="M420 108 L463 108"/><path d="M420 142 L463 142"/>
+  <path d="M535 40 L563 70"/><path d="M535 74 L563 84"/><path d="M535 108 L563 100"/><path d="M535 142 L563 114"/></g>
+</svg>
+<div class="cap">Figure 1.6 — MapReduce counting letters: input → split → map (emit (letter,1)) → shuffle/sort (group by key) → reduce (add up) → output</div>
+</div>
+
+<!-- 1.4 -->
+<h2 id="s1-4"><span class="no">1.4</span>Data format — the NCDC weather dataset<span class="marker">@@s1-4@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>To learn MapReduce, the textbook uses <b>weather data</b>. Thousands of weather stations record readings <b>hour after hour</b> for many years → a huge dataset. The question we'll answer: <b>"What is the highest temperature recorded in each year?"</b></div>
+<ul>
+<li>Data comes from the <b>National Climatic Data Center (NCDC)</b>.</li>
+<li>The data is <mark>semi-structured and record-oriented</mark> — each line is <b>one weather observation</b>. That makes it a good fit for MapReduce.</li>
+<li>Each record is stored in a <b>line-oriented ASCII format</b> with <b>fixed-width fields</b> (each field is always at the same character position).</li>
+</ul>
+<h4>One record — fields we care about</h4>
+<div class="fig">
+<svg viewBox="0 0 620 82" width="620" font-family="DejaVu Sans Mono, monospace" font-size="11">
+ <g font-weight="700" fill="#fff" text-anchor="middle">
+  <rect x="5" y="8" width="105" height="30" rx="4" fill="#2463eb"/><text x="57" y="28">332130</text>
+  <rect x="115" y="8" width="125" height="30" rx="4" fill="#0f8b8d"/><text x="177" y="28">19500101</text>
+  <rect x="245" y="8" width="80" height="30" rx="4" fill="#6a3fb5"/><text x="285" y="28">0300</text>
+  <rect x="330" y="8" width="70" height="30" rx="4" fill="#9aa3b5"/><text x="365" y="28">…</text>
+  <rect x="405" y="8" width="100" height="30" rx="4" fill="#d9622b"/><text x="455" y="28">-0128</text>
+  <rect x="510" y="8" width="105" height="30" rx="4" fill="#7d879b"/><text x="562" y="28">10268</text>
+ </g>
+ <g font-family="Inter" font-size="9.5" text-anchor="middle" fill="#16244a"><text x="57" y="54">Station ID</text><text x="177" y="54">Date (yyyyMMdd)</text><text x="285" y="54">Time</text><text x="365" y="54">wind, visibility…</text><text x="455" y="54" font-weight="700" fill="#d9622b">Air temperature</text><text x="562" y="54">Pressure</text></g>
+ <g font-family="Inter" font-size="8.6" text-anchor="middle" fill="#5b6478"><text x="177" y="68">1950-01-01 → year = 1950</text><text x="455" y="68">°C × 10</text></g>
+</svg>
+<div class="cap">Figure 1.7 — A weather record is a long line of fixed-width fields</div>
+</div>
+<div class="two">
+<div class="box eg" style="margin-top:0"><div class="bt">📌 Why does the record say -0128?</div>Temperature is stored as <b>degrees Celsius × 10</b>.<br><code>-0128 ÷ 10 = -12.8 °C</code><br>The program extracts and interprets this fixed-width temperature field. Missing readings are stored as <b>9999</b>.</div>
+<div class="box eg" style="margin-top:0"><div class="bt">📌 How the files are organised</div>Originally: one directory per <b>year</b> (e.g., <code>raw/1990/</code>) containing a <b>gzipped file for each weather station</b> (<code>010010-99999-1990.gz</code>, …) — <b>tens of thousands of small files</b>.</div>
+</div>
+<div class="flow">
+ <div class="st"><b>Station files</b>file 1, file 2, file 3, … (many small files)</div><div class="ar">→</div>
+ <div class="st"><b>Preprocess</b>concatenate all station files of a year</div><div class="ar">→</div>
+ <div class="st"><b>One file per year</b>e.g., 1990 → all readings</div><div class="ar">→</div>
+ <div class="st" style="background:#16244a;color:#fff"><b style="color:#ffd166">Ready for MapReduce</b></div>
+</div>
+<div class="box key"><div class="bt">🔑 Key point</div>Hadoop works better with a <mark>small number of large files</mark> than with many small files. Preprocessing changes only the <b>file organisation</b> — not the meaning of the weather records.</div>
+
+<!-- 1.5 -->
+<h2 id="s1-5"><span class="no">1.5</span>Analyzing the data with Hadoop — Map &amp; Reduce<span class="marker">@@s1-5@@</span></h2>
+<div class="def"><span class="dt">Map and Reduce</span>
+<ul style="margin:.5mm 0 0">
+<li>MapReduce works by breaking the processing into <mark>two phases: the map phase and the reduce phase</mark>.</li>
+<li>Each phase has <mark>key–value pairs as input and output</mark>, the types of which may be chosen by the programmer.</li>
+<li>The programmer also specifies <b>two functions</b>: the <b>map function</b> and the <b>reduce function</b>.</li>
+</ul></div>
+<div class="box eg"><div class="bt">📌 The task</div>Find the <b>maximum temperature for each year</b>. Example input: <code>1990 → 25°C, 31°C, 28°C</code> and <code>1991 → 27°C, 34°C, 30°C</code>. Wanted output: <code>1990 → 31°C</code> | <code>1991 → 34°C</code>.</div>
+
+<div class="phase"><b>Step 1 · MAP — extract only what we need</b>
+The mapper reads each long weather record (station + date + time + wind + visibility + temperature + pressure + …) and emits just <b>(year, temperature)</b>. It also <b>filters out bad or missing records</b>.
+<br><code>(1990, 25) (1990, 31) (1990, 28) (1991, 27) …</code> &nbsp;→&nbsp; <b>Key = Year | Value = Temperature</b>
+<br><span class="small">Input to map: key = <b>line offset</b> in the file (ignored), value = <b>the line of text</b> (the record).</span></div>
+<div class="phase"><b>Step 2 · SHUFFLE &amp; SORT — group the same years (done automatically by Hadoop)</b>
+Before reduce, the framework <b>sorts and groups</b> values having the same key:
+<br><code>1990 → [25, 31, 28]</code> &nbsp; <code>1991 → [27, 34, 30]</code> &nbsp; (textbook: <code>1949 → [111, 78]</code>, <code>1950 → [0, 22, −11]</code>)</div>
+<div class="phase"><b>Step 3 · REDUCE — find the maximum in each group</b>
+The reduce function receives <b>(key, list of values)</b> and iterates through the list picking the maximum:
+<br><code>MAX(111, 78) = 111</code> &nbsp; <code>MAX(0, 22, −11) = 22</code> → final output <code>(1949, 111)</code>, <code>(1950, 22)</code>.</div>
+
+<div class="fig">
+<svg viewBox="0 0 640 170" width="640" font-family="DejaVu Sans Mono, monospace" font-size="8.4">
+ <defs><marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d6334a"/></marker></defs>
+ <g font-family="Inter" font-weight="700" font-size="10" text-anchor="middle" fill="#16244a"><text x="45" y="14">input</text><text x="155" y="14">map</text><text x="270" y="14">shuffle</text><text x="400" y="14">reduce</text><text x="520" y="14">output</text></g>
+ <rect x="5" y="25" width="80" height="100" rx="6" fill="#ffd8a8" stroke="#d9622b"/>
+ <g fill="#16244a"><text x="12" y="45">0067011990…</text><text x="12" y="62">0043011990…</text><text x="12" y="79">0043011990…</text><text x="12" y="96">0043012650…</text><text x="12" y="113">0043012650…</text></g>
+ <rect x="100" y="25" width="110" height="100" rx="6" fill="#fff" stroke="#16244a"/>
+ <g fill="#16244a"><text x="106" y="45">(0, 0067011990…)</text><text x="106" y="62">(106, 004301199…)</text><text x="106" y="79">(212, 004301199…)</text><text x="106" y="96">(318, 004301265…)</text><text x="106" y="113">(424, 004301265…)</text></g>
+ <rect x="225" y="25" width="90" height="100" rx="6" fill="#e6f5f5" stroke="#0f8b8d"/>
+ <g fill="#16244a"><text x="236" y="45">(1950, 0)</text><text x="236" y="62">(1950, 22)</text><text x="236" y="79">(1950, −11)</text><text x="236" y="96">(1949, 111)</text><text x="236" y="113">(1949, 78)</text></g>
+ <rect x="330" y="45" width="140" height="60" rx="6" fill="#f1ebfb" stroke="#6a3fb5"/>
+ <g fill="#16244a"><text x="340" y="70">(1949, [111, 78])</text><text x="340" y="88">(1950, [0, 22, −11])</text></g>
+ <rect x="485" y="50" width="70" height="50" rx="6" fill="#fff" stroke="#16244a"/><g fill="#16244a"><text x="493" y="71">(1949, 111)</text><text x="493" y="88">(1950, 22)</text></g>
+ <rect x="570" y="50" width="65" height="50" rx="6" fill="#ffd8a8" stroke="#d9622b"/><g fill="#16244a" font-weight="700"><text x="578" y="71">1949  111</text><text x="578" y="88">1950  22</text></g>
+ <g stroke="#d6334a" stroke-width="1.6" stroke-dasharray="3 2" marker-end="url(#m2)"><line x1="85" y1="75" x2="98" y2="75"/><line x1="210" y1="75" x2="223" y2="75"/><line x1="315" y1="75" x2="328" y2="75"/><line x1="470" y1="75" x2="483" y2="75"/><line x1="555" y1="75" x2="568" y2="75"/></g>
+ <g font-family="Inter" font-size="9" fill="#5b6478" text-anchor="middle"><text x="45" y="142">raw records</text><text x="155" y="142">(offset, line)</text><text x="270" y="142">(year, temp)</text><text x="400" y="142">grouped &amp; sorted by key</text><text x="520" y="142">(year, max)</text>
+ <text x="155" y="160" font-weight="700" fill="#0f8b8d">MAP = Extract</text><text x="400" y="160" font-weight="700" fill="#6a3fb5">SHUFFLE = Group</text><text x="560" y="160" font-weight="700" fill="#d9622b">REDUCE = Maximum</text></g>
+</svg>
+<div class="cap">Figure 1.8 — MapReduce logical data flow for the maximum-temperature example (Textbook Fig. 2-1)</div>
+</div>
+<div class="box key"><div class="bt">🔑 Who does what?</div>The <b>programmer</b> writes only two things: the <b>map function</b> ("for every weather record, extract the year and temperature") and the <b>reduce function</b> ("for every year, find the maximum temperature"). <mark>Hadoop takes care of distributing the work, grouping the intermediate key–value pairs, and passing them to reducers.</mark></div>
+<div class="box mem"><div class="bt">🧠 Memory trick</div><b>MAP = Extract · SHUFFLE = Group · REDUCE = Summarise</b> — "<b>E G S</b>: <b>E</b>very <b>G</b>roup <b>S</b>ummarised".</div>
+
+<!-- 1.6 -->
+<h2 id="s1-6"><span class="no">1.6</span>Java MapReduce — Mapper, Reducer, Driver<span class="marker">@@s1-6@@</span></h2>
+<p>To run a MapReduce program, we need <b>three things</b>:</p>
+<div class="cards c3">
+ <div class="card"><h5>1 · Map function (Mapper class)</h5><p>Reads each input record (one line of weather data), extracts year &amp; temperature, <b>filters out bad/missing records</b>, outputs intermediate key–value pairs <code>&lt;Year, Temperature&gt;</code>.</p></div>
+ <div class="card"><h5>2 · Reduce function (Reducer class)</h5><p>Receives a key and a <b>list of all values</b> (a year and all its temperatures), finds the maximum, outputs <code>&lt;Year, Max Temperature&gt;</code>.</p></div>
+ <div class="card"><h5>3 · Code to run the job (Driver / Main class)</h5><p>Configures the job (name, input &amp; output paths), specifies the Mapper and Reducer classes, sets the key and value types, <b>submits the job</b> to Hadoop and waits for it to finish.</p></div>
+</div>
+<p class="center"><b>In short: a MapReduce program has a Mapper, a Reducer, and a Driver to run the job.</b></p>
+
+<h3>The Mapper</h3>
+<div class="fig" style="margin:1mm 0 2mm">
+<svg viewBox="0 0 560 62" width="560" font-family="DejaVu Sans Mono, monospace" font-size="10">
+ <text x="5" y="16" font-weight="700" fill="#16244a">Mapper&lt;</text>
+ <g text-anchor="middle"><rect x="70" y="3" width="105" height="20" rx="4" fill="#e6f5f5" stroke="#0f8b8d"/><text x="122" y="17">LongWritable,</text>
+ <rect x="185" y="3" width="65" height="20" rx="4" fill="#e6f5f5" stroke="#0f8b8d"/><text x="217" y="17">Text,</text>
+ <rect x="260" y="3" width="65" height="20" rx="4" fill="#fdf0e8" stroke="#d9622b"/><text x="292" y="17">Text,</text>
+ <rect x="335" y="3" width="110" height="20" rx="4" fill="#fdf0e8" stroke="#d9622b"/><text x="390" y="17">IntWritable</text></g>
+ <text x="452" y="16" font-weight="700" fill="#16244a">&gt;</text>
+ <g font-family="Inter" font-size="9" text-anchor="middle" fill="#5b6478"><text x="122" y="38">input key</text><text x="122" y="50">(file offset)</text><text x="217" y="38">input value</text><text x="217" y="50">(record)</text><text x="292" y="38">output key</text><text x="292" y="50">(year)</text><text x="390" y="38">output value</text><text x="390" y="50">(temperature)</text></g>
+</svg>
+</div>
+<pre class="code"><span class="k">public class</span> MaxTemperatureMapper
+    <span class="k">extends</span> Mapper&lt;LongWritable, Text, Text, IntWritable&gt; {
+  <span class="k">private static final int</span> MISSING = 9999;
+  <span class="k">@Override</span>
+  <span class="k">public void</span> map(LongWritable key, Text value, Context context)
+      <span class="k">throws</span> IOException, InterruptedException {
+    String line = value.toString();
+    String year = line.substring(15, 19);            <span class="c">// year is at characters 15–19</span>
+    <span class="k">int</span> airTemperature;
+    <span class="k">if</span> (line.charAt(87) == '+') {                    <span class="c">// parseInt doesn't like leading plus signs</span>
+      airTemperature = Integer.parseInt(line.substring(88, 92));
+    } <span class="k">else</span> {
+      airTemperature = Integer.parseInt(line.substring(87, 92));
+    }
+    String quality = line.substring(92, 93);
+    <span class="k">if</span> (airTemperature != MISSING &amp;&amp; quality.matches(<span class="s">"[01459]"</span>)) {  <span class="c">// skip bad/missing readings</span>
+      context.write(<span class="k">new</span> Text(year), <span class="k">new</span> IntWritable(airTemperature));
+    }
+  }
+}</pre>
+
+<h3>The Reducer</h3>
+<p class="small"><code>Reducer&lt;Text, IntWritable, Text, IntWritable&gt;</code> = &lt;Year, Temperatures, Year, Maximum Temperature&gt;. The reducer's <b>input types must match the mapper's output types</b>.</p>
+<pre class="code"><span class="k">public class</span> MaxTemperatureReducer
+    <span class="k">extends</span> Reducer&lt;Text, IntWritable, Text, IntWritable&gt; {
+  <span class="k">@Override</span>
+  <span class="k">public void</span> reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context)
+      <span class="k">throws</span> IOException, InterruptedException {
+    <span class="k">int</span> maxValue = Integer.MIN_VALUE;
+    <span class="k">for</span> (IntWritable value : values) {
+      maxValue = Math.max(maxValue, value.get());      <span class="c">// keep the largest</span>
+    }
+    context.write(key, <span class="k">new</span> IntWritable(maxValue));
+  }
+}</pre>
+
+<h3>The Driver (application that runs the job)</h3>
+<pre class="code"><span class="k">public class</span> MaxTemperature {
+  <span class="k">public static void</span> main(String[] args) <span class="k">throws</span> Exception {
+    <span class="k">if</span> (args.length != 2) {
+      System.err.println(<span class="s">"Usage: MaxTemperature &lt;input path&gt; &lt;output path&gt;"</span>);
+      System.exit(-1);
+    }
+    Job job = <span class="k">new</span> Job();
+    job.setJarByClass(MaxTemperature.<span class="k">class</span>);           <span class="c">// Hadoop finds the JAR to ship to the cluster</span>
+    job.setJobName(<span class="s">"Max temperature"</span>);
+    FileInputFormat.addInputPath(job, <span class="k">new</span> Path(args[0]));   <span class="c">// input path</span>
+    FileOutputFormat.setOutputPath(job, <span class="k">new</span> Path(args[1])); <span class="c">// output dir (must NOT exist)</span>
+    job.setMapperClass(MaxTemperatureMapper.<span class="k">class</span>);
+    job.setReducerClass(MaxTemperatureReducer.<span class="k">class</span>);
+    job.setOutputKeyClass(Text.<span class="k">class</span>);
+    job.setOutputValueClass(IntWritable.<span class="k">class</span>);
+    System.exit(job.waitForCompletion(<span class="k">true</span>) ? 0 : 1);   <span class="c">// submit and wait</span>
+  }
+}</pre>
+<div class="box tip"><div class="bt">💡 Hadoop data types</div>Hadoop uses its own types optimised for network serialisation: <code>LongWritable</code> ≈ Java <code>long</code>, <code>Text</code> ≈ Java <code>String</code>, <code>IntWritable</code> ≈ Java <code>int</code>.</div>
+
+<h3>A test run</h3>
+<p>After writing the Mapper, Reducer and Driver, don't immediately run them on years of data. First run on a <b>very small sample containing only 5 weather records</b>:</p>
+<pre class="code">% export HADOOP_CLASSPATH=hadoop-examples.jar
+% hadoop MaxTemperature input/ncdc/sample.txt output</pre>
+<div class="two">
+<div>
+<p>Hadoop prints a log: <i>Running job: job_local_0001 … map 100% reduce 100% … Job completed successfully</i>, followed by <b>counters</b>, e.g.:</p>
+<ul class="small">
+<li>Map input records = <b>5</b>, Map output records = <b>5</b></li>
+<li>Reduce input groups = <b>2</b> (two years), Reduce input records = 5</li>
+<li>Reduce output records = <b>2</b></li>
+</ul>
+</div>
+<div>
+<pre class="code">% cat output/part-r-00000
+1949    111
+1950    22</pre>
+<p class="small">The output file is named <code>part-r-00000</code> (r = reducer output, 00000 = reducer number). 111 = 11.1°C and 22 = 2.2°C.</p>
+</div>
+</div>
+<div class="box eg"><div class="bt">📌 Lab steps from your slides (running it yourself)</div>
+<ol style="margin:0;columns:2;column-gap:6mm;font-size:9.2pt">
+<li>Check the bash file created in the Hadoop installed folder.</li>
+<li>Run it: <code>source bash.sh</code></li>
+<li>Check Hadoop: <code>hadoop</code></li>
+<li>Create a folder <code>weather</code> inside the Hadoop folder.</li>
+<li>Make <code>driver.java</code>, <code>mapper.java</code>, <code>reducer.java</code>.</li>
+<li>Compile: <code>javac -d . *.java</code></li>
+<li>Set main class: <code>echo Main-Class: weather.driver &gt; Manifest.txt</code></li>
+<li>Create JAR: <code>jar cfm weather.jar Manifest.txt weather/*.class</code></li>
+<li>Create input file <code>input.txt</code> (download weather input).</li>
+<li>Run: <code>hadoop jar weather.jar input.txt output</code></li>
+<li>See output: <code>cat output/*</code></li>
+</ol></div>
+
+<!-- 1.7 -->
+<h2 id="s1-7"><span class="no">1.7</span>Scaling out &amp; data flow<span class="marker">@@s1-7@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>On real (big) data, Hadoop cuts the input into <b>pieces called splits</b>, runs <b>one map task per split</b> on many machines at the same time — preferably on the machine that <b>already holds that piece of data</b> — and then sends the map results to the reducers.</div>
+<div class="def"><span class="dt">MapReduce job</span><p>A <mark>unit of work that the client wants to be performed</mark>. It consists of the <b>input data</b>, the <b>MapReduce program</b>, and <b>configuration information</b>.</p></div>
+<ul>
+<li>Hadoop runs the job by dividing it into <b>tasks</b> of two types: <mark>map tasks and reduce tasks</mark>.</li>
+<li>Tasks are <b>scheduled using YARN</b> and run on nodes in the cluster. If a task fails, it is <b>automatically rescheduled</b> on a different node.</li>
+<li>Hadoop divides the input into fixed-size pieces called <mark>input splits</mark> (or just splits). It creates <b>one map task for each split</b>, which runs the map function for each record in the split.</li>
+<li><b>Why many small splits?</b> The time to process each split is small compared to the whole input → work is <b>better load-balanced</b>: a faster machine can process proportionally more splits than a slower one.</li>
+</ul>
+
+<h3>Data locality optimisation</h3>
+<p>Hadoop does its best to run the map task <mark>on a node where the input data resides in HDFS</mark>, because it doesn't use valuable cluster bandwidth. This is called the <b>data locality optimisation</b>.</p>
+<div class="fig">
+<svg viewBox="0 0 620 175" width="620" font-family="Inter" font-size="9.5">
+ <rect x="5" y="5" width="610" height="140" rx="8" fill="#fafbfd" stroke="#c4cad6" stroke-dasharray="5 3"/><text x="600" y="138" text-anchor="end" font-size="8.5" fill="#5b6478">data center</text>
+ <g fill="#e6f5f5" stroke="#0f8b8d"><rect x="20" y="15" width="175" height="115" rx="6"/><rect x="225" y="15" width="175" height="115" rx="6"/><rect x="430" y="15" width="175" height="115" rx="6"/></g>
+ <g font-weight="700" fill="#0f8b8d" text-anchor="middle"><text x="107" y="30">Rack 1</text><text x="312" y="30">Rack 2</text><text x="517" y="30">Rack 3</text></g>
+ <g fill="#fff" stroke="#9aa3b5"><rect x="35" y="40" width="145" height="24" rx="3"/><rect x="35" y="70" width="145" height="24" rx="3"/><rect x="35" y="100" width="145" height="24" rx="3"/><rect x="240" y="40" width="145" height="24" rx="3"/><rect x="240" y="70" width="145" height="24" rx="3"/><rect x="240" y="100" width="145" height="24" rx="3"/><rect x="445" y="40" width="145" height="24" rx="3"/><rect x="445" y="70" width="145" height="24" rx="3"/><rect x="445" y="100" width="145" height="24" rx="3"/></g>
+ <!-- a: data-local -->
+ <rect x="45" y="46" width="40" height="12" rx="2" fill="#f6b100"/><text x="65" y="56" text-anchor="middle" font-size="7.5">map a</text><rect x="95" y="46" width="40" height="12" rx="2" fill="#2463eb"/><text x="115" y="56" text-anchor="middle" font-size="7.5" fill="#fff">block a</text>
+ <!-- b: rack-local -->
+ <rect x="250" y="76" width="40" height="12" rx="2" fill="#2463eb"/><text x="270" y="86" text-anchor="middle" font-size="7.5" fill="#fff">block b</text>
+ <rect x="250" y="106" width="40" height="12" rx="2" fill="#f6b100"/><text x="270" y="116" text-anchor="middle" font-size="7.5">map b</text>
+ <path d="M300 88 C 320 95, 320 100, 300 108" fill="none" stroke="#d6334a" stroke-width="1.5"/>
+ <!-- c: off-rack -->
+ <rect x="335" y="46" width="40" height="12" rx="2" fill="#2463eb"/><text x="355" y="56" text-anchor="middle" font-size="7.5" fill="#fff">block c</text>
+ <rect x="455" y="76" width="40" height="12" rx="2" fill="#f6b100"/><text x="475" y="86" text-anchor="middle" font-size="7.5">map c</text>
+ <path d="M375 52 C 420 52, 420 82, 453 82" fill="none" stroke="#d6334a" stroke-width="1.5"/>
+ <g font-size="9"><rect x="20" y="152" width="12" height="10" fill="#f6b100"/><text x="36" y="161">map task</text><rect x="100" y="152" width="12" height="10" fill="#2463eb"/><text x="116" y="161">HDFS block (input split)</text><line x1="245" y1="157" x2="265" y2="157" stroke="#d6334a" stroke-width="1.5"/><text x="270" y="161">network transfer</text></g>
+</svg>
+<div class="cap">Figure 1.9 — (a) data-local, (b) rack-local and (c) off-rack map tasks (Textbook Fig. 2-2)</div>
+</div>
+<table class="t">
+<tr><th style="width:18%">Case</th><th>When it happens</th><th style="width:22%">Cost</th></tr>
+<tr><td>(a) Data-local</td><td>Map task runs on the <b>same node</b> that stores the block — the preferred case.</td><td>✅ No network transfer</td></tr>
+<tr><td>(b) Rack-local</td><td>All nodes holding the block's replicas are busy → scheduler finds a free map slot on a node <b>in the same rack</b>.</td><td>⚠️ Transfer within the rack</td></tr>
+<tr><td>(c) Off-rack</td><td>Very occasionally even that is impossible → a node <b>in a different rack</b> is used.</td><td>❌ Inter-rack network transfer</td></tr>
+</table>
+<div class="box key"><div class="bt">🔑 Why is the optimal split size = HDFS block size (128 MB)?</div>Because a block is the <mark>largest size of input that can be guaranteed to be stored on a single node</mark>. If a split spanned two blocks, it's unlikely any one node stores both, so part of the split would have to travel over the network — less efficient than running the whole map task on local data.</div>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>"<b>Home → Neighbour → Other town</b>": data-local (your own house), rack-local (your neighbour on the same street), off-rack (another town — slowest trip).</div>
+
+<h3>Data flow with a single reduce task</h3>
+<ul>
+<li>Map tasks write their output to the <b>local disk</b>, not to HDFS — map output is <b>intermediate</b>: it's processed by reducers and thrown away once the job is complete.</li>
+<li>The reduce task's input is the <b>sorted map outputs</b> from all mappers, transferred over the network (<b>copy</b>), <b>merged</b>, then passed to the reduce function.</li>
+<li>Reduce output is stored in <b>HDFS</b> for reliability (first replica on the local node, other replicas off-rack).</li>
+</ul>
+<div class="fig">
+<svg viewBox="0 0 620 210" width="620" font-family="Inter" font-size="9.5">
+ <defs><marker id="m3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d6334a"/></marker></defs>
+ <text x="15" y="14" font-weight="700" font-size="9">input HDFS</text>
+ <g fill="#e6f5f5" stroke="#9aa3b5" stroke-dasharray="3 2"><rect x="10" y="20" width="210" height="52" rx="4"/><rect x="10" y="80" width="210" height="52" rx="4"/><rect x="10" y="140" width="210" height="52" rx="4"/></g>
+ <g fill="#ffd8a8" stroke="#d9622b" stroke-dasharray="3 2"><rect x="20" y="36" width="50" height="22" rx="3"/><rect x="20" y="96" width="50" height="22" rx="3"/><rect x="20" y="156" width="50" height="22" rx="3"/></g>
+ <g text-anchor="middle"><text x="45" y="51">split 0</text><text x="45" y="111">split 1</text><text x="45" y="171">split 2</text></g>
+ <g fill="#2a9df4"><rect x="95" y="30" width="50" height="34" rx="3"/><rect x="95" y="90" width="50" height="34" rx="3"/><rect x="95" y="150" width="50" height="34" rx="3"/></g>
+ <g text-anchor="middle" fill="#fff" font-weight="700"><text x="120" y="51">map</text><text x="120" y="111">map</text><text x="120" y="171">map</text></g>
+ <g fill="#fff" stroke="#16244a"><rect x="175" y="38" width="20" height="18"/><rect x="175" y="98" width="20" height="18"/><rect x="175" y="158" width="20" height="18"/></g>
+ <text x="185" y="32" text-anchor="middle" font-size="8">sort</text>
+ <g stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#m3)"><line x1="70" y1="47" x2="93" y2="47"/><line x1="70" y1="107" x2="93" y2="107"/><line x1="70" y1="167" x2="93" y2="167"/><line x1="145" y1="47" x2="173" y2="47"/><line x1="145" y1="107" x2="173" y2="107"/><line x1="145" y1="167" x2="173" y2="167"/></g>
+ <g stroke="#d6334a" stroke-width="1.6" marker-end="url(#m3)"><line x1="195" y1="47" x2="298" y2="100"/><line x1="195" y1="107" x2="298" y2="107"/><line x1="195" y1="167" x2="298" y2="114"/></g>
+ <text x="245" y="72" font-size="8.5" fill="#d6334a">copy</text>
+ <rect x="285" y="70" width="230" height="74" rx="4" fill="#e6f5f5" stroke="#9aa3b5" stroke-dasharray="3 2"/>
+ <g fill="#fff" stroke="#16244a"><rect x="300" y="94" width="18" height="8"/><rect x="300" y="102" width="18" height="8"/><rect x="300" y="110" width="18" height="8"/><rect x="335" y="96" width="20" height="20"/></g>
+ <text x="309" y="88" text-anchor="middle" font-size="8">merge</text>
+ <rect x="375" y="90" width="55" height="34" rx="3" fill="#2a9df4"/><text x="402" y="111" text-anchor="middle" fill="#fff" font-weight="700">reduce</text>
+ <rect x="450" y="96" width="50" height="22" rx="3" fill="#ffd8a8" stroke="#d9622b" stroke-dasharray="3 2"/><text x="475" y="111" text-anchor="middle">part 0</text>
+ <g stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#m3)"><line x1="318" y1="106" x2="333" y2="106"/><line x1="355" y1="106" x2="373" y2="106"/><line x1="430" y1="107" x2="448" y2="107"/></g>
+ <line x1="515" y1="107" x2="545" y2="107" stroke="#d6334a" stroke-width="2" marker-end="url(#m3)"/><text x="550" y="104" font-weight="700" font-size="8.5">HDFS</text><text x="550" y="115" font-weight="700" font-size="8.5">replication</text>
+ <text x="455" y="64" font-weight="700" font-size="9">output HDFS</text>
+</svg>
+<div class="cap">Figure 1.10 — MapReduce data flow with a single reduce task (Textbook Fig. 2-3). Dotted boxes = nodes; dotted arrows = transfer on a node; solid arrows = transfer between nodes.</div>
+</div>
+
+<h3>Data flow with multiple reduce tasks</h3>
+<ul>
+<li>The <b>number of reduce tasks is not governed by the size of the input</b> — it is specified independently.</li>
+<li>With multiple reducers, map tasks <mark>partition</mark> their output, creating <b>one partition for each reduce task</b>.</li>
+<li>There can be many keys in each partition, but <b>all records for a given key are in a single partition</b>.</li>
+<li>Partitioning can be controlled by a <b>user-defined partitioning function</b>, but normally the <b>default partitioner — which buckets keys using a hash function</b> — works very well.</li>
+<li>Because each reduce task is fed by many map tasks, this data flow is colloquially known as <mark>"the shuffle"</mark>.</li>
+</ul>
+<div class="fig">
+<svg viewBox="0 0 620 205" width="620" font-family="Inter" font-size="9.5">
+ <defs><marker id="m4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d6334a"/></marker></defs>
+ <g fill="#e6f5f5" stroke="#9aa3b5" stroke-dasharray="3 2"><rect x="10" y="15" width="210" height="52" rx="4"/><rect x="10" y="77" width="210" height="52" rx="4"/><rect x="10" y="139" width="210" height="52" rx="4"/></g>
+ <g fill="#ffd8a8" stroke="#d9622b" stroke-dasharray="3 2"><rect x="20" y="30" width="50" height="22" rx="3"/><rect x="20" y="92" width="50" height="22" rx="3"/><rect x="20" y="154" width="50" height="22" rx="3"/></g>
+ <g text-anchor="middle"><text x="45" y="45">split 0</text><text x="45" y="107">split 1</text><text x="45" y="169">split 2</text></g>
+ <g fill="#2a9df4"><rect x="95" y="24" width="50" height="34" rx="3"/><rect x="95" y="86" width="50" height="34" rx="3"/><rect x="95" y="148" width="50" height="34" rx="3"/></g>
+ <g text-anchor="middle" fill="#fff" font-weight="700"><text x="120" y="45">map</text><text x="120" y="107">map</text><text x="120" y="169">map</text></g>
+ <g fill="#fff" stroke="#16244a"><rect x="175" y="28" width="20" height="12"/><rect x="175" y="40" width="20" height="12"/><rect x="175" y="90" width="20" height="12"/><rect x="175" y="102" width="20" height="12"/><rect x="175" y="152" width="20" height="12"/><rect x="175" y="164" width="20" height="12"/></g>
+ <g stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#m4)"><line x1="70" y1="41" x2="93" y2="41"/><line x1="70" y1="103" x2="93" y2="103"/><line x1="70" y1="165" x2="93" y2="165"/><line x1="145" y1="41" x2="173" y2="41"/><line x1="145" y1="103" x2="173" y2="103"/><line x1="145" y1="165" x2="173" y2="165"/></g>
+ <g stroke="#d6334a" stroke-width="1.4" marker-end="url(#m4)"><line x1="195" y1="34" x2="298" y2="50"/><line x1="195" y1="46" x2="298" y2="140"/><line x1="195" y1="96" x2="298" y2="55"/><line x1="195" y1="108" x2="298" y2="145"/><line x1="195" y1="158" x2="298" y2="60"/><line x1="195" y1="170" x2="298" y2="150"/></g>
+ <text x="235" y="22" font-size="8.5" fill="#d6334a">copy (shuffle)</text>
+ <g fill="#e6f5f5" stroke="#9aa3b5" stroke-dasharray="3 2"><rect x="285" y="25" width="230" height="60" rx="4"/><rect x="285" y="115" width="230" height="60" rx="4"/></g>
+ <g fill="#fff" stroke="#16244a"><rect x="300" y="43" width="18" height="8"/><rect x="300" y="51" width="18" height="8"/><rect x="300" y="59" width="18" height="8"/><rect x="335" y="45" width="20" height="20"/><rect x="300" y="133" width="18" height="8"/><rect x="300" y="141" width="18" height="8"/><rect x="300" y="149" width="18" height="8"/><rect x="335" y="135" width="20" height="20"/></g>
+ <g fill="#2a9df4"><rect x="375" y="38" width="55" height="34" rx="3"/><rect x="375" y="128" width="55" height="34" rx="3"/></g>
+ <g text-anchor="middle" fill="#fff" font-weight="700"><text x="402" y="59">reduce</text><text x="402" y="149">reduce</text></g>
+ <g fill="#ffd8a8" stroke="#d9622b" stroke-dasharray="3 2"><rect x="450" y="44" width="50" height="22" rx="3"/><rect x="450" y="134" width="50" height="22" rx="3"/></g>
+ <g text-anchor="middle"><text x="475" y="59">part 0</text><text x="475" y="149">part 1</text><text x="309" y="38" font-size="8">merge</text><text x="309" y="128" font-size="8">merge</text></g>
+ <g stroke="#d6334a" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#m4)"><line x1="318" y1="55" x2="333" y2="55"/><line x1="355" y1="55" x2="373" y2="55"/><line x1="430" y1="55" x2="448" y2="55"/><line x1="318" y1="145" x2="333" y2="145"/><line x1="355" y1="145" x2="373" y2="145"/><line x1="430" y1="145" x2="448" y2="145"/></g>
+ <g stroke="#d6334a" stroke-width="2" marker-end="url(#m4)"><line x1="515" y1="55" x2="545" y2="55"/><line x1="515" y1="145" x2="545" y2="145"/></g>
+ <g font-weight="700" font-size="8.5"><text x="550" y="52">HDFS</text><text x="550" y="63">replication</text><text x="550" y="142">HDFS</text><text x="550" y="153">replication</text></g>
+ <text x="180" y="200" font-size="8.5" fill="#5b6478">each map output is partitioned (one partition per reducer)</text>
+</svg>
+<div class="cap">Figure 1.11 — MapReduce data flow with multiple reduce tasks (Textbook Fig. 2-4)</div>
+</div>
+<div class="box tip"><div class="bt">💡 Extra (textbook): zero reducers &amp; combiners</div>A job can have <b>zero reduce tasks</b> when no shuffle is needed — then map tasks write output straight to HDFS. A <b>combiner</b> is an optional "mini-reducer" run on map output to cut the data sent over the network (e.g., max of a map's own values first). Your slide's driver uses <code>job.setCombinerClass(MaxTemperatureReducer.class)</code> for this.</div>
+
+<div class="check"><div class="bt">✅ Before you move on — can you…</div>
+<ul>
+<li>Quote the data-scale examples (NYSE, Facebook, LHC) and the 0.18 → 1.8 ZB growth?</li>
+<li>Explain why bigger disks didn't help (1990 vs 20 years later) and the 100-disk idea?</li>
+<li>Name the two problems of parallel disks and their solutions (replication, MapReduce)?</li>
+<li>Define Hadoop, list its creators, core components, history and why to use it?</li>
+<li>Describe the NCDC record format and why -0128 means -12.8 °C?</li>
+<li>Trace Map → Shuffle &amp; Sort → Reduce for the max-temperature example (Fig 1.8)?</li>
+<li>Explain the Mapper's four generic types and the job of the Driver?</li>
+<li>Define job, task, split; explain data-local/rack-local/off-rack and why split = block size?</li>
+<li>Draw single- and multiple-reducer data flows and explain partitioning?</li>
+</ul></div>
+</section>

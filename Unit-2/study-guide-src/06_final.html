@@ -1,0 +1,140 @@
+
+<!-- ================= FINAL REVISION ================= -->
+<section style="--acc:#16244a; --accl:#eef1f8">
+<div class="chapter-open" id="final" style="background:#16244a"><p class="marker">@@final@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Last-night revision</div>
+  <h1>Final Revision</h1>
+  <div class="learn"><b>Use these pages the night before the exam</b>
+    <ol><li>Cheat sheet (all 3 chapters)</li><li>All memory tricks in one place</li><li>Important 2-mark questions</li><li>Important 5/10-mark questions</li></ol>
+  </div>
+  <div class="meta"><span>⏱ ≈ 30–40 minutes</span><span>Then redraw the 6 key diagrams once</span></div>
+</div>
+
+<h2 id="cheat"><span class="no">★</span>Cheat sheet<span class="marker">@@cheat@@</span></h2>
+<div style="columns:2; column-gap:6mm; font-size:8.7pt; line-height:1.4">
+<h4 style="color:#0f8b8d;margin-top:0">CHAPTER 1 · Basics of Hadoop</h4>
+<ul>
+<li><b>Data!</b> 2006: 0.18 ZB → 2011: 1.8 ZB (10×). 1 ZB = 10<sup>21</sup> B = 1 billion TB. NYSE 1 TB/day · Facebook 10 bn photos ≈ 1 PB · Ancestry 2.5 PB · Internet Archive 2 PB (+20 TB/month) · LHC 15 PB/yr. MyLifeBits ≈ 1 GB/month.</li>
+<li><b>Storage problem:</b> 1990 disk 1,370 MB @ 4.4 MB/s (5 min); now 1 TB @ 100 MB/s (&gt; 2.5 hr). Read 1 TB from 100 disks in parallel → &lt; 2 min.</li>
+<li><b>2 problems:</b> hardware failure → <b>replication</b> (HDFS); combining data → <b>MapReduce</b>.</li>
+<li><b>Hadoop</b> = open-source framework to store &amp; process large data in a parallel, distributed manner; Java; Doug Cutting &amp; Mike Cafarella; = reliable shared storage + reliable distributed analysis.</li>
+<li><b>Components:</b> HDFS (storage), MapReduce (processing), YARN (resource mgmt), Common.</li>
+<li><b>History:</b> Nutch 2002 → GFS paper 2003 → NDFS 2004 → MapReduce paper 2004 → Nutch+MR 2005 → Hadoop Feb 2006. Named after a toy elephant (not an acronym). Yahoo!: 24,000 nodes by 2009; Apache top-level Jan 2008; 1 TB sort in 209 s on 900 nodes.</li>
+<li><b>Why Hadoop:</b> ~90% of market, scalable, fault tolerant, flexible.</li>
+<li><b>NCDC data:</b> semi-structured, record-oriented, fixed-width ASCII; temp = °C × 10 (-0128 = -12.8 °C); 9999 = missing; preprocess many small station files → one file per year.</li>
+<li><b>MapReduce:</b> 2 phases (map, reduce), key–value in &amp; out; programmer writes map &amp; reduce functions. Map = extract (year, temp) · Shuffle = group by key · Reduce = max. Output: (1949, 111), (1950, 22).</li>
+<li><b>Java:</b> Mapper&lt;LongWritable, Text, Text, IntWritable&gt;; Reducer&lt;Text, IntWritable, Text, IntWritable&gt;; Driver sets paths, classes, types, waitForCompletion. Output file part-r-00000.</li>
+<li><b>Scaling out:</b> job = input + program + config; tasks = map + reduce; scheduled by YARN; input splits (one map per split); data-local → rack-local → off-rack; split size = block size (128 MB).</li>
+<li><b>Data flow:</b> map output → local disk; reducers copy &amp; merge; reduce output → HDFS. Multiple reducers → partition (hash partitioner) → "the shuffle".</li>
+</ul>
+<h4 style="color:#6a3fb5">CHAPTER 2 · HDFS</h4>
+<ul>
+<li><b>DFS</b> = file system managing storage across a network of machines; main challenge: tolerate node failure without data loss.</li>
+<li><b>HDFS design:</b> very large files, streaming access (write once, read many), commodity hardware. <b>Not for:</b> low latency (use HBase), lots of small files (NameNode memory), multiple writers/arbitrary modifications.</li>
+<li><b>Blocks:</b> 128 MB default (disk block 512 B; FS block few KB). A 1 MB file uses 1 MB. Benefits: file &gt; any disk; simpler storage; fits replication (3 copies).</li>
+<li><b>NameNode</b> (master): namespace, file tree, metadata; persisted as <b>namespace image + edit log</b>. <b>DataNodes</b> (workers): store/retrieve blocks, send block reports.</li>
+<li><b>Resilience:</b> write metadata to multiple FS (local + NFS, synchronous &amp; atomic); <b>Secondary NameNode</b> merges image + edit log (not a backup).</li>
+<li><b>Federation</b> (2.x): many NameNodes, each manages part of namespace (/user, /share); namespace volume = metadata + block pool; independent.</li>
+<li><b>HA:</b> NameNode = SPOF; cold restart = load image + replay edit log + block reports → 30+ min. Fix: active–standby pair; shared edit log; block reports to both; client failover; standby does checkpoints.</li>
+<li><b>File read (6):</b> open() on DistributedFileSystem → RPC NameNode for block locations (sorted by proximity) → read() on FSDataInputStream/DFSInputStream → stream from closest DataNode → next block → close(). Failures: next closest DN; checksum → other replica + report.</li>
+<li><b>File write (7):</b> create() → RPC NameNode create (checks exists/permissions, else IOException) → write: packets → data queue → DataStreamer → pipeline of 3 DNs → ack queue → close() flushes → complete. Failure: close pipeline, re-queue acks, new block ID, rebuild pipeline.</li>
+</ul>
+<h4 style="color:#d9622b">CHAPTER 3 · Developing MapReduce apps</h4>
+<ul>
+<li><b>Workflows:</b> more jobs, not more complex jobs; or use Pig, Hive, Cascading, Crunch, Spark. Mean-max = Job 1 (station, date → max) + Job 2 (station, day-month → mean). Linear chain via JobClient.runJob(); DAG via <b>JobControl</b>.</li>
+<li><b>MRUnit</b> + JUnit: MapDriver (1950, −11), ReduceDriver ([10,5] → 10), local job runner for whole job.</li>
+<li><b>Job run:</b> submit() / waitForCompletion(); mapreduce.framework.name = local / classic / yarn.</li>
+<li><b>MR1:</b> Client, JobTracker, TaskTrackers, DFS. Submission (1–4: job ID, check output, compute splits, copy JAR high replication, submitJob) · Initialisation (5–6: queue, one map/split, mapred.reduce.tasks) · Assignment (7: heartbeat) · Execution (8–10: localise JAR, TaskRunner launches new JVM).</li>
+<li><b>YARN</b> (Yet Another Resource Negotiator, 2010, Yahoo!; MR1 bottleneck ~4,000 nodes): JobTracker split into ResourceManager + ApplicationMaster. Entities: Client, RM, NMs, MRAppMaster, DFS. Steps 1–4 submit · 5a/5b launch AM · 6 init · 7 splits · 8 request containers (maps first; reduces after 5%) · 9a/9b start container · 10 YarnChild localises · 11 run.</li>
+<li><b>Failures MR1:</b> task (exception/JVM exit), TaskTracker (no heartbeat; blacklist &gt;4 failed tasks), JobTracker (SPOF → job fails). <b>YARN:</b> task (4 attempts), AM (RM restarts it), NM (10 min timeout; AM blacklists &gt;3 failures), RM (checkpoint recovery).</li>
+<li><b>Scheduling:</b> FIFO (default MR1) · Fair (pools per user, fair share over time, preemption) · Capacity (hierarchical queues with capacity, FIFO inside). Preemption = forcefully reassigning resources to higher-priority work.</li>
+<li><b>Shuffle &amp; sort:</b> reducer input sorted by key. Map side: 100 MB circular buffer → spill at 80% → partition → in-memory sort → combiner → merge spills → compress → HTTP. Reduce side: copy (5 threads) → merge ("sort") in rounds → reduce → HDFS.</li>
+</ul>
+</div>
+
+<h2 id="mnem"><span class="no">🧠</span>All memory tricks in one place<span class="marker">@@mnem@@</span></h2>
+<table class="t long">
+<thead><tr><th style="width:30%">To remember…</th><th>Trick</th><th style="width:38%">Expands to</th></tr></thead>
+<tr><td>Hadoop core components</td><td>"HMY body"</td><td>HDFS (storage), MapReduce (processing), YARN (manager)</td></tr>
+<tr><td>MapReduce phases</td><td>"E G S — Every Group Summarised"</td><td>Map = Extract, Shuffle = Group, Reduce = Summarise</td></tr>
+<tr><td>Data locality</td><td>"Home → Neighbour → Other town"</td><td>data-local → rack-local → off-rack</td></tr>
+<tr><td>HDFS strengths</td><td>"L S C"</td><td>Large files, Streaming access, Cheap/commodity hardware</td></tr>
+<tr><td>HDFS weaknesses</td><td>"L S M"</td><td>Low latency, Small files, Multiple writers</td></tr>
+<tr><td>Library analogy</td><td>Catalogue vs shelves</td><td>NameNode = catalogue (metadata), DataNodes = shelves (blocks)</td></tr>
+<tr><td>File read — 6 steps</td><td>"Only Good Readers Really Read Carefully"</td><td>Open, Get locations, Read, Read (stream), Read next block, Close</td></tr>
+<tr><td>File write — 7 steps</td><td>"Cute Cats Write Poems And Close Carefully"</td><td>Create, Create (NN), Write, Packet, Ack, Close, Complete</td></tr>
+<tr><td>Testing</td><td>MapDriver / ReduceDriver / local runner</td><td>test mapper → test reducer → test whole job</td></tr>
+<tr><td>MR1 entities</td><td>"Client Just Talks to DFS"</td><td>Client, JobTracker, TaskTrackers, DFS</td></tr>
+<tr><td>YARN entities</td><td>"Can Rahul Not Attend Daily?"</td><td>Client, ResourceManager, NodeManagers, ApplicationMaster, DFS</td></tr>
+<tr><td>Job run phases (MR1 &amp; YARN)</td><td>"Students In An Exam"</td><td>Submission, Initialisation, Assignment, Execution</td></tr>
+<tr><td>MR1 failures</td><td>"Two Tired Jugglers"</td><td>Task, TaskTracker, JobTracker</td></tr>
+<tr><td>YARN failures</td><td>"The Ants Never Rest"</td><td>Task, Application master, Node manager, Resource manager</td></tr>
+<tr><td>Schedulers</td><td>"Friends Play fair" / "Companies Queue up"</td><td>Fair → Pools; Capacity → Queues</td></tr>
+<tr><td>Shuffle — map side</td><td>"Big Spills Please Sweep, Clean, Mop"</td><td>Buffer, Spill (80%), Partition, Sort, Combine, Merge</td></tr>
+<tr><td>Shuffle — reduce side</td><td>"Collect, Mix, Result"</td><td>Copy, Merge ("sort"), Reduce</td></tr>
+</table>
+
+<h2 id="imp" class="newpage"><span class="no">🎯</span>Important exam questions<span class="marker">@@imp@@</span></h2>
+<div class="two">
+<div>
+<h3 style="--acc:#16244a">Short answers (2–3 marks)</h3>
+<ol style="font-size:9.2pt">
+<li>What is Hadoop? Who created it? <span class="small">§1.3</span></li>
+<li>List the core components of Hadoop. <span class="small">§1.3</span></li>
+<li>Why did bigger disks not solve the Big Data problem? <span class="small">§1.2</span></li>
+<li>What is data locality optimisation? <span class="small">§1.7</span></li>
+<li>Why is the optimal split size equal to the block size? <span class="small">§1.7</span></li>
+<li>Define input split, job and task. <span class="small">§1.7</span></li>
+<li>What is the default HDFS block size? Why so large? <span class="small">§2.3</span></li>
+<li>Where does HDFS not work well? <span class="small">§2.2</span></li>
+<li>What is the role of the Secondary NameNode? <span class="small">§2.4</span></li>
+<li>What is a namespace volume / block pool? <span class="small">§2.5</span></li>
+<li>What is MRUnit? <span class="small">§3.2</span></li>
+<li>What does mapreduce.framework.name control? <span class="small">§3.3</span></li>
+<li>Expand YARN. Why was it introduced? <span class="small">§3.5</span></li>
+<li>What is preemption? <span class="small">§3.7</span></li>
+<li>What is a heartbeat? What is blacklisting? <span class="small">§3.4, §3.6</span></li>
+</ol>
+</div>
+<div>
+<h3 style="--acc:#16244a">Long answers (5–10 marks)</h3>
+<ol style="font-size:9.2pt">
+<li>Explain how MapReduce finds the maximum temperature per year, with a data-flow diagram. <span class="small">§1.5</span></li>
+<li>Write and explain the Mapper, Reducer and Driver for the max-temperature program. <span class="small">§1.6</span></li>
+<li>Explain scaling out: splits, data locality, single and multiple reducer data flow. <span class="small">§1.7</span></li>
+<li>Explain the design of HDFS. <span class="small">§2.2</span></li>
+<li>Explain HDFS blocks, NameNode and DataNodes with a neat diagram. <span class="small">§2.3–2.4</span></li>
+<li>Explain HDFS Federation and High Availability. <span class="small">§2.5–2.6</span></li>
+<li>Explain the anatomy of a file read in HDFS. <span class="small">§2.7</span></li>
+<li>Explain the anatomy of a file write in HDFS. <span class="small">§2.8</span></li>
+<li>Explain MapReduce workflows with an example; explain JobControl. <span class="small">§3.1</span></li>
+<li>How do you write a unit test using MRUnit? <span class="small">§3.2</span></li>
+<li>Explain how a job runs in classic MapReduce (MR1). <span class="small">§3.4</span></li>
+<li>Explain how a job runs in YARN; compare with MR1. <span class="small">§3.5</span></li>
+<li>Explain failures in classic MapReduce and in YARN. <span class="small">§3.6</span></li>
+<li>Explain the Fair and Capacity schedulers and compare them. <span class="small">§3.7</span></li>
+<li>Explain shuffle and sort in MapReduce. <span class="small">§3.8</span></li>
+</ol>
+</div>
+</div>
+<div class="box exam"><div class="bt">🎯 The 6 diagrams you must be able to draw from memory</div>
+<ol style="margin:0;columns:2;column-gap:6mm">
+<li>MapReduce logical data flow (Fig 1.8)</li>
+<li>Data flow with multiple reducers (Fig 1.11)</li>
+<li>HDFS architecture — NameNode, DataNodes, racks (Fig 2.3)</li>
+<li>Anatomy of a file read &amp; file write (Fig 2.7, 2.8)</li>
+<li>MR1 and YARN job run (Fig 3.2, 3.4)</li>
+<li>Shuffle and sort (Fig 3.7)</li>
+</ol></div>
+<div class="box tip"><div class="bt">💡 How to write a 10-mark answer</div>
+<ol style="margin:0">
+<li><b>Definition</b> — use the exact textbook words (Definition boxes).</li>
+<li><b>Diagram</b> — neat, labelled, with <b>numbered arrows</b> for step-based topics.</li>
+<li><b>Numbered steps / points</b> — one per arrow, 1–2 lines each; mention class names.</li>
+<li><b>Failure handling / special cases</b> — examiners love this extra paragraph.</li>
+<li><b>Example</b> — the weather dataset fits almost every question.</li>
+</ol></div>
+<p class="center small" style="margin-top:2mm">All the best for CIE-1! 🐘 — Made from your Unit 2 slides (Lectures 1–3) and Tom White, <i>Hadoop: The Definitive Guide</i>.</p>
+</section>
+</body></html>
