@@ -1,0 +1,297 @@
+
+<!-- ================= CHAPTER 2 ================= -->
+<section class="ch2">
+<div class="chapter-open" id="ch2"><p class="marker">@@ch2@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Chapter 2</div>
+  <h1>Introduction to Big Data</h1>
+  <div class="learn"><b>What you'll learn</b>
+    <ol><li>Characteristics of data (3 Cs)</li><li>Evolution of Big Data</li><li>Definition of Big Data (Gartner)</li><li>Challenges with Big Data</li><li>The 3 Vs: Volume, Velocity, Variety</li><li>Other Vs: Veracity, Volatility, Variability</li><li>Why Big Data?</li><li>Traditional BI vs Big Data</li></ol>
+  </div>
+  <div class="meta"><span>⏱ ≈ 1.5 hours</span><span>Slides: Lecture 2 (pp. 48–70)</span><span>Textbook Ch. 2</span></div>
+</div>
+
+<!-- 2.1 -->
+<h2 id="s2-1"><span class="no">2.1</span>Characteristics of data<span class="marker">@@s2-1@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Before analysing any data, ask 3 questions: <b>What is it made of?</b> (Composition) · <b>Is it in good shape?</b> (Condition) · <b>Where and why did it come from?</b> (Context).</div>
+<div class="two" style="grid-template-columns:1.25fr .75fr">
+<div>
+<p>Data has <b>three characteristics</b>:</p>
+<ol>
+<li><b>Composition</b> — deals with the <mark>structure of data</mark>: the <b>sources</b> of data, the <b>granularity</b>, the <b>types</b>, and the <b>nature</b> of data — whether it is <b>static or real-time streaming</b>.</li>
+<li><b>Condition</b> — deals with the <mark>state of the data</mark>: "Can one use this data <b>as is</b> for analysis?" or "Does it require <b>cleansing</b> for further enhancement and enrichment?"</li>
+<li><b>Context</b> — deals with "<mark>Where</mark> has this data been generated?", "<mark>Why</mark> was this data generated?", and so on.</li>
+</ol>
+</div>
+<div class="fig" style="margin-top:2mm">
+<svg viewBox="0 0 230 150" width="230" font-family="Inter" font-size="11">
+ <g font-weight="700" fill="#fff">
+  <path d="M5 12 h105 l12 14 l-12 14 h-105 z" fill="#6a3fb5"/><text x="58" y="31" text-anchor="middle">Composition</text>
+  <path d="M5 57 h105 l12 14 l-12 14 h-105 z" fill="#8458cc"/><text x="58" y="76" text-anchor="middle">Condition</text>
+  <path d="M5 102 h105 l12 14 l-12 14 h-105 z" fill="#9f7ae0"/><text x="58" y="121" text-anchor="middle">Context</text>
+ </g>
+ <g stroke="#6a3fb5" stroke-width="1.6" fill="none"><path d="M122 26 L160 71"/><path d="M122 71 L160 71"/><path d="M122 116 L160 71"/></g>
+ <rect x="160" y="52" width="65" height="38" rx="6" fill="#16244a"/><text x="192" y="76" text-anchor="middle" fill="#fff" font-weight="800" font-size="13">Data</text>
+</svg>
+<div class="cap">Figure 2.1 — Characteristics of data</div>
+</div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>The <b>3 Cs</b> of data: <b>C</b>omposition (what), <b>C</b>ondition (how good), <b>C</b>ontext (where &amp; why).</div>
+
+<!-- 2.2 -->
+<h2 id="s2-2"><span class="no">2.2</span>Evolution of Big Data<span class="marker">@@s2-2@@</span></h2>
+<p>Big Data did not appear overnight. Data grew in three eras:</p>
+<div class="fig">
+<svg viewBox="0 0 640 205" width="640" font-family="Inter" font-size="10">
+ <defs><marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#6a3fb5"/></marker></defs>
+ <line x1="20" y1="70" x2="625" y2="70" stroke="#6a3fb5" stroke-width="3" marker-end="url(#b1)"/>
+ <g>
+  <circle cx="110" cy="70" r="11" fill="#6a3fb5"/><text x="110" y="74" text-anchor="middle" fill="#fff" font-weight="800">1</text>
+  <text x="110" y="30" text-anchor="middle" font-weight="800" font-size="12" fill="#16244a">1970s and before</text>
+  <text x="110" y="47" text-anchor="middle" fill="#6a3fb5" font-weight="700">Mainframe era</text>
+  <rect x="25" y="92" width="170" height="104" rx="8" fill="#f1ebfb" stroke="#6a3fb5"/>
+  <text x="110" y="111" text-anchor="middle" font-weight="700">Data generation &amp; storage</text>
+  <text x="110" y="128" text-anchor="middle">Mainframes: basic data storage</text>
+  <text x="110" y="152" text-anchor="middle" font-weight="700">Nature of data</text>
+  <text x="110" y="169" text-anchor="middle">Primitive and structured</text>
+  <text x="110" y="187" text-anchor="middle" font-size="9" fill="#5b6478">(small, simple, numeric/text)</text>
+ </g>
+ <g>
+  <circle cx="320" cy="70" r="11" fill="#6a3fb5"/><text x="320" y="74" text-anchor="middle" fill="#fff" font-weight="800">2</text>
+  <text x="320" y="30" text-anchor="middle" font-weight="800" font-size="12" fill="#16244a">1980s – 1990s</text>
+  <text x="320" y="47" text-anchor="middle" fill="#6a3fb5" font-weight="700">Relational database era</text>
+  <rect x="235" y="92" width="170" height="104" rx="8" fill="#f1ebfb" stroke="#6a3fb5"/>
+  <text x="320" y="111" text-anchor="middle" font-weight="700">Data utilisation</text>
+  <text x="320" y="128" text-anchor="middle">Relational databases:</text>
+  <text x="320" y="141" text-anchor="middle">data-intensive applications</text>
+  <text x="320" y="163" text-anchor="middle" font-weight="700">Nature of data</text>
+  <text x="320" y="180" text-anchor="middle">Complex and relational</text>
+ </g>
+ <g>
+  <circle cx="530" cy="70" r="11" fill="#6a3fb5"/><text x="530" y="74" text-anchor="middle" fill="#fff" font-weight="800">3</text>
+  <text x="530" y="30" text-anchor="middle" font-weight="800" font-size="12" fill="#16244a">2000s and beyond</text>
+  <text x="530" y="47" text-anchor="middle" fill="#6a3fb5" font-weight="700">WWW &amp; IoT — data explosion</text>
+  <rect x="445" y="92" width="170" height="104" rx="8" fill="#16244a"/>
+  <text x="530" y="111" text-anchor="middle" font-weight="700" fill="#ffd166">Data driven</text>
+  <text x="530" y="128" text-anchor="middle" fill="#fff">Structured, unstructured</text>
+  <text x="530" y="141" text-anchor="middle" fill="#fff">and multimedia data</text>
+  <text x="530" y="163" text-anchor="middle" font-weight="700" fill="#ffd166">Nature of data</text>
+  <text x="530" y="180" text-anchor="middle" fill="#fff">Complex and unstructured</text>
+ </g>
+</svg>
+<div class="cap">Figure 2.2 — Evolution of Big Data (data generation &amp; storage → data utilisation → data driven)</div>
+</div>
+<div class="box key"><div class="bt">🔑 Key point</div>Data moved from <mark>primitive &amp; structured</mark> (mainframes) → <mark>complex &amp; relational</mark> (RDBMS) → <mark>complex &amp; unstructured</mark> (WWW, IoT, social media). The <b>web and IoT</b> caused the "explosion of data" that we now call Big Data.</div>
+
+<!-- 2.3 -->
+<h2 id="s2-3"><span class="no">2.3</span>Definition of Big Data<span class="marker">@@s2-3@@</span></h2>
+<p>People describe Big Data in different informal ways (from your slides):</p>
+<div class="cards c2">
+ <div class="card"><p>1. "<b>Anything beyond the human and technical infrastructure</b> needed to support storage, processing, and analysis."</p></div>
+ <div class="card"><p>2. "<b>Today's BIG may be tomorrow's NORMAL.</b>" (what is "big" keeps changing)</p></div>
+ <div class="card"><p>3. "<b>Terabytes or petabytes or zettabytes</b> of data."</p></div>
+ <div class="card"><p>4. "I think about the <b>3 Vs</b>." (Volume, Velocity, Variety)</p></div>
+</div>
+<div class="def"><span class="dt">Gartner definition — learn word-for-word</span>
+<p style="font-size:11.2pt">"Big Data is <mark>high-volume, high-velocity and high-variety</mark> information assets that demand <mark>cost-effective, innovative forms of information processing</mark> for <mark>enhanced insight and decision making</mark>."</p>
+<p class="small">Source: Gartner IT Glossary</p></div>
+<p>The definition has <b>three parts</b> — learn them as a cycle:</p>
+<div class="flow">
+ <div class="st"><b>Part 1 · What it is</b>High-volume, high-velocity, high-variety information assets</div><div class="ar">→</div>
+ <div class="st"><b>Part 2 · What it needs</b>Cost-effective, innovative forms of information processing</div><div class="ar">→</div>
+ <div class="st"><b>Part 3 · What it gives</b>Enhanced insight &amp; decision making</div>
+</div>
+<div class="flow" style="margin-top:0">
+ <div class="st" style="background:#16244a;color:#fff;border-color:#16244a"><b style="color:#ffd166">Data</b></div><div class="ar">→</div>
+ <div class="st"><b>Information</b></div><div class="ar">→</div>
+ <div class="st"><b>Actionable intelligence</b></div><div class="ar">→</div>
+ <div class="st"><b>Better decisions</b></div><div class="ar">→</div>
+ <div class="st" style="background:#16244a;color:#fff;border-color:#16244a"><b style="color:#ffd166">Enhanced business value</b></div>
+</div>
+<div class="box exam"><div class="bt">🎯 Exam tip</div>"Define Big Data" → write the <b>Gartner definition</b>, draw the 3-part cycle, then add one line on each of the <b>3 Vs</b>. That's a complete 5-mark answer.</div>
+
+<!-- 2.4 -->
+<h2 id="s2-4"><span class="no">2.4</span>Challenges with Big Data<span class="marker">@@s2-4@@</span></h2>
+<div class="two" style="grid-template-columns:1.35fr .65fr">
+<div>
+<ol>
+<li><b>Huge growth of data</b> — data is growing <b>exponentially</b>, so it is difficult to decide which data is <b>useful</b> and which is <b>noise</b>. We must select relevant data for analysis.</li>
+<li><b>Cloud computing &amp; virtualisation</b> — cloud helps manage Big Data infrastructure efficiently: <b>cost-effective, flexible</b>, easy <b>upgrading or downgrading</b> of resources. (Challenge: deciding whether/how to host data on the cloud.)</li>
+<li><b>Data retention</b> — deciding <b>how long</b> to store Big Data. Some data is useful for long-term decisions; some becomes irrelevant quickly.</li>
+<li><b>Lack of skilled professionals</b> — shortage of experts in data science and Big Data technologies → hard to implement Big Data solutions.</li>
+<li><b>Data capture, storage, processing &amp; security</b> — challenges in capturing, storing, preparing, searching, analysing, transferring, securing and visualising data. Traditional databases may not handle data that is very <b>large, fast and varied</b>.</li>
+<li><b>Data visualisation</b> — representing Big Data with graphs, charts, dashboards helps people see patterns. There is a <b>shortage of skilled visualisation professionals</b> too.</li>
+</ol>
+</div>
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 220 300" width="220" font-family="Inter" font-size="10">
+ <rect x="2" y="132" width="88" height="36" rx="6" fill="#6a3fb5"/><text x="46" y="148" text-anchor="middle" fill="#fff" font-weight="700">Challenges</text><text x="46" y="161" text-anchor="middle" fill="#fff" font-weight="700">with Big Data</text>
+ <g stroke="#6a3fb5" stroke-width="1.3">
+ <line x1="90" y1="150" x2="120" y2="20"/><line x1="90" y1="150" x2="120" y2="56"/><line x1="90" y1="150" x2="120" y2="92"/><line x1="90" y1="150" x2="120" y2="128"/><line x1="90" y1="150" x2="120" y2="164"/><line x1="90" y1="150" x2="120" y2="200"/><line x1="90" y1="150" x2="120" y2="236"/><line x1="90" y1="150" x2="120" y2="272"/></g>
+ <g fill="#f1ebfb" stroke="#6a3fb5"><rect x="120" y="7" width="96" height="26" rx="13"/><rect x="120" y="43" width="96" height="26" rx="13"/><rect x="120" y="79" width="96" height="26" rx="13"/><rect x="120" y="115" width="96" height="26" rx="13"/><rect x="120" y="151" width="96" height="26" rx="13"/><rect x="120" y="187" width="96" height="26" rx="13"/><rect x="120" y="223" width="96" height="26" rx="13"/><rect x="120" y="259" width="96" height="26" rx="13"/></g>
+ <g text-anchor="middle" font-weight="600"><text x="168" y="24">Capture</text><text x="168" y="60">Storage</text><text x="168" y="96">Curation</text><text x="168" y="132">Search</text><text x="168" y="168">Analysis</text><text x="168" y="204">Transfer</text><text x="168" y="240">Visualisation</text><text x="168" y="276">Privacy violations</text></g>
+</svg>
+<div class="cap">Figure 2.3 — Challenges with Big Data</div>
+</div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — 6 challenges</div><b>"Giant Clouds Rarely Lack Some Views"</b> → <b>G</b>rowth of data · <b>C</b>loud &amp; virtualisation · <b>R</b>etention · <b>L</b>ack of skilled people · <b>S</b>torage/capture/processing/security · <b>V</b>isualisation.</div>
+<div class="box warn"><div class="bt">⚠️ Don't confuse</div>"<b>Challenges with Big Data</b>" (this list, Ch. 2) ≠ "<b>Top challenges facing Big Data</b>" (Scale, Security, Schema, Availability, Consistency, Partition tolerance, Data quality — Ch. 3, §3.4). Read the question carefully!</div>
+
+<!-- 2.5 -->
+<h2 id="s2-5"><span class="no">2.5</span>What is Big Data? — the 3 Vs<span class="marker">@@s2-5@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>Big data is data that is <mark>big in volume, velocity, and variety</mark>.</p></div>
+<div class="two" style="grid-template-columns:.95fr 1.05fr">
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 320 280" width="310" font-family="Inter" font-size="9">
+ <style>.h{paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round; fill:#16244a}</style>
+ <defs><marker id="b2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#16244a"/></marker></defs>
+ <g stroke="#6a3fb5"><circle cx="165" cy="140" r="100" fill="#f1ebfb"/><circle cx="165" cy="140" r="75" fill="#e5daf8"/><circle cx="165" cy="140" r="50" fill="#d6c4f3"/><circle cx="165" cy="140" r="25" fill="#c3a9ee"/></g>
+ <line x1="165" y1="140" x2="305" y2="140" stroke="#16244a" stroke-width="1.6" marker-end="url(#b2)"/>
+ <line x1="165" y1="140" x2="96.0" y2="32.2" stroke="#16244a" stroke-width="1.6" marker-end="url(#b2)"/>
+ <line x1="165" y1="140" x2="96.0" y2="247.8" stroke="#16244a" stroke-width="1.6" marker-end="url(#b2)"/>
+ <g font-weight="800" fill="#6a3fb5" font-size="11"><text x="305" y="132" text-anchor="end">VOLUME</text><text x="102.0" y="36.2">VELOCITY</text><text x="102.0" y="251.8">VARIETY</text></g>
+ <circle cx="151.5" cy="118.9" r="2.4" fill="#16244a"/><text x="157.5" y="121.9" class="h">Batch</text><circle cx="138.0" cy="97.9" r="2.4" fill="#16244a"/><text x="144.0" y="100.9" class="h">Periodic</text><circle cx="124.6" cy="76.8" r="2.4" fill="#16244a"/><text x="130.6" y="79.8" class="h">Near real time</text><circle cx="111.1" cy="55.8" r="2.4" fill="#16244a"/><text x="117.1" y="58.8" class="h">Real time</text><circle cx="151.5" cy="161.1" r="2.4" fill="#16244a"/><text x="145.5" y="164.1" text-anchor="end" class="h">Table</text><circle cx="138.0" cy="182.1" r="2.4" fill="#16244a"/><text x="132.0" y="185.1" text-anchor="end" class="h">Database</text><circle cx="124.6" cy="203.2" r="2.4" fill="#16244a"/><text x="118.6" y="206.2" text-anchor="end" class="h">Photo, Web, Audio</text><circle cx="111.1" cy="224.2" r="2.4" fill="#16244a"/><text x="105.1" y="227.2" text-anchor="end" class="h">Social, Video, Mobile</text><circle cx="190" cy="140" r="2.4" fill="#16244a"/><text x="187" y="153" text-anchor="middle" class="h">MB</text><circle cx="215" cy="140" r="2.4" fill="#16244a"/><text x="212" y="153" text-anchor="middle" class="h">GB</text><circle cx="240" cy="140" r="2.4" fill="#16244a"/><text x="237" y="153" text-anchor="middle" class="h">TB</text><circle cx="265" cy="140" r="2.4" fill="#16244a"/><text x="262" y="153" text-anchor="middle" class="h">PB</text>
+</svg>
+<div class="cap">Figure 2.4 — Data: big in volume, velocity and variety</div>
+</div>
+<div>
+<div class="cards" style="grid-template-columns:1fr; gap:2.4mm; margin-top:0">
+ <div class="card"><h5>📦 Volume — how MUCH data</h5><p>Huge amounts — from GB/TB to PB, EB, ZB. Comes from internal &amp; external sources.</p></div>
+ <div class="card"><h5>⚡ Velocity — how FAST data arrives</h5><p><b>Batch → Periodic → Near real time → Real-time</b> processing.</p></div>
+ <div class="card"><h5>🎨 Variety — how many KINDS of data</h5><p>Structured + semi-structured + unstructured, from many sources.</p></div>
+</div>
+<div class="box mem" style="margin-top:3mm"><div class="bt">🧠 Memory trick</div>Imagine a <b>river</b>: <b>Volume</b> = how much water, <b>Velocity</b> = how fast it flows, <b>Variety</b> = how many different things are floating in it.</div>
+</div>
+</div>
+
+<h3>Volume — the growth of data</h3>
+<table class="t long">
+<thead><tr><th>Unit</th><th>Abbr.</th><th>Size (binary, textbook)</th><th>≈ Decimal ("mountain of data")</th><th>Example use case</th></tr></thead>
+<tr><td>Bit</td><td>b</td><td>0 or 1</td><td>—</td><td>Binary value</td></tr>
+<tr><td>Byte</td><td>B</td><td>8 bits</td><td>—</td><td>A single character</td></tr>
+<tr><td>Kilobyte</td><td>KB</td><td>1024 bytes</td><td>1,000 bytes (10<sup>3</sup>)</td><td>Small text files</td></tr>
+<tr><td>Megabyte</td><td>MB</td><td>1024<sup>2</sup> bytes</td><td>10<sup>6</sup> bytes</td><td>Images, small MP3 files</td></tr>
+<tr><td>Gigabyte</td><td>GB</td><td>1024<sup>3</sup> bytes</td><td>10<sup>9</sup> bytes</td><td>Videos, large software applications</td></tr>
+<tr><td>Terabyte</td><td>TB</td><td>1024<sup>4</sup> bytes</td><td>10<sup>12</sup> bytes</td><td>Hard drives, storage in modern laptops</td></tr>
+<tr><td>Petabyte</td><td>PB</td><td>1024<sup>5</sup> bytes</td><td>10<sup>15</sup> bytes</td><td>Daily data processed by large internet companies</td></tr>
+<tr><td>Exabyte</td><td>EB</td><td>1024<sup>6</sup> bytes</td><td>10<sup>18</sup> bytes</td><td>Monthly global internet traffic</td></tr>
+<tr><td>Zettabyte</td><td>ZB</td><td>1024<sup>7</sup> bytes</td><td>10<sup>21</sup> bytes</td><td>Estimated digital universe size by 2025</td></tr>
+<tr><td>Yottabyte</td><td>YB</td><td>1024<sup>8</sup> bytes</td><td>10<sup>24</sup> bytes</td><td>Hypothetical large-scale data storage</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick — order of units</div><b>"Kind Men Give Tea, Please Eat Zesty Yogurt"</b> → KB · MB · GB · TB · PB · EB · ZB · YB. Each step is <b>×1024</b> (≈ ×1000). Power of 1024 = position in the list (KB = 1024<sup>1</sup> … YB = 1024<sup>8</sup>).</div>
+
+<h3>Where does this volume come from? — Sources of Big Data</h3>
+<div class="fig">
+<svg viewBox="0 0 640 175" width="640" font-family="Inter" font-size="9.8">
+ <rect x="5" y="5" width="630" height="165" rx="10" fill="#fafbfd" stroke="#e3e7ef"/>
+ <rect x="210" y="5" width="8" height="165" fill="#d6334a"/><text x="214" y="185" text-anchor="middle" font-size="8.5" fill="#d6334a"></text>
+ <g transform="translate(214,88) rotate(-90)"><text text-anchor="middle" y="-6" font-size="9" fill="#d6334a" font-weight="700">ORGANISATION FIREWALL 🔥</text></g>
+ <text x="105" y="25" text-anchor="middle" font-weight="800" fill="#6a3fb5" font-size="11.5">1 · Internal sources</text>
+ <text x="105" y="39" text-anchor="middle" font-size="8.8" fill="#5b6478">data present WITHIN the firewall</text>
+ <rect x="18" y="50" width="175" height="50" rx="6" fill="#f1ebfb" stroke="#6a3fb5"/><text x="105" y="66" text-anchor="middle" font-weight="700">Data storage</text><text x="105" y="80" text-anchor="middle" font-size="8.8">File systems, SQL, NoSQL</text><text x="105" y="92" text-anchor="middle" font-size="8.8">(MongoDB, Cassandra)</text>
+ <rect x="18" y="108" width="175" height="54" rx="6" fill="#f1ebfb" stroke="#6a3fb5"/><text x="105" y="124" text-anchor="middle" font-weight="700">Archives</text><text x="105" y="138" text-anchor="middle" font-size="8.8">Scanned documents, paper archives,</text><text x="105" y="150" text-anchor="middle" font-size="8.8">customer records, patient health records</text>
+ <text x="530" y="25" text-anchor="middle" font-weight="800" fill="#6a3fb5" font-size="11.5">2 · External sources</text>
+ <text x="530" y="39" text-anchor="middle" font-size="8.8" fill="#5b6478">data residing OUTSIDE the firewall</text>
+ <rect x="445" y="50" width="175" height="50" rx="6" fill="#f1ebfb" stroke="#6a3fb5"/><text x="532" y="66" text-anchor="middle" font-weight="700">Public web</text><text x="532" y="80" text-anchor="middle" font-size="8.8">Wikipedia, weather,</text><text x="532" y="92" text-anchor="middle" font-size="8.8">regulatory, census data</text>
+ <text x="330" y="25" text-anchor="middle" font-weight="800" fill="#16244a" font-size="11.5">3 · Both (internal + external)</text>
+ <g font-size="8.8"><text x="232" y="48"><tspan font-weight="700">Sensor data</tspan> – car sensors, smart meters, buildings</text>
+ <text x="232" y="66"><tspan font-weight="700">Machine log data</tspan> – event, app, business</text><text x="232" y="78">  process &amp; audit logs</text>
+ <text x="232" y="96"><tspan font-weight="700">Social media</tspan> – Twitter, blogs, Facebook,</text><text x="232" y="108">  LinkedIn, YouTube, Instagram</text>
+ <text x="232" y="126"><tspan font-weight="700">Business apps</tspan> – ERP, CRM, HR, Google Docs</text>
+ <text x="232" y="144"><tspan font-weight="700">Media</tspan> – audio, video, image, podcast</text>
+ <text x="232" y="162"><tspan font-weight="700">Docs</tspan> – CSV, Word, PDF, XLS, PPT</text></g>
+ <rect x="230" y="35" width="205" height="133" rx="6" fill="none" stroke="#16244a" stroke-dasharray="4 3"/>
+</svg>
+<div class="cap">Figure 2.5 — Sources of Big Data: internal, external and both</div>
+</div>
+
+<h3>Velocity — the speed of data</h3>
+<div class="flow">
+ <div class="st"><b>Batch</b>collected, then processed together later<br><span class="small">e.g., monthly payroll</span></div><div class="ar">→</div>
+ <div class="st"><b>Periodic</b>processed at fixed intervals<br><span class="small">e.g., hourly/daily reports</span></div><div class="ar">→</div>
+ <div class="st"><b>Near real time</b>processed within seconds/minutes<br><span class="small">e.g., traffic updates on maps</span></div><div class="ar">→</div>
+ <div class="st" style="background:#16244a;color:#fff"><b style="color:#ffd166">Real-time</b>processed instantly as it arrives<br><span class="small" style="color:#c8d0ea">e.g., card-fraud check at swipe</span></div>
+</div>
+
+<h3>Variety — the kinds of data</h3>
+<p>Variety deals with a <b>wide range of data types and sources</b>:</p>
+<ol>
+<li><b>Structured data</b>: from traditional transaction processing systems and RDBMS, etc.</li>
+<li><b>Semi-structured data</b>: e.g., HyperText Markup Language (HTML), eXtensible Markup Language (XML).</li>
+<li><b>Unstructured data</b>: e.g., unstructured text documents, audios, videos, emails, photos, PDFs, social media, etc.</li>
+</ol>
+
+<!-- 2.6 -->
+<h2 id="s2-6"><span class="no">2.6</span>Other characteristics of data<span class="marker">@@s2-6@@</span></h2>
+<p>These are <mark>not definitional traits of Big Data</mark> (the definition only needs the 3 Vs), but are still important:</p>
+<div class="cards c3">
+ <div class="card"><h5>✅ Veracity &amp; Validity</h5><p><b>Veracity</b> = <mark>trustworthiness</mark> of data (is there noise, bias or abnormality?).<br><b>Validity</b> = <mark>accuracy and correctness</mark> of data for the given problem.</p><span class="ex">e.g., fake reviews reduce veracity.</span></div>
+ <div class="card"><h5>⏳ Volatility</h5><p>How <mark>long the data remains valid and useful</mark>. Helps decide <b>storage duration</b> — some data stays useful for long, some becomes obsolete quickly.</p><span class="ex">e.g., today's stock price is stale tomorrow; birth date never expires.</span></div>
+ <div class="card"><h5>📉 Variability</h5><p>Data flow is <mark>inconsistent</mark> and can have <b>sudden peaks</b>. Systems must handle such irregular, fluctuating data rates.</p><span class="ex">e.g., traffic spike on a shopping site during a festival sale.</span></div>
+</div>
+<div class="box key"><div class="bt">🔑 Key point</div>Core Big Data = <b>3 Vs</b> (Volume, Velocity, Variety). The "extra" characteristics = <b>Veracity &amp; Validity, Volatility, Variability</b> — together often called the <b>6 Vs</b>.</div>
+<div class="box warn"><div class="bt">⚠️ Common mistake</div><b>Velocity</b> (speed of arrival) ≠ <b>Variability</b> (inconsistency of the flow) ≠ <b>Volatility</b> (how long data stays useful). Learn one example for each.</div>
+
+<!-- 2.7 -->
+<h2 id="s2-7"><span class="no">2.7</span>Why Big Data?<span class="marker">@@s2-7@@</span></h2>
+<div class="flow">
+ <div class="st"><b>More data</b></div><div class="ar">→</div>
+ <div class="st"><b>More accurate analysis</b></div><div class="ar">→</div>
+ <div class="st"><b>More confidence in decision making</b></div><div class="ar">→</div>
+ <div class="st" style="flex:1.5"><b>Greater operational efficiencies</b>cost reduction, time reduction, new product development, optimised offerings, etc.</div>
+</div>
+<p>The importance of Big Data lies in <mark>how you utilise the data</mark> which you own. Data can be fetched from any source and analysed to enable:</p>
+<div class="cards c4">
+ <div class="card"><h5>💰 Cost reductions</h5></div>
+ <div class="card"><h5>⏱ Time reductions</h5></div>
+ <div class="card"><h5>🚀 New product development &amp; optimised offerings</h5></div>
+ <div class="card"><h5>🧠 Smart decision making</h5></div>
+</div>
+
+<!-- 2.8 -->
+<h2 id="s2-8"><span class="no">2.8</span>Traditional Business Intelligence (BI) vs Big Data<span class="marker">@@s2-8@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div><b>Business Intelligence (BI)</b> = the old way: a company keeps its own neat (structured) data on one big central server and makes reports about the past. <b>Big Data</b> = the new way: data of all kinds, from inside and outside, spread over many cheap machines, analysed in real time too.</div>
+<p>Three textbook differences (write these in a long answer):</p>
+<ol>
+<li>In traditional BI, all the enterprise's data is housed in a <mark>central server</mark>, whereas in Big Data it resides in a <mark>distributed file system</mark>. The distributed file system <b>scales horizontally</b> (scaling in or out), compared to a typical database server that <b>scales vertically</b>.</li>
+<li>In traditional BI, data is generally analysed in an <mark>offline mode</mark>; in Big Data, it is analysed in <mark>both real time and offline</mark> mode.</li>
+<li>Traditional BI is about <b>structured data</b>, and here <mark>data is taken to the processing functions</mark>; Big Data is about <b>variety</b>, and here <mark>the processing functions are taken to the data</mark>.</li>
+</ol>
+<table class="t">
+<tr><th style="width:20%">Point</th><th>Traditional BI</th><th>Big Data</th></tr>
+<tr><td>Storage</td><td>Central server</td><td>Distributed file system</td></tr>
+<tr><td>Scaling</td><td>Vertical (bigger machine) — "scale up"</td><td>Horizontal (add more machines) — "scale out"</td></tr>
+<tr><td>Analysis mode</td><td>Mostly offline</td><td>Real-time + offline</td></tr>
+<tr><td>Data type</td><td>Structured</td><td>Structured + unstructured (variety)</td></tr>
+<tr><td>Processing style</td><td>Data moved to processing functions</td><td>Processing functions moved to the data</td></tr>
+<tr><td>Volume</td><td>Limited (GBs)</td><td>Very large (TBs/PBs)</td></tr>
+<tr><td>Data sources</td><td>Mostly internal</td><td>Internal + external</td></tr>
+<tr><td>Schema</td><td>Schema-on-write</td><td>Schema-on-read</td></tr>
+<tr><td>Cost</td><td>High (expensive servers)</td><td>Lower (commodity hardware)</td></tr>
+</table>
+<div class="fig">
+<svg viewBox="0 0 600 150" width="600" font-family="Inter" font-size="10">
+ <text x="140" y="16" text-anchor="middle" font-weight="800" fill="#16244a" font-size="11.5">Vertical scaling (BI) — scale UP</text>
+ <rect x="60" y="100" width="50" height="40" rx="4" fill="#d6c4f3" stroke="#6a3fb5"/><text x="85" y="124" text-anchor="middle">server</text>
+ <text x="133" y="124" font-size="16" fill="#6a3fb5" font-weight="800">→</text>
+ <rect x="160" y="30" width="80" height="110" rx="5" fill="#6a3fb5"/><text x="200" y="80" text-anchor="middle" fill="#fff" font-weight="700">BIGGER</text><text x="200" y="94" text-anchor="middle" fill="#fff" font-weight="700">server</text><text x="200" y="112" text-anchor="middle" fill="#e5daf8" font-size="8.5">more CPU, RAM, disk</text>
+ <line x1="300" y1="10" x2="300" y2="145" stroke="#e3e7ef" stroke-width="2"/>
+ <text x="455" y="16" text-anchor="middle" font-weight="800" fill="#16244a" font-size="11.5">Horizontal scaling (Big Data) — scale OUT</text>
+ <g fill="#d6c4f3" stroke="#6a3fb5"><rect x="330" y="100" width="40" height="40" rx="4"/><rect x="380" y="100" width="40" height="40" rx="4"/><rect x="430" y="100" width="40" height="40" rx="4"/><rect x="480" y="100" width="40" height="40" rx="4" fill="#6a3fb5"/><rect x="530" y="100" width="40" height="40" rx="4" fill="#6a3fb5"/></g>
+ <text x="455" y="70" text-anchor="middle">add more <tspan font-weight="700">cheap commodity machines</tspan></text><text x="455" y="85" text-anchor="middle" font-size="9" fill="#5b6478">(distributed file system)</text>
+</svg>
+<div class="cap">Figure 2.6 — Scale up (traditional BI) vs scale out (Big Data)</div>
+</div>
+<div class="box tip"><div class="bt">💡 Schema-on-write vs schema-on-read</div><b>Schema-on-write</b> (BI): you must define the table structure <i>before</i> storing data — data that doesn't fit is rejected. <b>Schema-on-read</b> (Big Data): store the raw data first in any form; apply a structure only <i>when you read/analyse</i> it. This is why Big Data handles variety easily.</div>
+
+<div class="check"><div class="bt">✅ Before you move on — can you…</div>
+<ul>
+<li>Explain the 3 Cs (composition, condition, context) with the diagram?</li>
+<li>Draw the evolution timeline (mainframe → RDBMS → WWW/IoT)?</li>
+<li>Write the Gartner definition word-for-word and its 3 parts?</li>
+<li>List the 6 challenges with Big Data + draw the 8-bubble challenges diagram?</li>
+<li>Explain the 3 Vs with the concentric-circle figure, list the units KB → YB, and internal vs external sources?</li>
+<li>Explain veracity, validity, volatility, variability with an example each?</li>
+<li>Write the BI vs Big Data differences (3 textbook points + table)?</li>
+</ul></div>
+</section>

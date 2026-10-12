@@ -1,0 +1,140 @@
+
+<!-- ================= FINAL REVISION ================= -->
+<section style="--acc:#16244a; --accl:#eef1f8">
+<div class="chapter-open" id="final" style="background:#16244a"><p class="marker">@@final@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Last-night revision</div>
+  <h1>Final Revision</h1>
+  <div class="learn"><b>Use these pages the night before the exam</b>
+    <ol><li>Cheat sheet</li><li>All memory tricks in one place</li><li>Important 2-mark questions</li><li>Important 5/10-mark questions</li></ol>
+  </div>
+  <div class="meta"><span>⏱ ≈ 30 minutes</span><span>Read the 🔑 boxes again too</span></div>
+</div>
+
+<h2 id="cheat"><span class="no">★</span>Cheat sheet<span class="marker">@@cheat@@</span></h2>
+<div style="columns:2; column-gap:6mm; font-size:8.7pt; line-height:1.4">
+<div><h4 style="color:#0f8b8d;margin-top:0">CHAPTER 1 · Digital data</h4>
+<ul>
+<li><b>Data</b> = quantities, characters, symbols on which a computer operates; stored/transmitted as electrical signals.</li>
+<li><b>Data → Information → Insights.</b> Data is internal &amp; external; homogeneous &amp; heterogeneous.</li>
+<li><b>3 types</b>: Structured (rows/cols, RDBMS) · Semi-structured (tags, self-describing: XML, JSON, HTML, email) · Unstructured (no model: images, video, chats) = <b>80–90%</b>.</li>
+<li><b>Cardinality</b> = no. of rows; <b>Degree</b> = no. of columns.</li>
+<li>Constraints: UNIQUE, NOT NULL, business rule, permissible values; PRIMARY KEY; tables related by common column.</li>
+<li><b>Ease of structured (ISIST)</b>: Insert/update/delete (DML) · Security (encryption, tokenization) · Indexing · Scalability (scale up) · Transactions (<b>ACID</b>).</li>
+<li><b>ACID</b>: Atomicity (all or nothing) · Consistency (consistent state) · Isolation (as if alone) · Durability (permanent).</li>
+<li><b>Semi-structured</b>: no data model; tags segregate semantics &amp; enforce hierarchy; no data/schema separation; same-class entities may differ in attributes/order. Chars: inconsistent structure, self-describing label/value, schema blended, unknown attributes.</li>
+<li><b>XML–SOAP, JSON–REST</b>; MongoDB &amp; Couchbase/CouchDB store JSON natively.</li>
+<li><b>Unstructured</b>: machine-generated (satellite, atmospheric, radar, CCTV, medical imaging) vs human-generated (emails, office docs, texts, audio, social media). Terminology issues: implied structure; structure not helpful; unanticipated structure.</li>
+<li><b>7 techniques</b>: Data mining (KDD; association rules, regression, collaborative filtering) · Text analytics (categorisation, clustering, sentiment, entity extraction) · NLP · Noisy text analytics · Manual tagging with metadata · POS tagging · UIMA (IBM, open source).</li>
+<li><b>Comparison</b> (7 props): Technology · Transactions · Versioning · Flexibility · Scalability · Robustness · Query performance.</li>
+</ul></div>
+<div><h4 style="color:#6a3fb5">CHAPTER 2 · Big Data</h4>
+<ul>
+<li><b>3 Cs of data</b>: Composition (structure, sources, granularity, types, static/streaming) · Condition (usable as-is or needs cleansing?) · Context (where/why generated).</li>
+<li><b>Evolution</b>: ≤1970s mainframes (primitive, structured) → 1980s–90s RDBMS (complex, relational) → 2000s+ WWW &amp; IoT (complex, unstructured; data-driven).</li>
+<li><b>Gartner</b>: "high-volume, high-velocity and high-variety information assets that demand cost-effective, innovative forms of information processing for enhanced insight and decision making."</li>
+<li>Data → Information → Actionable intelligence → Better decisions → Enhanced business value.</li>
+<li><b>6 challenges</b>: growth, cloud &amp; virtualisation, retention, lack of skills, capture/storage/processing/security, visualisation. (Fig: capture, storage, curation, search, analysis, transfer, visualisation, privacy.)</li>
+<li><b>3 Vs</b>: Volume (KB→YB, ×1024) · Velocity (batch → periodic → near real time → real time) · Variety (structured, semi, unstructured).</li>
+<li>Sources: internal (file systems, SQL, NoSQL, archives) · external (public web) · both (sensors, logs, social, business apps, media, docs).</li>
+<li><b>Other Vs</b>: Veracity (trust) &amp; Validity (correctness) · Volatility (how long valid) · Variability (inconsistent flow, peaks).</li>
+<li><b>Why</b>: more data → accurate analysis → confidence → efficiency: cost ↓, time ↓, new products, smart decisions.</li>
+<li><b>BI vs Big Data</b>: central server vs distributed FS · vertical vs horizontal scaling · offline vs real-time+offline · structured vs variety · data→code vs code→data · schema-on-write vs schema-on-read.</li>
+</ul></div>
+<div><h4 style="color:#d9622b">CHAPTER 3 · Big Data Analytics</h4>
+<ul>
+<li>Key idea: large data → analyse → patterns → better decisions (Amazon recommendations, 500-truck example).</li>
+<li>Pyramid: Data (collect) → Information (organise) → Knowledge (summarise, analyse) → Actionable insights (synthesise) → Decision.</li>
+<li><b>What BDA is (6)</b>: technology-enabled · deeper insights · competitive edge · handshake of IT + data scientists + business users · large varied data · moving code to data.</li>
+<li><b>Isn't</b>: only volume · just technology · replace RDBMS · replace DW · only for Google/Amazon · one-size-fits-all RDBMS.</li>
+<li><b>Hype</b>: data growth · cheaper storage · tools available.</li>
+<li><b>1st school</b>: basic · operationalised · advanced · monetised. <b>2nd school</b>: 1.0 descriptive (1950s–2009) · 2.0 +predictive (2005–2012, Hadoop) · 3.0 +prescriptive (2012–, in-memory, in-DB, ML). Hindsight → insight → foresight.</li>
+<li><b>7 top challenges</b>: scale · security · schema · continuous availability · consistency · partition tolerance · data quality.</li>
+<li><b>Importance — 4 approaches</b>: reactive BI · reactive BDA · proactive analytics · proactive BDA ★.</li>
+<li><b>Data science</b> = extracting knowledge from data; skills: business acumen + technology + mathematics. Process: collect → prepare → analyse → show → communicate → decide.</li>
+<li><b>Data scientist (4)</b>: data management · analytical techniques · business/domain expertise · communication &amp; presentation.</li>
+<li><b>In-memory</b>: data in RAM. <b>In-database</b>: compute inside DB (OLTP → ETL → EDW).</li>
+<li><b>SMP</b>: shared memory, one OS, tightly coupled, caches + system bus. <b>MPP</b>: own memory + OS per processor, messaging, harder to program.</li>
+<li><b>Parallel</b> = tightly coupled, user sees one system. <b>Distributed</b> = loosely coupled machines over network.</li>
+<li><b>SM / SD / SN</b>; SN advantages: fault isolation + scalability.</li>
+<li><b>CAP (Brewer)</b>: pick two of C, A, P. CA: RDBMS · CP: HBase, MongoDB, Redis, MemcacheDB, BigTable · AP: Riak, Cassandra, CouchDB, Dynamo.</li>
+</ul></div>
+</div>
+
+<h2 id="mnem"><span class="no">🧠</span>All memory tricks in one place<span class="marker">@@mnem@@</span></h2>
+<table class="t long">
+<thead><tr><th style="width:32%">To remember…</th><th>Trick</th><th style="width:36%">Expands to</th></tr></thead>
+<tr><td>Cardinality vs degree</td><td><b>C</b>ardinality = <b>C</b>ount of rows</td><td>rows = cardinality; columns = degree</td></tr>
+<tr><td>5 eases of structured data</td><td><b>I S I S T</b></td><td>Insert/update/delete, Security, Indexing, Scalability, Transactions (ACID)</td></tr>
+<tr><td>7 techniques for unstructured data</td><td>"<b>D</b>ark <b>T</b>ea <b>N</b>ever <b>N</b>eeds <b>M</b>ore <b>P</b>ure <b>U</b>pgrades"</td><td>Data mining, Text analytics, NLP, Noisy text, Manual tagging, POS tagging, UIMA</td></tr>
+<tr><td>7 comparison properties</td><td>"<b>T</b>he <b>T</b>iny <b>V</b>ampire <b>F</b>lew <b>S</b>wiftly, <b>R</b>arely <b>Q</b>uerying"</td><td>Technology, Transaction, Version, Flexibility, Scalability, Robustness, Query</td></tr>
+<tr><td>Characteristics of data</td><td>The <b>3 Cs</b></td><td>Composition, Condition, Context</td></tr>
+<tr><td>6 challenges with Big Data</td><td>"<b>G</b>iant <b>C</b>louds <b>R</b>arely <b>L</b>ack <b>S</b>ome <b>V</b>iews"</td><td>Growth, Cloud, Retention, Lack of skills, Storage/security, Visualisation</td></tr>
+<tr><td>3 Vs</td><td>A <b>river</b></td><td>how much (Volume), how fast (Velocity), how many kinds (Variety)</td></tr>
+<tr><td>Data units in order</td><td>"<b>K</b>ind <b>M</b>en <b>G</b>ive <b>T</b>ea, <b>P</b>lease <b>E</b>at <b>Z</b>esty <b>Y</b>ogurt"</td><td>KB, MB, GB, TB, PB, EB, ZB, YB (each ×1024)</td></tr>
+<tr><td>6 points of "What is BDA"</td><td>"<b>T</b>he <b>D</b>eep <b>C</b>ompetitive <b>H</b>andshake <b>W</b>ith <b>M</b>ovement"</td><td>Technology-enabled, Deeper insights, Competitive edge, Handshake, Working with large data, Moving code</td></tr>
+<tr><td>First school of analytics</td><td><b>BOAM</b></td><td>Basic, Operationalised, Advanced, Monetised</td></tr>
+<tr><td>4 types of analytics</td><td>"<b>D</b>o <b>D</b>octors <b>P</b>rescribe <b>P</b>roperly?"</td><td>Descriptive, Diagnostic, Predictive, Prescriptive</td></tr>
+<tr><td>7 top challenges</td><td>"<b>S</b>ix <b>S</b>tudents <b>S</b>at <b>C</b>almly, <b>C</b>opying <b>P</b>ast <b>Q</b>uizzes"</td><td>Scale, Security, Schema, Continuous availability, Consistency, Partition tolerance, Quality</td></tr>
+<tr><td>Data scientist's skills</td><td><b>BTM</b> three-legged stool</td><td>Business acumen, Technology, Mathematics</td></tr>
+<tr><td>4 responsibilities</td><td>"<b>M</b>y <b>A</b>unt <b>B</b>akes <b>C</b>akes"</td><td>Manage data, Analyse, Business context, Communicate</td></tr>
+<tr><td>SMP vs MPP</td><td>"<b>S</b>ame <b>M</b>emory, <b>P</b>lease" / "<b>M</b>y <b>P</b>rivate <b>P</b>artition"</td><td>shared memory + one OS / own memory + own OS</td></tr>
+<tr><td>CP databases</td><td>"<b>H</b>appy <b>M</b>onkeys <b>R</b>un <b>M</b>any <b>B</b>ananas"</td><td>HBase, MongoDB, Redis, MemcacheDB, BigTable</td></tr>
+<tr><td>AP databases</td><td>"<b>R</b>eal <b>C</b>ats <b>C</b>hase <b>D</b>ogs"</td><td>Riak, Cassandra, CouchDB, Dynamo</td></tr>
+</table>
+
+<h2 id="imp" class="newpage"><span class="no">🎯</span>Important exam questions<span class="marker">@@imp@@</span></h2>
+<div class="two">
+<div>
+<h3 style="--acc:#16244a">Short answers (2–3 marks)</h3>
+<ol style="font-size:9.6pt">
+<li>Define data. Differentiate quantitative and qualitative data. <span class="small">§1.1</span></li>
+<li>What is cardinality and degree of a relation? <span class="small">§1.3</span></li>
+<li>Expand and explain ACID. <span class="small">§1.3</span></li>
+<li>Why is semi-structured data called self-describing? <span class="small">§1.4</span></li>
+<li>Why is an email placed in the unstructured category? <span class="small">§1.8</span></li>
+<li>What is UIMA? Who developed it? <span class="small">§1.6</span></li>
+<li>What is noisy text? Give two examples. <span class="small">§1.6</span></li>
+<li>State the Gartner definition of Big Data. <span class="small">§2.3</span></li>
+<li>Differentiate veracity, volatility and variability. <span class="small">§2.6</span></li>
+<li>What is schema-on-read? <span class="small">§2.8</span></li>
+<li>What is meant by "moving code to data"? <span class="small">§3.2</span></li>
+<li>List what Big Data Analytics isn't. <span class="small">§3.2</span></li>
+<li>What is in-memory analytics? Advantages? <span class="small">§3.8</span></li>
+<li>Differentiate SMP and MPP. <span class="small">§3.8</span></li>
+<li>State the CAP theorem. <span class="small">§3.9</span></li>
+</ol>
+</div>
+<div>
+<h3 style="--acc:#16244a">Long answers (5–10 marks)</h3>
+<ol style="font-size:9.6pt">
+<li>Explain the classification of digital data with examples and a neat diagram. <span class="small">§1.2–1.5</span></li>
+<li>Explain structured data and the ease of working with it. <span class="small">§1.3</span></li>
+<li>Write a note on semi-structured and unstructured data. <span class="small">§1.4–1.5</span></li>
+<li>Explain the techniques to find patterns in / interpret unstructured data. <span class="small">§1.6</span></li>
+<li>Compare structured, semi-structured and unstructured data. <span class="small">§1.7</span></li>
+<li>Explain the evolution and definition of Big Data. <span class="small">§2.2–2.3</span></li>
+<li>Explain the 3 Vs of Big Data with sources of data. <span class="small">§2.5</span></li>
+<li>What are the challenges with Big Data? <span class="small">§2.4</span></li>
+<li>Differentiate traditional BI and Big Data. <span class="small">§2.8</span></li>
+<li>What is Big Data Analytics? Explain with a diagram. <span class="small">§3.2</span></li>
+<li>Explain Analytics 1.0, 2.0 and 3.0. <span class="small">§3.3</span></li>
+<li>Explain the top challenges facing Big Data. <span class="small">§3.4</span></li>
+<li>Why is Big Data Analytics important? (4 approaches) <span class="small">§3.5</span></li>
+<li>Explain data science and the skill sets of a data scientist. <span class="small">§3.6–3.7</span></li>
+<li>Explain shared-nothing architecture and its advantages. <span class="small">§3.8</span></li>
+<li>Explain the CAP theorem with an example and the CA/CP/AP databases. <span class="small">§3.9</span></li>
+</ol>
+</div>
+</div>
+<div class="box exam"><div class="bt">🎯 How to write a 10-mark answer</div>
+<ol style="margin:0">
+<li><b>Definition</b> (use the exact textbook words — the 🔑 / Definition boxes).</li>
+<li><b>Diagram</b> — neat, labelled, with a figure caption. Draw it early in the answer.</li>
+<li><b>Explanation in points</b> — one heading per point, 2–3 lines each.</li>
+<li><b>Example</b> — Amazon, bank, student marks, truck company… examiners love examples.</li>
+<li><b>Conclusion</b> — 1 line tying back to "better decisions" / "business value".</li>
+</ol></div>
+<p class="center small" style="margin-top:6mm">All the best for CIE-1! 🚀 — Made from your Unit 1 lecture slides (Lectures 1–4) and the textbook by Seema Acharya &amp; Subhashini Chellappan.</p>
+</section>
+</body></html>

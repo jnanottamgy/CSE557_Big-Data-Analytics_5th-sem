@@ -1,0 +1,81 @@
+
+<!-- ============ HOW TO USE ============ -->
+<section>
+  <h1 class="page-title">How to use this guide</h1>
+  <p class="lead">This guide assumes you know <b>nothing</b> about Big Data yet. Read it in order: each chapter builds on the previous one. Everything from your Unit 1 slides (Lectures 1–4) is here, rewritten in simple language, with the textbook terms you need to write in the exam.</p>
+
+  <h3 style="--acc:var(--navy)">What the coloured boxes mean</h3>
+  <div class="legend">
+    <div class="box key"><div class="bt">🔑 Key point</div>Must-know fact. If you remember nothing else, remember these.</div>
+    <div class="box exam"><div class="bt">🎯 Exam tip</div>How this topic is usually asked and how to score full marks.</div>
+    <div class="box tip"><div class="bt">💡 Tip</div>A shortcut to understand or study the idea faster.</div>
+    <div class="box mem"><div class="bt">🧠 Memory trick</div>Mnemonics to recall lists quickly in the exam hall.</div>
+    <div class="box warn"><div class="bt">⚠️ Common mistake</div>Things students mix up — avoid losing marks here.</div>
+    <div class="box eg"><div class="bt">📌 Example</div>A real-life example that makes the concept click.</div>
+  </div>
+  <p class="small">Also: <mark>yellow highlighted text</mark> = exam keywords. Use these exact words in your answers.</p>
+
+  <h3 style="--acc:var(--navy)">Suggested study plan (about 6–7 hours total)</h3>
+  <div class="plan">
+    <div class="d" style="background:#0f8b8d"><b>Session 1</b>Chapter 1 — Types of Digital Data<br><span class="tm">≈ 1.5 hrs</span></div>
+    <div class="d" style="background:#6a3fb5"><b>Session 2</b>Chapter 2 — Introduction to Big Data<br><span class="tm">≈ 1.5 hrs</span></div>
+    <div class="d" style="background:#d9622b"><b>Session 3</b>Chapter 3 Part A — Analytics, Data Science<br><span class="tm">≈ 1.5 hrs</span></div>
+    <div class="d" style="background:#16244a"><b>Session 4</b>Ch 3 Part B — Terminologies (SMP, MPP, CAP) + Cheat sheet<br><span class="tm">≈ 1.5 hrs</span></div>
+  </div>
+
+  <div class="box tip" style="margin:2.5mm 0"><div class="bt">💡 How to study each section</div>
+    <ol>
+      <li><b>Read the "In simple words" box first</b> — get the idea before the definition.</li>
+      <li><b>Look at the diagram</b> and try to explain it out loud in 2–3 lines.</li>
+      <li><b>Learn the textbook definition</b> (the boxed <i>Definition</i>) — examiners like the exact wording.</li>
+      <li>At the end of every chapter, tick the <b>"Can you…?" checklist</b>. If you can't tick something, go back.</li>
+      <li>The night before the exam, read only the <b>Cheat Sheet</b> (last pages) and the 🔑 boxes.</li>
+    </ol>
+  </div>
+
+  <div class="box exam" style="margin:2.5mm 0"><div class="bt">🎯 About CIE-1</div>
+    CIE-1 is for <b>30 marks</b> and covers CO1, CO2 &amp; CO3 → <b>Unit 1, Unit 2 and the first part of Unit 3</b> (Spark architecture overview). This guide covers <b>Unit 1 completely</b>. For long answers (5–10 marks), always write: <b>definition → explanation in points → diagram → example</b>. A neat diagram is often worth 1–2 marks by itself.
+  </div>
+</section>
+
+<!-- ============ TOC ============ -->
+<section class="pb">
+  <h1 class="page-title">Contents</h1>
+  <div class="toc">
+    <div class="row ch"><a href="#ch1">Chapter 1 · Types of Digital Data</a><span class="dots"></span><span class="pg">{{pg:ch1}}</span></div>
+    <div class="row sub"><a href="#s1-1">1.1 What is data?</a><span class="dots"></span><span class="pg">{{pg:s1-1}}</span></div>
+    <div class="row sub"><a href="#s1-2">1.2 Classification of digital data</a><span class="dots"></span><span class="pg">{{pg:s1-2}}</span></div>
+    <div class="row sub"><a href="#s1-3">1.3 Structured data (RDBMS, constraints, ACID)</a><span class="dots"></span><span class="pg">{{pg:s1-3}}</span></div>
+    <div class="row sub"><a href="#s1-4">1.4 Semi-structured data (XML, JSON)</a><span class="dots"></span><span class="pg">{{pg:s1-4}}</span></div>
+    <div class="row sub"><a href="#s1-5">1.5 Unstructured data</a><span class="dots"></span><span class="pg">{{pg:s1-5}}</span></div>
+    <div class="row sub"><a href="#s1-6">1.6 Dealing with unstructured data (Data mining, NLP, Text analytics…)</a><span class="dots"></span><span class="pg">{{pg:s1-6}}</span></div>
+    <div class="row sub"><a href="#s1-7">1.7 Comparison: Structured vs Semi vs Unstructured</a><span class="dots"></span><span class="pg">{{pg:s1-7}}</span></div>
+    <div class="row sub"><a href="#s1-8">1.8 Sample questions — solved</a><span class="dots"></span><span class="pg">{{pg:s1-8}}</span></div>
+
+    <div class="row ch"><a href="#ch2">Chapter 2 · Introduction to Big Data</a><span class="dots"></span><span class="pg">{{pg:ch2}}</span></div>
+    <div class="row sub"><a href="#s2-1">2.1 Characteristics of data</a><span class="dots"></span><span class="pg">{{pg:s2-1}}</span></div>
+    <div class="row sub"><a href="#s2-2">2.2 Evolution of Big Data</a><span class="dots"></span><span class="pg">{{pg:s2-2}}</span></div>
+    <div class="row sub"><a href="#s2-3">2.3 Definition of Big Data</a><span class="dots"></span><span class="pg">{{pg:s2-3}}</span></div>
+    <div class="row sub"><a href="#s2-4">2.4 Challenges with Big Data</a><span class="dots"></span><span class="pg">{{pg:s2-4}}</span></div>
+    <div class="row sub"><a href="#s2-5">2.5 What is Big Data? — the 3 Vs</a><span class="dots"></span><span class="pg">{{pg:s2-5}}</span></div>
+    <div class="row sub"><a href="#s2-6">2.6 Other characteristics of data</a><span class="dots"></span><span class="pg">{{pg:s2-6}}</span></div>
+    <div class="row sub"><a href="#s2-7">2.7 Why Big Data?</a><span class="dots"></span><span class="pg">{{pg:s2-7}}</span></div>
+    <div class="row sub"><a href="#s2-8">2.8 Traditional BI vs Big Data</a><span class="dots"></span><span class="pg">{{pg:s2-8}}</span></div>
+
+    <div class="row ch"><a href="#ch3">Chapter 3 · Big Data Analytics</a><span class="dots"></span><span class="pg">{{pg:ch3}}</span></div>
+    <div class="row sub"><a href="#s3-1">3.1 Understanding analytics through examples</a><span class="dots"></span><span class="pg">{{pg:s3-1}}</span></div>
+    <div class="row sub"><a href="#s3-2">3.2 What is (and isn't) Big Data Analytics</a><span class="dots"></span><span class="pg">{{pg:s3-2}}</span></div>
+    <div class="row sub"><a href="#s3-3">3.3 Classification of analytics</a><span class="dots"></span><span class="pg">{{pg:s3-3}}</span></div>
+    <div class="row sub"><a href="#s3-4">3.4 Top challenges facing Big Data</a><span class="dots"></span><span class="pg">{{pg:s3-4}}</span></div>
+    <div class="row sub"><a href="#s3-5">3.5 Why is Big Data Analytics important?</a><span class="dots"></span><span class="pg">{{pg:s3-5}}</span></div>
+    <div class="row sub"><a href="#s3-6">3.6 Data Science</a><span class="dots"></span><span class="pg">{{pg:s3-6}}</span></div>
+    <div class="row sub"><a href="#s3-7">3.7 Data Scientist &amp; responsibilities</a><span class="dots"></span><span class="pg">{{pg:s3-7}}</span></div>
+    <div class="row sub"><a href="#s3-8">3.8 Terminologies used in Big Data environments</a><span class="dots"></span><span class="pg">{{pg:s3-8}}</span></div>
+    <div class="row sub"><a href="#s3-9">3.9 CAP theorem</a><span class="dots"></span><span class="pg">{{pg:s3-9}}</span></div>
+
+    <div class="row ch"><a href="#final">Final Revision</a><span class="dots"></span><span class="pg">{{pg:final}}</span></div>
+    <div class="row sub"><a href="#cheat">Cheat sheet (all 3 chapters)</a><span class="dots"></span><span class="pg">{{pg:cheat}}</span></div>
+    <div class="row sub"><a href="#mnem">All memory tricks in one place</a><span class="dots"></span><span class="pg">{{pg:mnem}}</span></div>
+    <div class="row sub"><a href="#imp">Important exam questions</a><span class="dots"></span><span class="pg">{{pg:imp}}</span></div>
+  </div>
+</section>

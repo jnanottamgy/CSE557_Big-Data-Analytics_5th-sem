@@ -1,0 +1,435 @@
+
+<!-- ================= CHAPTER 1 ================= -->
+<section class="ch1">
+<div class="chapter-open" id="ch1"><p class="marker">@@ch1@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Chapter 1</div>
+  <h1>Types of Digital Data</h1>
+  <div class="learn"><b>What you'll learn</b>
+    <ol><li>What data is and where it comes from</li><li>The 3 types of digital data</li><li>Structured data, RDBMS &amp; ACID</li><li>Semi-structured data: XML &amp; JSON</li><li>Unstructured data &amp; its sources</li><li>Techniques to deal with unstructured data</li><li>The big comparison table</li><li>Solved sample questions</li></ol>
+  </div>
+  <div class="meta"><span>⏱ ≈ 1.5 hours</span><span>Slides: Lecture 1 (pp. 8–46)</span><span>Textbook Ch. 1</span></div>
+</div>
+
+<!-- 1.1 -->
+<h2 id="s1-1"><span class="no">1.1</span>What is data?<span class="marker">@@s1-1@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Data = <b>raw facts</b>. Numbers, words, pictures, sounds — anything a computer can store and work on. On its own data may not mean much; once we organise it, it becomes <b>information</b>, and when we understand it, it gives <b>insights</b>.</div>
+
+<div class="def"><span class="dt">Definition</span><p>Data is <mark>the quantities, characters, or symbols on which operations are performed by a computer</mark>, which may be <b>stored and transmitted</b> in the form of <b>electrical signals</b> and recorded on <b>magnetic, optical, or mechanical</b> recording media.</p></div>
+
+<div class="two">
+<div>
+<h4>Data comes from…</h4>
+<p>Data can be <span class="pill">numbers</span><span class="pill">facts</span><span class="pill">quantities</span><span class="pill">information</span><span class="pill">graphs</span><span class="pill">observations</span><span class="pill">measurements</span></p>
+<h4>Computer data as information</h4>
+<ul>
+<li>Computer data is <b>information processed or stored by a computer</b>.</li>
+<li>It may be text documents, images, audio clips, software programs, or other types of data.</li>
+<li>It is processed by the computer's <b>CPU</b> and stored in <b>files and folders</b> on the hard disk.</li>
+</ul>
+</div>
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 330 205" width="330" font-family="Inter" font-size="11">
+  <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#0f8b8d"/></marker></defs>
+  <text x="165" y="13" text-anchor="middle" font-weight="700" fill="#16244a">Types of Data</text>
+  <rect x="135" y="22" width="60" height="26" rx="6" fill="#0f8b8d"/><text x="165" y="39" text-anchor="middle" fill="#fff" font-weight="700">Data</text>
+  <line x1="150" y1="48" x2="85" y2="72" stroke="#0f8b8d" stroke-width="1.6" marker-end="url(#a1)"/>
+  <line x1="180" y1="48" x2="245" y2="72" stroke="#0f8b8d" stroke-width="1.6" marker-end="url(#a1)"/>
+  <rect x="25" y="74" width="120" height="40" rx="6" fill="#e6f5f5" stroke="#0f8b8d"/><text x="85" y="91" text-anchor="middle" font-weight="700" fill="#0f8b8d">Quantitative</text><text x="85" y="106" text-anchor="middle" font-size="9.5" fill="#5b6478">numerical</text>
+  <rect x="185" y="74" width="120" height="40" rx="6" fill="#e6f5f5" stroke="#0f8b8d"/><text x="245" y="91" text-anchor="middle" font-weight="700" fill="#0f8b8d">Qualitative</text><text x="245" y="106" text-anchor="middle" font-size="9.5" fill="#5b6478">descriptive (red, soft)</text>
+  <line x1="65" y1="114" x2="40" y2="138" stroke="#0f8b8d" stroke-width="1.6" marker-end="url(#a1)"/>
+  <line x1="105" y1="114" x2="130" y2="138" stroke="#0f8b8d" stroke-width="1.6" marker-end="url(#a1)"/>
+  <rect x="2" y="140" width="80" height="58" rx="6" fill="#fff" stroke="#0f8b8d"/><text x="42" y="156" text-anchor="middle" font-weight="700">Discrete</text><text x="42" y="171" text-anchor="middle" font-size="9" fill="#5b6478">usually counted</text><text x="42" y="186" text-anchor="middle" font-size="9" fill="#5b6478">20 dogs, 512 people</text>
+  <rect x="92" y="140" width="84" height="58" rx="6" fill="#fff" stroke="#0f8b8d"/><text x="134" y="156" text-anchor="middle" font-weight="700">Continuous</text><text x="134" y="171" text-anchor="middle" font-size="9" fill="#5b6478">usually measured</text><text x="134" y="186" text-anchor="middle" font-size="9" fill="#5b6478">18 cm, 30 grams</text>
+</svg>
+</div>
+</div>
+
+<h4>Where does data live?</h4>
+<ul>
+<li>Data is present <mark>internal to the enterprise</mark> and also exists <mark>outside the four walls and firewalls</mark> of the enterprise.</li>
+<li>Data is present in <b>homogeneous</b> sources (all of the same kind) as well as in <b>heterogeneous</b> sources (of many different kinds).</li>
+</ul>
+<div class="flow">
+  <div class="st"><b>Data</b>raw facts</div><div class="ar">→</div>
+  <div class="st"><b>Information</b>organised, meaningful data</div><div class="ar">→</div>
+  <div class="st"><b>Insights</b>understanding that helps decide</div>
+</div>
+
+<!-- 1.2 -->
+<h2 id="s1-2"><span class="no">1.2</span>Classification of digital data<span class="marker">@@s1-2@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Think of three cupboards. <b>Structured</b> = everything in labelled boxes in neat rows (an Excel sheet). <b>Semi-structured</b> = items with name-tags but no fixed boxes (an XML/JSON file, an email header). <b>Unstructured</b> = everything thrown in a pile (photos, videos, chats).</div>
+<div class="fig">
+<svg viewBox="0 0 620 230" width="620" font-family="Inter" font-size="11">
+  <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#16244a"/></marker></defs>
+  <rect x="235" y="5" width="150" height="34" rx="8" fill="#16244a"/><text x="310" y="27" text-anchor="middle" fill="#fff" font-weight="700" font-size="12.5">Digital Data</text>
+  <path d="M310 39 V55 H105 V70 M310 55 V70 M310 55 H515 V70" fill="none" stroke="#16244a" stroke-width="1.6"/>
+  <g>
+   <rect x="20" y="72" width="170" height="120" rx="8" fill="#e6f5f5" stroke="#0f8b8d" stroke-width="1.5"/>
+   <text x="105" y="92" text-anchor="middle" font-weight="800" fill="#0f8b8d" font-size="13">Structured</text>
+   <text x="105" y="110" text-anchor="middle" font-size="9.6">Organised in rows &amp; columns</text>
+   <text x="105" y="124" text-anchor="middle" font-size="9.6">Easily used by programs</text>
+   <text x="105" y="146" text-anchor="middle" font-size="9.2" fill="#5b6478">Oracle, SQL Server, DB2,</text>
+   <text x="105" y="159" text-anchor="middle" font-size="9.2" fill="#5b6478">Teradata, MySQL, MS Access,</text>
+   <text x="105" y="172" text-anchor="middle" font-size="9.2" fill="#5b6478">MS Excel</text>
+  </g>
+  <g>
+   <rect x="225" y="72" width="170" height="120" rx="8" fill="#fff7dc" stroke="#f6b100" stroke-width="1.5"/>
+   <text x="310" y="92" text-anchor="middle" font-weight="800" fill="#9a6b00" font-size="13">Semi-structured</text>
+   <text x="310" y="110" text-anchor="middle" font-size="9.6">Some structure (tags),</text>
+   <text x="310" y="124" text-anchor="middle" font-size="9.6">but no fixed data model</text>
+   <text x="310" y="146" text-anchor="middle" font-size="9.2" fill="#5b6478">XML, JSON, HTML,</text>
+   <text x="310" y="159" text-anchor="middle" font-size="9.2" fill="#5b6478">emails, markup languages</text>
+  </g>
+  <g>
+   <rect x="430" y="72" width="170" height="120" rx="8" fill="#fdecee" stroke="#d6334a" stroke-width="1.5"/>
+   <text x="515" y="92" text-anchor="middle" font-weight="800" fill="#d6334a" font-size="13">Unstructured</text>
+   <text x="515" y="110" text-anchor="middle" font-size="9.6">No data model at all,</text>
+   <text x="515" y="124" text-anchor="middle" font-size="9.6">not easily used by programs</text>
+   <text x="515" y="146" text-anchor="middle" font-size="9.2" fill="#5b6478">Images, videos, audio, chats,</text>
+   <text x="515" y="159" text-anchor="middle" font-size="9.2" fill="#5b6478">social media, memos, PPTs,</text>
+   <text x="515" y="172" text-anchor="middle" font-size="9.2" fill="#5b6478">body of an email</text>
+  </g>
+  <text x="20" y="212" font-size="9.5" fill="#5b6478">Share of enterprise data:</text>
+  <rect x="140" y="202" width="46" height="14" fill="#0f8b8d"/><rect x="186" y="202" width="46" height="14" fill="#f6b100"/><rect x="232" y="202" width="368" height="14" fill="#d6334a"/>
+  <text x="163" y="226" text-anchor="middle" font-size="9">~10%</text><text x="209" y="226" text-anchor="middle" font-size="9">~10%</text><text x="416" y="213" text-anchor="middle" font-size="9.5" fill="#fff" font-weight="700">~80–90% unstructured (Gartner)</text>
+</svg>
+<div class="cap">Figure 1.1 — The three types of digital data</div>
+</div>
+<div class="box key"><div class="bt">🔑 Key point</div><mark>About 80–90% of an organisation's data is unstructured.</mark> Only a small part is neatly structured. This is the main reason we need Big Data tools.</div>
+
+<!-- 1.3 -->
+<h2 id="s1-3"><span class="no">1.3</span>Structured data<span class="marker">@@s1-3@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>Structured data is data which is in an <mark>organised form (e.g., in rows and columns)</mark> and can be <mark>easily used by a computer program</mark>. Relationships exist between entities of data, such as classes and their objects.</p><p class="small">Example: data stored in databases.</p></div>
+
+<h3>Structured data and RDBMS</h3>
+<ul>
+<li>Most structured data is held in an <b>RDBMS</b> (Relational Database Management System — e.g., Oracle, MySQL, SQL Server, DB2).</li>
+<li>An RDBMS follows the <b>relational data model</b>: data is stored in <b>rows/columns</b> (a table is also called a <i>relation</i>).</li>
+<li>The number of rows/records/tuples in a relation = <mark>cardinality</mark> of the relation.</li>
+<li>The number of columns = <mark>degree</mark> of the relation.</li>
+</ul>
+<div class="box mem"><div class="bt">🧠 Memory trick</div><b>C</b>ardinality = <b>C</b>ount of rows (records). <b>D</b>egree = <b>D</b>own-the-top columns (attributes). Rows go "card by card", columns give the table its "degree" of detail.</div>
+
+<h3>How do we design structured data? (steps)</h3>
+<ol>
+<li><b>Design the relation/table</b> — decide the fields/columns and the <b>type</b> of data each will store: number (integer or real), alphabets, date, Boolean, etc.</li>
+<li><b>Decide the constraints</b> the data must follow:
+ <ul><li><b>UNIQUE</b> values in a column, <b>NOT NULL</b> values in a column,</li>
+ <li>a <b>business constraint</b> e.g., value in a column should not drop below 50,</li>
+ <li>a <b>set of permissible values</b> e.g., the column should accept only "CS", "IS", "MS".</li></ul></li>
+<li><b>Relate tables</b> to each other using common columns.</li>
+</ol>
+
+<div class="box eg"><div class="bt">📌 Example — Employee table (from your slides)</div>
+<div class="two" style="grid-template-columns:0.8fr 1.2fr;gap:4mm">
+<div>
+<table class="t plain" style="margin:1mm 0"><tr><th>Column</th><th>Data type</th><th>Constraint</th></tr>
+<tr><td>EmpNo</td><td>Varchar(10)</td><td><b>PRIMARY KEY</b></td></tr>
+<tr><td>EmpName</td><td>Varchar(50)</td><td></td></tr>
+<tr><td>Designation</td><td>Varchar(25)</td><td>NOT NULL</td></tr>
+<tr><td>DeptNo</td><td>Varchar(5)</td><td></td></tr>
+<tr><td>ContactNo</td><td>Varchar(10)</td><td>NOT NULL</td></tr></table>
+<div class="small center">Schema of the "Employee" table</div>
+</div>
+<div>
+<table class="t plain" style="margin:1mm 0; font-size:8pt"><tr><th>EmpNo</th><th>Name</th><th>Designation</th><th>Dept</th><th>ContactNo</th></tr>
+<tr><td>E101</td><td>Allen</td><td>Software Engineer</td><td>D1</td><td>0999999999</td></tr>
+<tr><td>E102</td><td>Simon</td><td>Consultant</td><td>D1</td><td>0777777777</td></tr></table>
+<div class="small center">Sample records → cardinality = 2, degree = 5</div>
+</div>
+</div>
+</div>
+
+<div class="fig">
+<svg viewBox="0 0 520 150" width="520" font-family="Inter" font-size="10.5">
+  <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#0f8b8d"/></marker></defs>
+  <rect x="20" y="10" width="150" height="128" rx="7" fill="#fff" stroke="#0f8b8d" stroke-width="1.5"/>
+  <rect x="20" y="10" width="150" height="24" rx="7" fill="#0f8b8d"/><rect x="20" y="26" width="150" height="8" fill="#0f8b8d"/>
+  <text x="95" y="27" text-anchor="middle" fill="#fff" font-weight="700">Employee</text>
+  <text x="32" y="52">EmpNo  🔑</text><text x="32" y="70">EmpName</text><text x="32" y="88">EmpDesignation</text>
+  <rect x="26" y="94" width="138" height="18" rx="3" fill="#fff7dc"/><text x="32" y="107" font-weight="700">DeptNo</text><text x="32" y="128">EmpContactNo</text>
+  <rect x="350" y="10" width="150" height="110" rx="7" fill="#fff" stroke="#0f8b8d" stroke-width="1.5"/>
+  <rect x="350" y="10" width="150" height="24" rx="7" fill="#0f8b8d"/><rect x="350" y="26" width="150" height="8" fill="#0f8b8d"/>
+  <text x="425" y="27" text-anchor="middle" fill="#fff" font-weight="700">Department</text>
+  <rect x="356" y="40" width="138" height="18" rx="3" fill="#fff7dc"/><text x="362" y="53" font-weight="700">DeptNo  🔑</text><text x="362" y="74">DeptName</text><text x="362" y="92">DeptLocation</text><text x="362" y="110">DeptEmpStrength</text>
+  <path d="M164 103 C 260 103, 260 49, 354 49" fill="none" stroke="#0f8b8d" stroke-width="1.8" marker-end="url(#a3)"/>
+  <text x="258" y="70" text-anchor="middle" font-size="9.5" fill="#5b6478">related on the</text><text x="258" y="83" text-anchor="middle" font-size="9.5" fill="#5b6478">common column "DeptNo"</text>
+</svg>
+<div class="cap">Figure 1.2 — Tables in an RDBMS can be related through a common column</div>
+</div>
+
+<h3>Sources of structured data</h3>
+<p>Databases such as <span class="pill">Oracle</span><span class="pill">IBM DB2</span><span class="pill">Microsoft SQL Server</span><span class="pill">Teradata</span><span class="pill">MySQL</span><span class="pill">PostgreSQL</span>, plus <span class="pill">MS Access</span><span class="pill">MS Excel (spreadsheets)</span> and OLTP (online transaction processing) systems.</p>
+
+<h3>Ease of working with structured data</h3>
+<p>Structured data is the easiest type to work with. Your slides list <b>5 reasons</b>:</p>
+<div class="cards c2">
+ <div class="card"><h5><span class="ic">✏️</span>1. Insert / Update / Delete</h5><p>The <b>DML (Data Manipulation Language)</b> operations make it easy to input, store, access, process and analyse data.</p></div>
+ <div class="card"><h5><span class="ic">🔒</span>2. Security</h5><p>Strong <b>encryption and tokenization</b> protect data throughout its lifecycle. Only <b>authorised</b> people can decrypt and view sensitive data → organisations stay in control and compliant.</p></div>
+ <div class="card"><h5><span class="ic">🔎</span>3. Indexing / Searching</h5><p>An <b>index</b> is a data structure that <b>speeds up data retrieval</b> (mainly SELECT queries), at the cost of extra writes and storage space — but faster search is worth it.</p></div>
+ <div class="card"><h5><span class="ic">📈</span>4. Scalability</h5><p>Storage and processing capacity of an RDBMS can be scaled up by <b>increasing the horsepower of the server</b> (more processor power, primary &amp; secondary storage).</p></div>
+</div>
+<div class="card avoid" style="margin-bottom:4mm"><h5><span class="ic">🔁</span>5. Transaction processing — ACID properties</h5><p>RDBMS supports the <b>ACID</b> properties of a transaction (a transaction = a unit of work, e.g., transferring money):</p>
+<div class="cards c4" style="margin:2mm 0 0">
+ <div class="card" style="border-top-color:#0f8b8d"><h5>A · Atomicity</h5><p>All or nothing — a transaction happens <b>in its entirety or not at all</b>.</p></div>
+ <div class="card" style="border-top-color:#2463eb"><h5 style="color:#2463eb">C · Consistency</h5><p>DB moves from one consistent state to another. Same data stored in 2+ places must <b>agree</b>.</p></div>
+ <div class="card" style="border-top-color:#9c36b5"><h5 style="color:#9c36b5">I · Isolation</h5><p>Each transaction runs as if it were the <b>only transaction</b> happening.</p></div>
+ <div class="card" style="border-top-color:#d9622b"><h5 style="color:#d9622b">D · Durability</h5><p>Once done, changes are <b>permanent</b> (survive crashes).</p></div>
+</div></div>
+<div class="box mem"><div class="bt">🧠 Memory trick — 5 eases of structured data</div><b>"I S I S T"</b> → <b>I</b>nsert/update/delete · <b>S</b>ecurity · <b>I</b>ndexing · <b>S</b>calability · <b>T</b>ransaction processing (ACID).</div>
+<div class="box eg"><div class="bt">📌 ACID with a bank example</div>You send ₹500 to a friend. <b>Atomicity</b>: money leaves your account <i>and</i> reaches theirs — never only one. <b>Consistency</b>: total money in the bank is still correct. <b>Isolation</b>: another transfer at the same moment doesn't mix with yours. <b>Durability</b>: after "Success", a power cut won't undo it.</div>
+
+<!-- 1.4 -->
+<h2 id="s1-4"><span class="no">1.4</span>Semi-structured data<span class="marker">@@s1-4@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>Semi-structured data is data which <mark>does not conform to a data model but has some structure</mark>. It is not in a form which can be used easily by a computer program. It is also called a <mark>self-describing structure</mark>.</p><p class="small">Examples: emails, XML, markup languages like HTML, JSON.</p></div>
+
+<h3>Features of semi-structured data (5 points)</h3>
+<ol>
+<li>It <b>does not conform to the data models</b> associated with relational databases or any other form of data tables.</li>
+<li>It uses <mark>tags</mark> to segregate semantic elements.</li>
+<li>Tags are also used to <b>enforce hierarchies</b> of records and fields within data.</li>
+<li>There is <mark>no separation between the data and the schema</mark>. The amount of structure used depends on the purpose at hand.</li>
+<li>Entities of the <b>same class</b> grouped together need <b>not</b> have the same set of attributes. Even if they do, the <b>order</b> of attributes may differ — and it doesn't matter.</li>
+</ol>
+
+<h3>Characteristics of semi-structured data</h3>
+<div class="cards c4">
+ <div class="card"><h5>🔀 Inconsistent structure</h5><p>Records may look different from each other.</p></div>
+ <div class="card"><h5>🏷 Self-describing</h5><p>Uses <b>label/value pairs</b> (e.g., <code>"name": "Asha"</code>).</p></div>
+ <div class="card"><h5>🧩 Schema blended with data</h5><p>Schema information is often mixed into the data values.</p></div>
+ <div class="card"><h5>❓ Unknown attributes</h5><p>Data objects may have different attributes <b>not known beforehand</b>.</p></div>
+</div>
+
+<h3>Sources of semi-structured data</h3>
+<div class="two">
+<div>
+<p>The front runners are <mark>XML</mark> and <mark>JSON</mark> (plus other markup languages like HTML).</p>
+<ol>
+<li><b>XML — eXtensible Markup Language</b>: hugely popularised by web services built on the <b>SOAP</b> (Simple Object Access Protocol) principles.</li>
+<li><b>JSON — JavaScript Object Notation</b>: used to <b>transmit data between a server and a web application</b>. Popularised by web services built on <b>REST</b> (Representational State Transfer). <b>MongoDB</b> and <b>Couchbase</b> (originally Membase) — open-source, distributed, NoSQL, document-oriented databases — store data <b>natively in JSON</b>.</li>
+<li><b>Other markup languages</b> — e.g., HTML.</li>
+</ol>
+</div>
+<div>
+<div class="box warn" style="margin-top:0"><div class="bt">⚠️ Don't mix up</div><b>XML ↔ SOAP</b><br><b>JSON ↔ REST</b><br><b>MongoDB / CouchDB / Couchbase ↔ JSON</b><br>These pairs appear in "match the following".</div>
+</div>
+</div>
+
+<div class="two">
+<div class="avoid">
+<h4>Example — HTML (a markup language)</h4>
+<pre style="font-family:'DejaVu Sans Mono';font-size:7.9pt;background:#0f1b33;color:#d6e2ff;border-radius:3mm;padding:3mm;margin:1mm 0;line-height:1.45;white-space:pre-wrap">&lt;HTML&gt;
+ &lt;HEAD&gt;
+  &lt;TITLE&gt;Place your title here&lt;/TITLE&gt;
+ &lt;/HEAD&gt;
+ &lt;BODY BGCOLOR="FFFFFF"&gt;
+  &lt;CENTER&gt;&lt;IMG SRC="clouds.jpg"
+     ALIGN="BOTTOM"&gt;&lt;/CENTER&gt;
+  &lt;a href="http://bigdatauniversity.com"&gt;Link Name&lt;/a&gt;
+  &lt;H1&gt;this is a Header&lt;/H1&gt;
+  &lt;H2&gt;this is a sub Header&lt;/H2&gt;
+  &lt;P&gt;a new paragraph
+ &lt;/BODY&gt;
+&lt;/HTML&gt;</pre>
+</div>
+<div class="avoid">
+<h4>Example — a JSON document</h4>
+<pre style="font-family:'DejaVu Sans Mono';font-size:7.9pt;background:#0f1b33;color:#d6e2ff;border-radius:3mm;padding:3mm;margin:1mm 0;line-height:1.45">{
+  <span style="color:#ffd166">_id</span>: 9,
+  <span style="color:#ffd166">BookTitle</span>: "Fundamentals of
+              Business Analytics",
+  <span style="color:#ffd166">AuthorName</span>: "Seema Acharya",
+  <span style="color:#ffd166">Publisher</span>: "Wiley India",
+  <span style="color:#ffd166">YearofPublication</span>: "2011"
+}</pre>
+<p class="small">The <b style="color:#9a6b00">yellow</b> keys are the "tags" (labels). Each value carries its own label → <b>self-describing</b>.</p>
+</div>
+</div>
+<div class="box tip"><div class="bt">💡 Why is an email "semi-structured"?</div>Its <b>header</b> has fixed labelled fields (To, From, Subject, Date) → some structure. But its <b>body</b> is free text → unstructured. So an email as a whole is semi-structured, while the <i>body of an email</i> is listed as unstructured.</div>
+
+<!-- 1.5 -->
+<h2 id="s1-5"><span class="no">1.5</span>Unstructured data<span class="marker">@@s1-5@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>Unstructured data is data which <mark>does not conform to a data model</mark> or is <mark>not in a form which can be used easily by a computer program</mark>. About <b>80–90%</b> of an organisation's data is in this format.</p><p class="small">Examples: memos, chat rooms, PowerPoint presentations, images, videos, letters, research papers, white papers, body of an email.</p></div>
+<div class="two">
+<div>
+<h3>Characteristics</h3>
+<ul>
+<li><b>Un-organised</b> data</li>
+<li><b>No predefined data model</b> (non-relational)</li>
+<li><mark>80% of enterprise data is unstructured</mark> (Source: Gartner)</li>
+<li>Can <b>never be stored</b> in databases' tables, rows and columns</li>
+<li><b>Difficult to search</b></li>
+<li>Storing <b>AADHAR images</b> of users is unstructured data</li>
+<li>Examples: social media data, images, videos, CCTV data, etc.</li>
+</ul>
+</div>
+<div>
+<h3>Sources of unstructured data</h3>
+<p><span class="pill">Web pages</span><span class="pill">Images</span><span class="pill">Free-form text</span><span class="pill">Audios</span><span class="pill">Videos</span><span class="pill">Body of email</span><span class="pill">Text messages</span><span class="pill">Chats</span><span class="pill">Social media data</span><span class="pill">Word documents</span></p>
+</div>
+</div>
+
+<h3>Forms of unstructured data: machine-generated vs human-generated</h3>
+<div class="fig">
+<svg viewBox="0 0 640 175" width="640" font-family="Inter" font-size="10">
+  <g>
+   <rect x="5" y="5" width="305" height="165" rx="10" fill="#e6f5f5"/>
+   <text x="157" y="24" text-anchor="middle" font-weight="800" fill="#0f8b8d" font-size="12">🤖 Machine-generated</text>
+   <rect x="102" y="76" width="110" height="34" rx="6" fill="#16244a"/><text x="157" y="91" text-anchor="middle" fill="#fff" font-size="9.5" font-weight="700">Machine Generated</text><text x="157" y="103" text-anchor="middle" fill="#fff" font-size="9.5">Unstructured Data</text>
+   <g fill="#0f8b8d"><circle cx="60" cy="55" r="27"/><circle cx="157" cy="45" r="0"/><circle cx="255" cy="55" r="27"/><circle cx="60" cy="135" r="27"/><circle cx="255" cy="135" r="27"/><circle cx="157" cy="145" r="22"/></g>
+   <g fill="#fff" text-anchor="middle" font-size="9" font-weight="600"><text x="60" y="52">Satellite</text><text x="60" y="63">images</text><text x="255" y="52">Atmospheric</text><text x="255" y="63">data</text><text x="60" y="132">Radar</text><text x="60" y="143">data</text><text x="255" y="132">Medical</text><text x="255" y="143">imaging</text><text x="157" y="149">CCTV</text></g>
+  </g>
+  <g>
+   <rect x="330" y="5" width="305" height="165" rx="10" fill="#fdf0e8"/>
+   <text x="482" y="24" text-anchor="middle" font-weight="800" fill="#d9622b" font-size="12">🙋 Human-generated</text>
+   <rect x="427" y="76" width="110" height="34" rx="6" fill="#16244a"/><text x="482" y="91" text-anchor="middle" fill="#fff" font-size="9.5" font-weight="700">Human Generated</text><text x="482" y="103" text-anchor="middle" fill="#fff" font-size="9.5">Unstructured Data</text>
+   <g fill="#d9622b"><circle cx="385" cy="55" r="27"/><circle cx="580" cy="55" r="27"/><circle cx="385" cy="135" r="27"/><circle cx="580" cy="135" r="27"/><circle cx="482" cy="145" r="22"/></g>
+   <g fill="#fff" text-anchor="middle" font-size="9" font-weight="600"><text x="385" y="52">Emails</text><text x="385" y="63"></text><text x="580" y="52">Office</text><text x="580" y="63">documents</text><text x="385" y="132">Text</text><text x="385" y="143">messages</text><text x="580" y="132">Social</text><text x="580" y="143">media</text><text x="482" y="142">Audio</text><text x="482" y="152">recordings</text></g>
+  </g>
+</svg>
+<div class="cap">Figure 1.3 — Forms/sources of unstructured data</div>
+</div>
+
+<h4>Few examples of disparate unstructured data (Textbook Table 1.4)</h4>
+<table class="t">
+<tr><th style="width:20%">Source</th><th>Example</th></tr>
+<tr><td>Twitter message</td><td>Feeling miffed ☹. Victim of twishing.</td></tr>
+<tr><td>Facebook post</td><td>LOL. C ya. BFN</td></tr>
+<tr><td>Log files</td><td class="mono" style="font-size:8pt">127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326 "http://www.example.com/start.html" "Mozilla/4.08 [en] (Win98; I; Nav)"</td></tr>
+<tr><td>Email</td><td>Hey Joan, possible to send across the first cut on the Hadoop chapter by Friday EOD or maybe we can meet up over a cup of coffee. Best regards, Tom</td></tr>
+</table>
+
+<h3>Issues with terminology</h3>
+<p>Calling data "unstructured" isn't always perfect. Three issues:</p>
+<ol>
+<li><b>Structure can be implied</b> despite not being formally defined.</li>
+<li>Data with some structure may <b>still be labelled unstructured</b> if the structure doesn't help with the processing task at hand.</li>
+<li>Data may have some structure or may even be <b>highly structured in ways that are unanticipated</b> or unannounced.</li>
+</ol>
+
+<!-- 1.6 -->
+<h2 id="s1-6"><span class="no">1.6</span>Dealing with unstructured data<span class="marker">@@s1-6@@</span></h2>
+<p>How do we find patterns in or interpret unstructured data? The textbook lists these <b>techniques</b>:</p>
+<div class="fig">
+<svg viewBox="0 0 600 200" width="600" font-family="Inter" font-size="10.5">
+  <rect x="215" y="82" width="170" height="36" rx="8" fill="#0f8b8d"/><text x="300" y="98" text-anchor="middle" fill="#fff" font-weight="700">Dealing with</text><text x="300" y="111" text-anchor="middle" fill="#fff" font-weight="700">Unstructured Data</text>
+  <g stroke="#0f8b8d" stroke-width="1.5"><line x1="215" y1="92" x2="165" y2="30"/><line x1="215" y1="100" x2="165" y2="100"/><line x1="215" y1="108" x2="165" y2="170"/><line x1="385" y1="90" x2="435" y2="22"/><line x1="385" y1="96" x2="435" y2="75"/><line x1="385" y1="104" x2="435" y2="128"/><line x1="385" y1="110" x2="435" y2="180"/></g>
+  <g font-weight="600"><rect x="10" y="15" width="155" height="30" rx="15" fill="#e6f5f5" stroke="#0f8b8d"/><text x="87" y="34" text-anchor="middle">1 · Data Mining</text>
+  <rect x="10" y="85" width="155" height="30" rx="15" fill="#e6f5f5" stroke="#0f8b8d"/><text x="87" y="104" text-anchor="middle">2 · Text Analytics</text>
+  <rect x="10" y="155" width="155" height="30" rx="15" fill="#e6f5f5" stroke="#0f8b8d"/><text x="87" y="174" text-anchor="middle">3 · NLP</text>
+  <rect x="435" y="7" width="160" height="30" rx="15" fill="#e6f5f5" stroke="#0f8b8d"/><text x="515" y="26" text-anchor="middle">4 · Noisy Text Analytics</text>
+  <rect x="435" y="60" width="160" height="30" rx="15" fill="#e6f5f5" stroke="#0f8b8d"/><text x="515" y="73" text-anchor="middle" font-size="9.5">5 · Manual Tagging</text><text x="515" y="85" text-anchor="middle" font-size="9.5">with Metadata</text>
+  <rect x="435" y="113" width="160" height="30" rx="15" fill="#e6f5f5" stroke="#0f8b8d"/><text x="515" y="132" text-anchor="middle">6 · POS Tagging</text>
+  <rect x="435" y="165" width="160" height="30" rx="15" fill="#e6f5f5" stroke="#0f8b8d"/><text x="515" y="184" text-anchor="middle">7 · UIMA</text></g>
+</svg>
+<div class="cap">Figure 1.4 — Techniques to find patterns in / interpret unstructured data</div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — 7 techniques</div><b>"Dark Tea Never Needs More Pure Upgrades"</b> → <b>D</b>ata mining · <b>T</b>ext analytics · <b>N</b>LP · <b>N</b>oisy text analytics · <b>M</b>anual tagging with metadata · <b>P</b>OS tagging · <b>U</b>IMA.</div>
+
+<div class="cards c2">
+ <div class="card"><h5><span class="ic">⛏</span>1. Data Mining</h5>
+ <p>Finding <b>useful patterns</b> or information from a large amount of data. Also called <mark>knowledge discovery in databases (KDD)</mark>, because we discover useful knowledge from stored data. Uses methods at the intersection of <b>statistics, AI, machine learning and databases</b>.</p>
+ <span class="ex">e.g., a supermarket analyses thousands of bills to find: what products people buy together, which products are popular, how one factor affects another.</span>
+ <p style="margin-top:1.5mm"><b>Popular algorithms:</b></p>
+ <ul style="margin:0">
+  <li><b>Association rule mining</b> — relationships between items: customers who buy <i>bread</i> also buy <i>butter</i> (market basket analysis).</li>
+  <li><b>Regression analysis</b> — predicts one variable from another: predicting marks from study hours.</li>
+  <li><b>Collaborative filtering</b> — predicts what a person will like based on what <b>similar people</b> like (Netflix/Amazon recommendations).</li>
+ </ul></div>
+ <div class="card"><h5><span class="ic">📝</span>2. Text Analytics / Text Mining</h5>
+ <p>Finding useful information and patterns <b>from text</b> — emails, blogs, social media, messages, reviews.</p>
+ <span class="ex">e.g., analysing 10,000 product reviews → "Most customers are happy, but many complain about battery life."</span>
+ <p style="margin-top:1.5mm"><b>Text mining includes:</b></p>
+ <ul style="margin:0">
+  <li><b>Text categorisation</b> → putting text into categories</li>
+  <li><b>Text clustering</b> → grouping similar text</li>
+  <li><b>Sentiment analysis</b> → positive / negative / neutral</li>
+  <li><b>Concept/entity extraction</b> → finding names, places, organisations</li>
+ </ul></div>
+ <div class="card"><h5><span class="ic">💬</span>3. Natural Language Processing (NLP)</h5>
+ <p>Teaching computers to <mark>understand human (natural) language</mark>.</p>
+ <span class="ex">Examples: Google Translate, chatbots, voice assistants, spam detection, speech-to-text. You type "I am feeling happy today." → NLP helps the computer understand its meaning.</span></div>
+ <div class="card"><h5><span class="ic">🤪</span>4. Noisy Text Analytics</h5>
+ <p><b>Noisy text</b> = text with mistakes, abbreviations, slang or unnecessary words — e.g., <i>"hey!!! u coming tmrw??"</i>, <i>"I ammmmm sooooo happyyyy"</i>. Noisy text analytics extracts useful info from such messy text (chats, SMS, blogs, call-centre notes).</p>
+ <span class="ex">It deals with: spelling mistakes, abbreviations (u = you), slang, missing punctuation, missing letters, unnecessary words like "wru".</span></div>
+ <div class="card"><h5><span class="ic">🏷</span>5. Manual Tagging with Metadata</h5>
+ <p><b>Metadata = information about data.</b> Manual tagging = a <b>person</b> manually adds labels/tags so computers can understand and organise the information.</p>
+ <span class="ex">A news article tagged: Sports, Cricket, India, 2026 → easier to organise &amp; search.</span></div>
+ <div class="card"><h5><span class="ic">🔤</span>6. Part-of-Speech (POS) Tagging</h5>
+ <p>Identifying the <b>grammatical role</b> of each word in a sentence.</p>
+ <span class="ex">"Rahul plays cricket." → Rahul = Noun, plays = Verb, cricket = Noun.<br>"The beautiful flower grows." → The = Determiner, beautiful = Adjective, flower = Noun, grows = Verb.</span></div>
+</div>
+<div class="card avoid" style="margin-bottom:4mm"><h5><span class="ic">🧱</span>7. UIMA — Unstructured Information Management Architecture</h5>
+ <p>An <mark>open-source platform originally developed by IBM</mark>. Its purpose is to <b>process unstructured data (such as text) and extract useful information</b> from it — used for real-time <b>content analytics</b>.</p>
+ <span class="ex">"Apple launched a new product in California." → Apple = Organisation, California = Location, new product = Concept/entity.</span></div>
+<div class="box exam"><div class="bt">🎯 Exam tip</div>"Explain the techniques to find patterns in or interpret unstructured data" is a <b>sample question on your slides</b>. Draw Figure 1.4, then write 2–3 lines + one example for each technique.</div>
+
+<!-- 1.7 -->
+<h2 id="s1-7"><span class="no">1.7</span>Comparison: Structured vs Semi-structured vs Unstructured<span class="marker">@@s1-7@@</span></h2>
+<table class="t">
+<tr><th style="width:18%">Property</th><th>Structured data</th><th>Semi-structured data</th><th>Unstructured data</th></tr>
+<tr><td>Technology</td><td>Based on <b>relational database tables</b></td><td>Based on <b>XML / RDF</b> (Resource Description Framework)</td><td>Based on <b>character and binary</b> data</td></tr>
+<tr><td>Transaction management</td><td><b>Matured</b> transaction and various concurrency techniques</td><td>Transaction is adapted from DBMS, <b>not matured</b></td><td><b>No</b> transaction management and no concurrency</td></tr>
+<tr><td>Version management</td><td>Versioning over tuples, rows, tables</td><td>Versioning over tuples or graph is possible</td><td>Versioned <b>as a whole</b></td></tr>
+<tr><td>Flexibility</td><td><b>Schema dependent</b>, less flexible</td><td>More flexible than structured, less flexible than unstructured</td><td><b>Most flexible</b> — absence of schema</td></tr>
+<tr><td>Scalability</td><td><b>Very difficult</b> to scale DB schema</td><td>Scaling is simpler than structured</td><td><b>Most scalable</b></td></tr>
+<tr><td>Robustness</td><td><b>Very robust</b></td><td>New technology, not very widespread</td><td>—</td></tr>
+<tr><td>Query performance</td><td>Structured query allows <b>complex joining</b></td><td>Queries over anonymous nodes are possible</td><td><b>Only textual queries</b> are possible</td></tr>
+<tr><td>Examples</td><td>RDBMS tables, Excel, MS Access</td><td>XML, JSON, HTML, email</td><td>Images, video, audio, chats, social posts</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick — 7 properties</div><b>"The Tiny Vampire Flew Swiftly, Rarely Querying"</b> → <b>T</b>echnology · <b>T</b>ransaction mgmt · <b>V</b>ersion mgmt · <b>F</b>lexibility · <b>S</b>calability · <b>R</b>obustness · <b>Q</b>uery performance.<br>Pattern to remember: going <b>Structured → Semi → Unstructured</b>, <b>flexibility &amp; scalability go UP</b> while <b>robustness, transactions &amp; query power go DOWN</b>.</div>
+
+<!-- 1.8 -->
+<h2 id="s1-8"><span class="no">1.8</span>Sample questions — solved<span class="marker">@@s1-8@@</span></h2>
+<div class="avoid"><h3>A. Place me in the basket</h3>
+<p class="small">Words: Email, MS Access, Images, Database, Chat conversations, Relations/Tables, Facebook, Videos, MS Excel, XML</p>
+<table class="t plain">
+<tr><th>Structured</th><th>Semi-structured</th><th>Unstructured</th></tr>
+<tr><td>MS Access<br>Database<br>Relations / Tables<br>MS Excel</td><td>XML<br>Email <span class="small">(header has fields; body is free text)</span></td><td>Images<br>Videos<br>Chat conversations<br>Facebook</td></tr>
+</table></div>
+
+<div class="two">
+<div class="avoid">
+<h3>B1. Match the following</h3>
+<table class="t plain">
+<tr><th>Column A</th><th>Column B (answer)</th></tr>
+<tr><td>NLP</td><td>Comprehend human or natural language input</td></tr>
+<tr><td>Text analytics</td><td>Text mining</td></tr>
+<tr><td>UIMA</td><td>Content analytics</td></tr>
+<tr><td>Noisy unstructured data</td><td>Text messages</td></tr>
+<tr><td>Data mining</td><td>Uses methods at the intersection of statistics, AI, ML &amp; DBs</td></tr>
+<tr><td>Noisy unstructured data</td><td>Chats</td></tr>
+<tr><td>IBM</td><td>UIMA</td></tr>
+</table>
+</div>
+<div class="avoid">
+<h3>B2. Match the following</h3>
+<table class="t plain">
+<tr><th>Column A</th><th>Column B (answer)</th></tr>
+<tr><td>JSON</td><td>REST</td></tr>
+<tr><td>MongoDB</td><td>JSON</td></tr>
+<tr><td>XML</td><td>SOAP</td></tr>
+<tr><td>Flexible structure</td><td>XML</td></tr>
+<tr><td>JSON</td><td>CouchDB</td></tr>
+</table>
+</div>
+</div>
+
+<h3>C. Short answers</h3>
+<div class="qa"><div class="q"><span>Q1.</span>Why is an email placed in the "unstructured" category?</div><div class="a">The <b>body of an email</b> is free-form text with no data model — it can contain anything (sentences, slang, links, attachments, images). It can't be stored in rows and columns or queried easily, so it's unstructured. (Its <i>header</i> — To, From, Date, Subject — does have structure, which is why emails are sometimes called semi-structured.)</div></div>
+<div class="qa"><div class="q"><span>Q2.</span>A book is issued from the library. What details can be placed in an RDBMS table?</div><div class="a">
+<b>Book</b>(BookID <i>PK</i>, Title, Author, Publisher, ISBN, Edition, YearOfPublication, Category) · <b>Member</b>(MemberID <i>PK</i>, Name, Department, Phone) · <b>Issue</b>(IssueID <i>PK</i>, BookID <i>FK</i>, MemberID <i>FK</i>, IssueDate, DueDate, ReturnDate, Fine). Constraints: BookID UNIQUE/NOT NULL, DueDate &gt; IssueDate, Fine ≥ 0.</div></div>
+<div class="qa"><div class="q"><span>Q3.</span>Define digital data and explain the sources of data.</div><div class="a">Use the definition from §1.1 + internal vs external sources (§1.1 and §2.5) + homogeneous vs heterogeneous sources. Mention the three forms: structured, semi-structured, unstructured.</div></div>
+<div class="qa"><div class="q"><span>Q4–Q8.</span>Classification of digital data · Structured data with example · Note on semi-structured &amp; unstructured · Working of structured data · Techniques for unstructured data</div><div class="a">See §1.2 (Fig 1.1), §1.3 (Employee table + Fig 1.2 + ease of working + ACID), §1.4 &amp; §1.5, and §1.6 (Fig 1.4). Always add the diagram!</div></div>
+
+<div class="check"><div class="bt">✅ Before you move on — can you…</div>
+<ul>
+<li>Define data, and draw the "Types of data" tree (quantitative/qualitative)?</li>
+<li>Name the 3 types of digital data with 2 examples each, and say what % is unstructured?</li>
+<li>Explain cardinality vs degree, and the 5 eases of structured data (ISIST) incl. ACID?</li>
+<li>List the 5 features + 4 characteristics of semi-structured data; pair XML–SOAP, JSON–REST?</li>
+<li>Draw machine vs human-generated unstructured data and list the 7 techniques to deal with it?</li>
+<li>Reproduce the 7-row comparison table?</li>
+</ul></div>
+</section>

@@ -1,0 +1,224 @@
+
+<!-- ================= CHAPTER 3 (A) ================= -->
+<section class="ch3">
+<div class="chapter-open" id="ch3"><p class="marker">@@ch3@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Chapter 3</div>
+  <h1>Big Data Analytics</h1>
+  <div class="learn"><b>What you'll learn</b>
+    <ol><li>Analytics through examples</li><li>What BDA is — and isn't</li><li>Classification: 1.0 / 2.0 / 3.0</li><li>Top challenges facing Big Data</li><li>Why BDA is important</li><li>Data Science &amp; its 3 skill sets</li><li>Data Scientist responsibilities</li><li>Terminologies: in-memory, in-database, SMP, MPP, shared nothing, CAP</li></ol>
+  </div>
+  <div class="meta"><span>⏱ ≈ 3 hours (two sessions)</span><span>Slides: Lectures 3–4 (pp. 71–140)</span><span>Textbook Ch. 3</span></div>
+</div>
+
+<!-- 3.1 -->
+<h2 id="s3-1"><span class="no">3.1</span>Understanding Big Data Analytics through examples<span class="marker">@@s3-1@@</span></h2>
+<div class="cards c2">
+ <div class="card"><h5>🛒 Scenario 1 — Amazon recommendation system</h5>
+ <p>You register on Amazon and buy a book by your favourite author. Soon Amazon recommends: books by the <b>same author</b>, books on <b>similar topics</b>, products based on your <b>previous purchases</b>, and products bought by <b>customers with similar interests</b>.</p>
+ <p style="margin-top:1.5mm"><b>How?</b> Amazon collects and analyses your <b>past purchases, browsing history, preferences and buying patterns</b>.</p></div>
+ <div class="card"><h5>🚚 Scenario 2 — Truck transport company</h5>
+ <p>You own <b>500 trucks</b>. A customer asks for an <b>urgent delivery</b> and will pay <b>double</b>. Which truck should you send?</p>
+ <p style="margin-top:1.5mm">You must analyse: <b>current truck location, available load capacity, fuel consumption, traffic on routes, distance to customer, expected delivery time</b>.</p></div>
+</div>
+<div class="flow">
+ <div class="st"><b>Large amount of data</b></div><div class="ar">→</div>
+ <div class="st"><b>Analyse the data</b></div><div class="ar">→</div>
+ <div class="st"><b>Find useful patterns</b></div><div class="ar">→</div>
+ <div class="st" style="background:#16244a;color:#fff"><b style="color:#ffd166">Make better decisions</b></div>
+</div>
+<p class="center small" style="margin-top:-2mm">Key idea of Big Data Analytics</p>
+
+<h3>Where do we begin with Big Data Analytics?</h3>
+<p>Big Data Analytics starts with <b>raw data</b>. Raw data by itself may not be very useful — we process it step by step until it is useful for decisions:</p>
+<div class="two" style="grid-template-columns:1fr 1fr">
+<ol>
+<li><b>Collecting → DATA</b>: collect raw data from different sources.</li>
+<li><b>Organising → INFORMATION</b>: classify and organise data so it becomes meaningful.</li>
+<li><b>Summarising &amp; Analysing → KNOWLEDGE</b>: find patterns, trends and relationships.</li>
+<li><b>Synthesising → ACTIONABLE INSIGHTS</b>: decide what useful action can be taken.</li>
+<li><b>DECISION MAKING</b>: use the insights to make a better and faster decision.</li>
+</ol>
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 280 175" width="280" font-family="Inter" font-size="10">
+ <defs><marker id="c1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d9622b"/></marker></defs>
+ <path d="M10 165 L170 165 L150 125 L30 125 Z" fill="#fbd5bf"/><text x="90" y="150" text-anchor="middle" font-weight="700">Data</text>
+ <path d="M30 122 L150 122 L132 86 L48 86 Z" fill="#f5ad86"/><text x="90" y="108" text-anchor="middle" font-weight="700">Information</text>
+ <path d="M48 83 L132 83 L114 47 L66 47 Z" fill="#ec8550"/><text x="90" y="69" text-anchor="middle" font-weight="700" fill="#fff">Knowledge</text>
+ <path d="M66 44 L114 44 L90 5 Z" fill="#d9622b"/><text x="90" y="34" text-anchor="middle" font-weight="700" fill="#fff" font-size="7.5">Insights</text>
+ <line x1="190" y1="165" x2="190" y2="10" stroke="#d9622b" stroke-width="2" marker-end="url(#c1)"/>
+ <g font-size="9.5" fill="#16244a"><text x="198" y="160">Collecting</text><text x="198" y="128">Organising</text><text x="198" y="104">Summarising</text><text x="198" y="80">Analysing</text><text x="198" y="56">Synthesising</text><text x="198" y="22" font-weight="700">Decision making</text></g>
+</svg>
+<div class="cap">Figure 3.1 — Transformation of data to yield actionable insights</div>
+</div>
+</div>
+
+<h3>Where does the data come from?</h3>
+<div class="fig">
+<svg viewBox="0 0 600 110" width="600" font-family="Inter" font-size="10.5">
+ <rect x="215" y="5" width="170" height="32" rx="6" fill="#d9622b"/><text x="300" y="26" text-anchor="middle" fill="#fff" font-weight="700">Analyse all available data</text>
+ <g stroke="#d9622b" stroke-width="1.4"><line x1="300" y1="37" x2="50" y2="75"/><line x1="300" y1="37" x2="150" y2="75"/><line x1="300" y1="37" x2="250" y2="75"/><line x1="300" y1="37" x2="350" y2="75"/><line x1="300" y1="37" x2="450" y2="75"/><line x1="300" y1="37" x2="550" y2="75"/></g>
+ <g fill="#fdf0e8" stroke="#d9622b"><rect x="5" y="75" width="90" height="28" rx="14"/><rect x="105" y="75" width="90" height="28" rx="14"/><rect x="205" y="75" width="90" height="28" rx="14"/><rect x="305" y="75" width="90" height="28" rx="14"/><rect x="405" y="75" width="90" height="28" rx="14"/><rect x="505" y="75" width="90" height="28" rx="14"/></g>
+ <g text-anchor="middle" font-weight="600"><text x="50" y="93">Websites</text><text x="150" y="93">Billing (POS)</text><text x="250" y="93">ERP</text><text x="350" y="93">CRM</text><text x="450" y="93">RFID</text><text x="550" y="93">Social media</text></g>
+</svg>
+<div class="cap">Figure 3.2 — Types of data available for analysis</div>
+</div>
+<p class="small">POS = Point of Sale · ERP = Enterprise Resource Planning · CRM = Customer Relationship Management · RFID = Radio Frequency Identification</p>
+
+<!-- 3.2 -->
+<h2 id="s3-2"><span class="no">3.2</span>What is Big Data Analytics?<span class="marker">@@s3-2@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Big Data Analytics (BDA) = using tools to dig through <b>huge, varied, fast</b> data to find <b>patterns</b> that help a business decide <b>better and faster</b> than competitors.</div>
+<div class="fig">
+<svg viewBox="0 0 640 230" width="640" font-family="Inter" font-size="9.4">
+ <g stroke="#d9622b" stroke-width="1.4"><line x1="320" y1="115" x2="110" y2="30"/><line x1="320" y1="115" x2="320" y2="28"/><line x1="320" y1="115" x2="530" y2="30"/><line x1="320" y1="115" x2="95" y2="115"/><line x1="320" y1="115" x2="545" y2="115"/><line x1="320" y1="115" x2="110" y2="200"/><line x1="320" y1="115" x2="320" y2="205"/><line x1="320" y1="115" x2="530" y2="200"/></g>
+ <polygon points="320,78 332,100 358,92 344,112 368,122 342,128 352,152 330,138 320,160 310,138 288,152 298,128 272,122 296,112 282,92 308,100" fill="#d9622b"/>
+ <text x="320" y="116" text-anchor="middle" fill="#fff" font-weight="800" font-size="9">Big Data</text><text x="320" y="127" text-anchor="middle" fill="#fff" font-weight="800" font-size="9">Analytics</text>
+ <g fill="#fdf0e8" stroke="#d9622b">
+  <rect x="25" y="8" width="170" height="40" rx="6"/><rect x="240" y="5" width="160" height="40" rx="6"/><rect x="445" y="8" width="170" height="40" rx="6"/>
+  <rect x="5" y="95" width="180" height="42" rx="6"/><rect x="455" y="95" width="180" height="42" rx="6"/>
+  <rect x="25" y="182" width="170" height="40" rx="6"/><rect x="235" y="185" width="170" height="40" rx="6"/><rect x="445" y="182" width="170" height="40" rx="6"/></g>
+ <g text-anchor="middle">
+  <text x="110" y="25" font-weight="700">Better, faster decisions</text><text x="110" y="38">in real time</text>
+  <text x="320" y="22" font-weight="700">Move code to data</text><text x="320" y="35">for greater speed &amp; efficiency</text>
+  <text x="530" y="25" font-weight="700">Richer, deeper insights</text><text x="530" y="38">into customers, partners, business</text>
+  <text x="95" y="112" font-weight="700">Working with datasets whose</text><text x="95" y="125">volume &amp; variety exceed a typical DB</text>
+  <text x="545" y="112" font-weight="700">Competitive</text><text x="545" y="125" font-weight="700">advantage</text>
+  <text x="110" y="199" font-weight="700">IT's collaboration with</text><text x="110" y="212">business users &amp; data scientists</text>
+  <text x="320" y="202" font-weight="700">Time-sensitive decisions</text><text x="320" y="215">in near real time (streaming data)</text>
+  <text x="530" y="199" font-weight="700">Technology-enabled</text><text x="530" y="212" font-weight="700">analytics</text>
+ </g>
+</svg>
+<div class="cap">Figure 3.3 — What is Big Data Analytics?</div>
+</div>
+<div class="avoid"><p>Your slides explain <b>6 points</b>:</p>
+<div class="cards c2">
+ <div class="card"><h5>1. Technology-enabled analytics</h5><p>Many analytics and visualisation tools are available to process huge data — from <b>IBM, Tableau, SAS, R Analytics, statistical tools, WPS</b> (World Programming Systems).</p></div>
+ <div class="card"><h5>2. Getting deeper, meaningful insights</h5><p>Having data is not enough — we need <b>insight</b>. Helps a company understand: who its customers are, what they like and buy, what else can be sold to them (cross-sell), how to use vendors and suppliers effectively.</p></div>
+ <div class="card"><h5>3. Gives a competitive edge</h5><p>Quicker and better decisions than competitors. Company A analyses customer behaviour and offers the right products early; Company B doesn't → A wins customers.<br><b>Better analysis → Faster decisions → Competitive advantage.</b></p></div>
+ <div class="card"><h5>4. A tight handshake between three communities</h5><p><b>IT team</b> — provides computers, databases, networks, infrastructure.<br><b>Data scientists</b> — analyse data and discover patterns.<br><b>Business users</b> — use the results to make business decisions.</p></div>
+ <div class="card"><h5>5. Working with very large &amp; varied datasets</h5><p><b>Volume</b> (huge quantity) and <b>variety</b> (customer records + images + videos + emails + social posts + transactions) may <b>exceed the capability of traditional systems</b>.</p></div>
+ <div class="card"><h5>6. Moving code to data</h5><p>Program = a few KB/MB; data = TB/PB. It's easier to move the <b>small program to where the data is stored</b> than to move huge data to the program. Processing happens <b>close to the data</b>.</p></div>
+</div></div>
+<div class="fig">
+<svg viewBox="0 0 600 120" width="600" font-family="Inter" font-size="10">
+ <defs><marker id="c2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d6334a"/></marker><marker id="c3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#1f9d55"/></marker></defs>
+ <text x="145" y="14" text-anchor="middle" font-weight="800" fill="#d6334a">✗ Traditional: move data to code</text>
+ <rect x="10" y="30" width="95" height="70" rx="6" fill="#d9622b"/><text x="57" y="62" text-anchor="middle" fill="#fff" font-weight="700">HUGE DATA</text><text x="57" y="76" text-anchor="middle" fill="#fff">(TB / PB)</text>
+ <line x1="110" y1="65" x2="200" y2="65" stroke="#d6334a" stroke-width="3" marker-end="url(#c2)"/><text x="155" y="58" text-anchor="middle" font-size="8.5" fill="#d6334a">slow, costly</text>
+ <rect x="205" y="48" width="70" height="34" rx="6" fill="#fdf0e8" stroke="#d9622b"/><text x="240" y="69" text-anchor="middle">Program</text>
+ <line x1="300" y1="10" x2="300" y2="110" stroke="#e3e7ef" stroke-width="2"/>
+ <text x="455" y="14" text-anchor="middle" font-weight="800" fill="#1f9d55">✓ Big Data: move code to data</text>
+ <rect x="325" y="48" width="70" height="34" rx="6" fill="#fdf0e8" stroke="#d9622b"/><text x="360" y="62" text-anchor="middle">Program</text><text x="360" y="75" text-anchor="middle" font-size="8.5">(KB/MB)</text>
+ <line x1="400" y1="65" x2="480" y2="65" stroke="#1f9d55" stroke-width="3" marker-end="url(#c3)"/><text x="440" y="58" text-anchor="middle" font-size="8.5" fill="#1f9d55">fast, cheap</text>
+ <rect x="485" y="30" width="105" height="70" rx="6" fill="#d9622b"/><text x="537" y="62" text-anchor="middle" fill="#fff" font-weight="700">HUGE DATA</text><text x="537" y="76" text-anchor="middle" fill="#fff">processed here</text>
+</svg>
+<div class="cap">Figure 3.4 — "Moving code to data"</div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — 6 points of "What is BDA"</div><b>"The Deep Competitive Handshake With Movement"</b> → <b>T</b>echnology-enabled · <b>D</b>eeper insights · <b>C</b>ompetitive edge · <b>H</b>andshake of 3 communities · <b>W</b>orking with large varied data · <b>M</b>oving code to data.</div>
+
+<h3>What Big Data Analytics <u>isn't</u></h3>
+<div class="cards c3">
+ <div class="card" style="border-top-color:#d6334a"><p>❌ Only about <b>volume</b></p></div>
+ <div class="card" style="border-top-color:#d6334a"><p>❌ Just about <b>technology</b></p></div>
+ <div class="card" style="border-top-color:#d6334a"><p>❌ Meant to <b>replace RDBMS</b></p></div>
+ <div class="card" style="border-top-color:#d6334a"><p>❌ Meant to <b>replace the data warehouse</b></p></div>
+ <div class="card" style="border-top-color:#d6334a"><p>❌ Only used by huge online companies like <b>Google or Amazon</b></p></div>
+ <div class="card" style="border-top-color:#d6334a"><p>❌ "<b>One-size-fits-all</b>" traditional RDBMS built on shared disk and memory</p></div>
+</div>
+
+<h3>Why this sudden hype around Big Data Analytics?</h3>
+<div class="cards c3">
+ <div class="card"><h5>📈 1. Huge growth of data</h5><p>Data is exploding from web, mobiles, sensors, social media.</p></div>
+ <div class="card"><h5>💾 2. Storage has become cheaper</h5><p>Storing TBs/PBs is now affordable (commodity hardware, cloud).</p></div>
+ <div class="card"><h5>🛠 3. Availability of analytics tools</h5><p>Open-source and commercial tools (Hadoop, R, Tableau…) are easily available.</p></div>
+</div>
+
+<!-- 3.3 -->
+<h2 id="s3-3"><span class="no">3.3</span>Classification of analytics<span class="marker">@@s3-3@@</span></h2>
+<p>There are basically <b>two schools of thought</b>:</p>
+<div class="two">
+<div class="card" style="border-top-color:#d9622b"><h5>First school of thought — 4 types</h5>
+<ol style="margin:0">
+<li><b>Basic analytics</b>: slicing and dicing of data for basic business insights — reporting on <b>historical data</b>, basic visualisation, etc.</li>
+<li><b>Operationalised analytics</b>: analytics that gets <b>woven into the enterprise's business processes</b>.</li>
+<li><b>Advanced analytics</b>: <b>forecasting the future</b> using predictive and prescriptive modelling.</li>
+<li><b>Monetised analytics</b>: analytics used to derive <b>direct business revenue</b>.</li>
+</ol></div>
+<div class="card" style="border-top-color:#16244a"><h5 style="color:#16244a">Second school of thought — 3 generations</h5>
+<p><b>Analytics 1.0</b> → <b>Analytics 2.0</b> → <b>Analytics 3.0</b></p>
+<p style="margin-top:1.5mm">Each generation <b>adds</b> a new type of analytics on top of the previous one:</p>
+<p style="margin-top:1mm">1.0 = Descriptive<br>2.0 = Descriptive + Predictive<br>3.0 = Descriptive + Predictive + Prescriptive</p></div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — first school</div><b>"BOAM"</b> — <b>B</b>asic, <b>O</b>perationalised, <b>A</b>dvanced, <b>M</b>onetised (from <i>looking back</i> → <i>making money</i>).</div>
+
+<h3>Analytics 1.0, 2.0 and 3.0</h3>
+<div class="fig">
+<svg viewBox="0 0 600 205" width="600" font-family="Inter" font-size="10">
+ <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#16244a"/><stop offset="1" stop-color="#d9622b"/></linearGradient></defs>
+ <path d="M30 190 L560 40 L560 25 L590 45 L560 70 L560 55 L38 200 Z" fill="url(#g1)"/>
+ <g font-weight="700" fill="#fff" text-anchor="middle" font-size="9.5">
+  <rect x="40" y="128" width="100" height="32" rx="5" fill="#16244a"/><text x="90" y="142">Descriptive</text><text x="90" y="153">analytics</text>
+  <rect x="170" y="98" width="100" height="32" rx="5" fill="#3b4a8a"/><text x="220" y="112">Diagnostic</text><text x="220" y="123">analytics</text>
+  <rect x="300" y="62" width="100" height="32" rx="5" fill="#9a5a5e"/><text x="350" y="76">Predictive</text><text x="350" y="87">analytics</text>
+  <rect x="430" y="26" width="100" height="32" rx="5" fill="#d9622b"/><text x="480" y="40">Prescriptive</text><text x="480" y="51">analytics</text>
+ </g>
+ <g text-anchor="middle" font-size="9.5" fill="#16244a">
+  <text x="90" y="120">What happened?</text><text x="220" y="90">Why did it happen?</text><text x="350" y="54">What will happen?</text><text x="480" y="18">How can we make it happen?</text>
+ </g>
+ <g font-style="italic" fill="#5b6478" font-size="10"><text x="130" y="188">Hindsight</text><text x="330" y="132">Insight</text><text x="505" y="90">Foresight</text></g>
+</svg>
+<div class="cap">Figure 3.5 — Analytics 1.0, 2.0 and 3.0: from hindsight to foresight</div>
+</div>
+<table class="t">
+<tr><th style="width:16%"></th><th>Analytics 1.0</th><th>Analytics 2.0</th><th>Analytics 3.0</th></tr>
+<tr><td>Era</td><td>Mid 1950s to 2009</td><td>2005 to 2012</td><td>2012 to present</td></tr>
+<tr><td>Main idea</td><td>Understand the past</td><td>Predict the future</td><td>Predict &amp; recommend</td></tr>
+<tr><td>Type of analytics</td><td><b>Descriptive</b> statistics (report on events, occurrences of the past)</td><td><b>Descriptive + predictive</b> statistics (use past data to make predictions)</td><td><b>Descriptive + predictive + prescriptive</b> (predict the future and recommend how to leverage the situation to one's advantage)</td></tr>
+<tr><td>Key questions</td><td>What happened?<br>Why did it happen?</td><td>What will happen?<br>Why will it happen?</td><td>What will happen? When will it happen? Why will it happen? What action should be taken to take advantage of it?</td></tr>
+<tr><td>Data</td><td>From legacy systems, ERP, CRM, 3rd-party apps. <b>Small &amp; structured</b>, stored in enterprise data warehouses / data marts</td><td><b>Big data</b> taken seriously — mainly <b>unstructured</b>, arriving fast; stored &amp; processed rapidly on massive parallel servers running <b>Hadoop</b></td><td><b>A blend</b> of big data and data from legacy systems, ERP, CRM &amp; 3rd-party apps; big data + traditional analytics for speed and impact</td></tr>
+<tr><td>Source</td><td>Internally sourced</td><td>Often externally sourced</td><td>Both internally &amp; externally sourced</td></tr>
+<tr><td>Technology</td><td>Relational databases</td><td>Database appliances, Hadoop clusters, SQL-to-Hadoop environments</td><td>In-memory analytics, in-database processing, agile analytical methods, machine-learning techniques</td></tr>
+<tr><td>Simple example</td><td>"Sales fell last month."</td><td>"Sales may rise next month."</td><td>"Increase stock next month."</td></tr>
+</table>
+<div class="box exam"><div class="bt">🎯 Exam tip</div>"Explain the classification of analytics" → write <b>both schools</b>. For the second school, draw the <b>staircase (Fig. 3.5)</b> and the table with at least 5 rows: era, type, key questions, data, technology.</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — the 4 analytics</div><b>"Do Doctors Prescribe Properly?"</b> in order: <b>D</b>escriptive (what happened) → <b>D</b>iagnostic (why) → <b>P</b>redictive (what will) → <b>P</b>rescriptive (what should we do). <b>Hindsight → Insight → Foresight</b>.</div>
+
+<!-- 3.4 -->
+<h2 id="s3-4"><span class="no">3.4</span>Top challenges facing Big Data<span class="marker">@@s3-4@@</span></h2>
+<div class="cards c2">
+ <div class="card"><h5>📏 1. Scale</h5><p>How to <b>store and manage</b> the huge and continuously growing amount of data.</p></div>
+ <div class="card"><h5>🔐 2. Security</h5><p>How to <b>protect</b> Big Data from unauthorised access and attacks.</p></div>
+ <div class="card"><h5>🧬 3. Schema</h5><p><b>Rigid schemas have no place</b> in Big Data — we need <b>dynamic schemas</b>.</p></div>
+ <div class="card"><h5>🕐 4. Continuous availability</h5><p>Systems must give <b>24/7 support</b> because downtime is a problem.</p></div>
+ <div class="card"><h5>🎯 5. Consistency</h5><p>Make sure users see <b>correct and updated</b> data.</p></div>
+ <div class="card"><h5>🧱 6. Partition tolerant</h5><p>How to build systems that keep working despite <b>hardware and software failures</b>.</p></div>
+</div>
+<div class="card avoid" style="margin-bottom:4mm"><h5>✨ 7. Data quality</h5><p>How to maintain data <b>accuracy, completeness, timeliness</b>, and proper <b>metadata</b>.</p></div>
+<div class="box mem"><div class="bt">🧠 Memory trick — 7 top challenges</div><b>"Six Students Sat Calmly, Copying Past Quizzes"</b> → <b>S</b>cale · <b>S</b>ecurity · <b>S</b>chema · <b>C</b>ontinuous availability · <b>C</b>onsistency · <b>P</b>artition tolerance · <b>Q</b>uality of data.<br>Notice: Consistency + Availability + Partition tolerance = <b>CAP</b> (see §3.9).</div>
+
+<!-- 3.5 -->
+<h2 id="s3-5"><span class="no">3.5</span>Why is Big Data Analytics important?<span class="marker">@@s3-5@@</span></h2>
+<p>Big Data Analytics is important because it <mark>converts huge amounts of data into useful information</mark>, helping organisations <b>make better decisions, predict future events, and solve complex problems</b>. The textbook explains it through <b>4 approaches</b> to analysis:</p>
+<div class="fig">
+<svg viewBox="0 0 600 255" width="600" font-family="Inter" font-size="9.6">
+ <text x="40" y="132" text-anchor="middle" transform="rotate(-90 40 132)" font-weight="800" fill="#16244a" font-size="11">DATA SIZE →</text>
+ <text x="330" y="250" text-anchor="middle" font-weight="800" fill="#16244a" font-size="11">APPROACH: Reactive (past) → Proactive (future)</text>
+ <text x="60" y="78" font-size="9" fill="#5b6478" transform="rotate(-90 60 78)" text-anchor="middle">Big Data</text>
+ <text x="60" y="185" font-size="9" fill="#5b6478" transform="rotate(-90 60 185)" text-anchor="middle">Traditional</text>
+ <rect x="70" y="135" width="250" height="100" rx="8" fill="#fdf0e8" stroke="#d9622b"/>
+ <text x="195" y="155" text-anchor="middle" font-weight="800" fill="#d9622b">1 · Reactive — Business Intelligence</text>
+ <text x="195" y="172" text-anchor="middle">Right info to the right person, at the right</text><text x="195" y="185" text-anchor="middle">time, in the right format. Analyses PAST data;</text><text x="195" y="198" text-anchor="middle">shows reports, dashboards, alerts. Supports</text><text x="195" y="211" text-anchor="middle">pre-specified reports + ad hoc querying.</text>
+ <rect x="70" y="25" width="250" height="100" rx="8" fill="#fdf0e8" stroke="#d9622b"/>
+ <text x="195" y="45" text-anchor="middle" font-weight="800" fill="#d9622b">2 · Reactive — Big Data Analytics</text>
+ <text x="195" y="65" text-anchor="middle">Analysis is done on HUGE datasets,</text><text x="195" y="78" text-anchor="middle">but the approach is still reactive —</text><text x="195" y="91" text-anchor="middle">it is still based on STATIC data.</text>
+ <rect x="335" y="135" width="250" height="100" rx="8" fill="#e9f0ff" stroke="#2463eb"/>
+ <text x="460" y="155" text-anchor="middle" font-weight="800" fill="#2463eb">3 · Proactive — Analytics</text>
+ <text x="460" y="172" text-anchor="middle">Futuristic decisions using data mining,</text><text x="460" y="185" text-anchor="middle">predictive modelling, text mining, statistics.</text><text x="460" y="198" text-anchor="middle">But uses TRADITIONAL DB practices → severe</text><text x="460" y="211" text-anchor="middle">limits on storage &amp; processing capability.</text>
+ <rect x="335" y="25" width="250" height="100" rx="8" fill="#16244a"/>
+ <text x="460" y="45" text-anchor="middle" font-weight="800" fill="#ffd166">4 · Proactive — Big Data Analytics ★</text>
+ <text x="460" y="65" text-anchor="middle" fill="#fff">Sieves through TB, PB, EB of information to</text><text x="460" y="78" text-anchor="middle" fill="#fff">filter the relevant data. Includes high-</text><text x="460" y="91" text-anchor="middle" fill="#fff">performance analytics for rapid insights and</text><text x="460" y="104" text-anchor="middle" fill="#fff">solving complex problems using more data.</text>
+</svg>
+<div class="cap">Figure 3.6 — Four approaches to analysis (the goal is box 4: proactive Big Data Analytics)</div>
+</div>
+<div class="box key"><div class="bt">🔑 Key point</div><b>Reactive</b> = looks at the <b>past</b> ("what happened?"). <b>Proactive</b> = looks at the <b>future</b> ("what will happen?"). Only <mark>Proactive Big Data Analytics</mark> combines <b>future-looking analysis</b> with <b>huge data</b> — that's why BDA is important.</div>
+</section>

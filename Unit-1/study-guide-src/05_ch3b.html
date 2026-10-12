@@ -1,0 +1,477 @@
+
+<!-- ================= CHAPTER 3 (B) ================= -->
+<section class="ch3">
+
+<!-- 3.6 -->
+<h2 id="s3-6"><span class="no">3.6</span>Data Science<span class="marker">@@s3-6@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>Data science is <mark>the science of extracting knowledge from data</mark>. In simple words, it <b>finds useful and hidden patterns in large amounts of data</b>. It uses ideas from <b>mathematics, statistics and information technology</b>, and also <b>machine learning, data engineering, probability models, statistical learning and pattern recognition</b>.</p></div>
+<div class="box eg"><div class="bt">📌 Simple example — student exam marks</div>
+<div class="flow" style="margin:1mm 0 0">
+ <div class="st"><b>DATA</b>Raw marks of students A–E in Maths, Science, English</div><div class="ar">→</div>
+ <div class="st"><b>PATTERN</b>Science marks are highest on average; English is lowest</div><div class="ar">→</div>
+ <div class="st"><b>KNOWLEDGE</b>Students do well in Science but need more support in English</div><div class="ar">→</div>
+ <div class="st" style="background:#16244a;color:#fff"><b style="color:#ffd166">DECISION</b>Plan extra English practice to improve overall performance</div>
+</div>
+<p class="center" style="margin-top:2mm"><b>Data Science turns data into knowledge and helps us make better decisions.</b></p></div>
+
+<h3>Where is Data Science used?</h3>
+<div class="cards c3">
+ <div class="card"><h5>🌦 Weather predictions</h5><p>Use past &amp; current weather data to predict future weather.</p></div>
+ <div class="card"><h5>🛢 Oil drilling</h5><p>Study geological &amp; sensor data to support drilling operations.</p></div>
+ <div class="card"><h5>🌍 Seismic activities</h5><p>Analyse earth-movement data to understand earthquakes.</p></div>
+ <div class="card"><h5>💳 Financial frauds</h5><p>Detect unusual transactions and suspicious behaviour.</p></div>
+ <div class="card"><h5>👍 Social media analytics</h5><p>Study posts, likes and trends to understand users.</p></div>
+ <div class="card"><h5>🛒 Retail &amp; manufacturing</h5><p>Customer churn, market basket analysis, filtering &amp; regression.</p></div>
+</div>
+
+<h3>Data Science is multi-disciplinary</h3>
+<div class="two" style="grid-template-columns:.9fr 1.1fr">
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 270 240" width="270" font-family="Inter" font-size="11">
+ <circle cx="135" cy="80" r="70" fill="#2463eb" opacity=".72"/>
+ <circle cx="90" cy="155" r="70" fill="#1f9d55" opacity=".72"/>
+ <circle cx="180" cy="155" r="70" fill="#d9622b" opacity=".72"/>
+ <g fill="#fff" font-weight="800" text-anchor="middle"><text x="135" y="52">Business</text><text x="135" y="66">acumen</text>
+ <text x="62" y="180">Technology</text><text x="62" y="194">expertise</text>
+ <text x="208" y="180">Mathematics</text><text x="208" y="194">expertise</text>
+ <rect x="104" y="117" width="62" height="32" rx="5" fill="#16244a"/><text x="135" y="130" font-size="9.5">DATA</text><text x="135" y="143" font-size="9.5">SCIENTIST</text></g>
+</svg>
+<div class="cap">Figure 3.7 — The data scientist sits where all three skill sets overlap</div>
+</div>
+<div>
+<p>A data scientist needs <b>all three</b> skill groups:</p>
+<ul>
+<li>Knowing <b>only programming</b> is not enough.</li>
+<li>Knowing <b>only mathematics</b> is not enough.</li>
+<li><b>Business understanding</b> helps convert analysis into useful action.</li>
+</ul>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>A data scientist is a <b>"BTM"</b> person — <b>B</b>usiness, <b>T</b>echnology, <b>M</b>aths. Like a three-legged stool: remove one leg and it falls.</div>
+</div>
+</div>
+
+<h3>Skill 1 — Business acumen</h3>
+<p>Business acumen means <mark>understanding the real problem and the needs of the organisation</mark>. "It's not just about data, it's about real-world impact."</p>
+<div class="cards c3">
+ <div class="card"><h5>1 · Understanding of domain</h5><p>Know the field: banking, healthcare, education, retail, etc. Each industry has different problems and needs.</p></div>
+ <div class="card"><h5>2 · Business strategy</h5><p>Understand what the organisation wants: increase profit, improve service, reach more customers, reduce cost.</p></div>
+ <div class="card"><h5>3 · Problem solving</h5><p>Convert a <b>business problem</b> into a solvable <b>data problem</b>. "Why are customers leaving?" → analyse customer data to find patterns of churn.</p></div>
+ <div class="card"><h5>4 · Communication</h5><p>Explain ideas clearly to others; make complex ideas simple.</p></div>
+ <div class="card"><h5>5 · Presentation</h5><p>Show results using simple reports, charts and slides — a good visual helps everyone understand.</p></div>
+ <div class="card"><h5>6 · Inquisitiveness</h5><p>Keep asking: Why? What happened? What can we improve? Can we do better?</p></div>
+</div>
+
+<h3>Skill 2 — Technology expertise</h3>
+<p>Technical tools help the data scientist <b>store, process, analyse and present</b> data.</p>
+<table class="t">
+<tr><th style="width:22%">Area</th><th>What it does</th><th>Examples</th></tr>
+<tr><td>RDBMS</td><td>Store and manage data in structured form</td><td>MySQL, PostgreSQL, Oracle</td></tr>
+<tr><td>NoSQL</td><td>Handle large and unstructured data</td><td>MongoDB, Cassandra, HBase</td></tr>
+<tr><td>Programming</td><td>Write code to process and analyse data</td><td>Python, Java, C++</td></tr>
+<tr><td>Data warehousing</td><td>Organise large amounts of data for analysis</td><td>Amazon Redshift, Snowflake, BigQuery</td></tr>
+<tr><td>Data mining</td><td>Discover useful patterns from data</td><td>Classification, clustering, association rules</td></tr>
+<tr><td>Visualisation</td><td>Present data using charts and dashboards</td><td>Tableau, Flare, Google Visualization APIs</td></tr>
+</table>
+
+<h3>Skill 3 — Mathematics expertise</h3>
+<p>A data scientist must understand, interpret and analyse data using mathematical concepts and algorithms. "Maths turns data into meaning."</p>
+<table class="t">
+<tr><th style="width:22%">Area</th><th>Role</th><th>Examples</th></tr>
+<tr><td>Mathematics</td><td>Basic language for calculations and modelling</td><td>Algebra, calculus, linear algebra</td></tr>
+<tr><td>Statistics</td><td>Summarise data and make conclusions</td><td>Mean, variance, hypothesis testing</td></tr>
+<tr><td>Algorithms</td><td>Step-by-step methods to solve problems</td><td>Sorting, search, optimisation</td></tr>
+<tr><td>Machine learning</td><td>Learns patterns from data</td><td>Regression, classification, clustering</td></tr>
+<tr><td>Pattern recognition</td><td>Recognises repeated structures or classes</td><td>Image recognition, anomaly detection</td></tr>
+<tr><td>NLP</td><td>Helps computers work with human language</td><td>Text classification, sentiment analysis</td></tr>
+</table>
+
+<h3>The Data Science process</h3>
+<div class="avoid"><p class="small">Textbook short form: <b>Collect → Prepare → Analyse → Show → Communicate → Decide</b></p>
+<div class="flow wrap" style="font-size:8.8pt">
+ <div class="st"><b>1 Collect</b>raw data from multiple sources</div><div class="ar">→</div>
+ <div class="st"><b>2 Process</b>make raw data usable</div><div class="ar">→</div>
+ <div class="st"><b>3 Integrate &amp; clean</b>combine sources, prepare a clean dataset</div><div class="ar">→</div>
+ <div class="st"><b>4 Explore &amp; analyse</b>apply statistics &amp; algorithms</div><div class="ar">→</div>
+ <div class="st"><b>5 Visualise</b>charts, graphs, infographics</div><div class="ar">→</div>
+ <div class="st"><b>6 Communicate</b>explain to stakeholders simply</div><div class="ar">→</div>
+ <div class="st" style="background:#16244a;color:#fff"><b style="color:#ffd166">7 Decide</b>better decisions from insights</div>
+</div>
+<p class="center small" style="margin-top:-2mm">Read left → right, top → bottom.</p>
+<p class="center"><b>Data + Analysis + Insight = Better Decisions</b></p></div>
+
+<!-- 3.7 -->
+<h2 id="s3-7"><span class="no">3.7</span>Data Scientist &amp; responsibilities<span class="marker">@@s3-7@@</span></h2>
+<div class="def"><span class="dt">Who is a data scientist?</span><p>A data scientist is a <mark>person who works with data to solve real-world problems</mark>. Raw data is often messy; the data scientist <b>prepares</b> the data, <b>studies</b> it, <b>finds patterns</b> and <b>explains</b> what they mean. The final goal is not just a graph or a model — it is a <mark>useful decision</mark>.</p></div>
+<div class="flow">
+ <div class="st"><b>A · Raw data</b>marks, sales, clicks, sensor readings, customer records</div><div class="ar">→</div>
+ <div class="st"><b>B · Analysis</b>clean the data, compare values, find patterns</div><div class="ar">→</div>
+ <div class="st"><b>C · Insight</b>explain what the data tells us and what action to take</div>
+</div>
+
+<h3>Main responsibilities of a data scientist (4)</h3>
+<div class="fig">
+<svg viewBox="0 0 640 180" width="640" font-family="Inter" font-size="9.4">
+ <g stroke="#d9622b" stroke-width="1.4"><line x1="320" y1="90" x2="130" y2="30"/><line x1="320" y1="90" x2="510" y2="30"/><line x1="320" y1="90" x2="130" y2="150"/><line x1="320" y1="90" x2="510" y2="150"/></g>
+ <polygon points="320,50 333,74 362,66 345,88 372,98 343,105 356,132 330,116 320,140 310,116 284,132 297,105 268,98 295,88 278,66 307,74" fill="#d9622b"/>
+ <text x="320" y="93" text-anchor="middle" fill="#fff" font-weight="800" font-size="8.6">Data Scientist</text><text x="320" y="104" text-anchor="middle" fill="#fff" font-size="7.5">new best friend!</text>
+ <g fill="#16244a"><rect x="5" y="8" width="250" height="46" rx="6"/><rect x="385" y="8" width="250" height="46" rx="6"/><rect x="5" y="127" width="250" height="46" rx="6"/><rect x="385" y="127" width="250" height="46" rx="6"/></g>
+ <g fill="#fff" text-anchor="middle"><text x="130" y="26" font-weight="700" fill="#ffd166">1 · Data management</text><text x="130" y="42">Prepares &amp; integrates large, varied datasets</text>
+ <text x="510" y="26" font-weight="700" fill="#ffd166">2 · Analytical techniques</text><text x="510" y="42">Models to interpret relationships, spot trends</text>
+ <text x="130" y="145" font-weight="700" fill="#ffd166">3 · Business / domain expertise</text><text x="130" y="161">Applies domain knowledge to give context</text>
+ <text x="510" y="145" font-weight="700" fill="#ffd166">4 · Communication &amp; presentation</text><text x="510" y="161">Communicates / presents findings &amp; results</text></g>
+</svg>
+<div class="cap">Figure 3.8 — Data scientist: your new best friend!</div>
+</div>
+<div class="cards c2">
+ <div class="card"><h5>🗄 1. Data management</h5><p>Raw data must be prepared before we can learn from it.</p>
+ <p style="margin-top:1mm"><b>RAW</b> (marks from different classes; values missing/repeated) → <b>CLEAN</b> (correct errors, remove duplicates, handle missing values) → <b>INTEGRATE</b> (combine marks, attendance, other info) → <b>READY</b> (one clean dataset to analyse).</p></div>
+ <div class="card"><h5>🔍 2. Analytical techniques</h5><p>Use <b>models and algorithms</b> to understand relationships, spot trends, uncover patterns. The technique depends on the <b>question</b> and the <b>type of data</b>. A model is useful only when it answers the actual question.</p>
+ <p style="margin-top:1mm"><b>Q:</b> Which students may need extra support? → <b>Analyse</b> marks + attendance → <b>Result:</b> support students earlier.</p></div>
+ <div class="card"><h5>🎯 3. Business / domain understanding</h5><p>Numbers alone are not enough — domain knowledge turns a statistical result into a <b>meaningful solution</b>.</p>
+ <p style="margin-top:1mm"><b>Cool fact:</b> "Attendance and marks are related." → <b>Business insight:</b> "Students with repeated low attendance may need early mentoring." → <b>Useful action:</b> mentoring, reminders, extra support.</p></div>
+ <div class="card"><h5>💬 4. Communication &amp; presentation</h5><p>A model may produce hundreds of numbers. Convert it into a <b>chart, key message and simple language</b> so teachers, managers or customers can act.</p>
+ <p style="margin-top:1mm"><b>Complex analysis → Simple explanation → Stakeholder decision.</b> A good data scientist must be a good presenter and communicator too.</p></div>
+</div>
+
+<h3>One example — college student performance</h3>
+<div class="flow" style="font-size:8.8pt">
+ <div class="st"><b>1 Collect</b>marks + attendance + assignment data</div><div class="ar">→</div>
+ <div class="st"><b>2 Prepare</b>clean and combine the records</div><div class="ar">→</div>
+ <div class="st"><b>3 Analyse</b>find relationships and patterns</div><div class="ar">→</div>
+ <div class="st"><b>4 Understand</b>connect results to the education context</div><div class="ar">→</div>
+ <div class="st"><b>5 Communicate</b>show a simple chart to faculty</div><div class="ar">→</div>
+ <div class="st" style="background:#16244a;color:#fff"><b style="color:#ffd166">6 Act</b>plan mentoring or extra classes</div>
+</div>
+
+<div class="two">
+<div class="avoid">
+<h3>Data Science vs Data Scientist</h3>
+<table class="t">
+<tr><th>Data Science</th><th>Data Scientist</th></tr>
+<tr><td style="font-weight:400">A <b>FIELD / DISCIPLINE</b>: methods, processes, maths, statistics, programming, ML</td><td>A <b>PERSON / JOB ROLE</b>: applies data-science techniques to real problems</td></tr>
+<tr><td style="font-weight:400">e.g., Data Science is used to predict student performance</td><td>e.g., A data scientist builds and explains the prediction system</td></tr>
+</table>
+</div>
+<div class="avoid">
+<h3>Careers after Data Science</h3>
+<ol style="font-size:9.6pt">
+<li><b>Data Analyst</b> — clean data, reports, dashboards, trends</li>
+<li><b>Data Scientist</b> — models, patterns, business problems</li>
+<li><b>ML Engineer</b> — build &amp; deploy learning systems</li>
+<li><b>Data Engineer</b> — pipelines that collect &amp; move data</li>
+<li><b>BI / Analytics Professional</b> — dashboards, business insights</li>
+<li><b>AI / NLP / Vision roles</b> — language, images, recommenders</li>
+</ol>
+</div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — 4 responsibilities</div><b>"My Aunt Bakes Cakes"</b> → <b>M</b>anage data · <b>A</b>nalyse with techniques · <b>B</b>usiness/domain context · <b>C</b>ommunicate &amp; present.</div>
+
+<!-- 3.8 -->
+<h2 id="s3-8"><span class="no">3.8</span>Terminologies used in Big Data environments<span class="marker">@@s3-8@@</span></h2>
+<div class="cards c4" style="font-size:9pt">
+ <div class="card"><h5>⚡ In-memory analytics</h5></div><div class="card"><h5>🗄 In-database processing</h5></div><div class="card"><h5>🧠 SMP &amp; MPP</h5></div><div class="card"><h5>🌐 Parallel vs distributed</h5></div>
+ <div class="card"><h5>🔗 Shared nothing architecture</h5></div><div class="card"><h5>△ CAP theorem</h5></div>
+</div>
+
+<h3>1. In-memory analytics</h3>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Reading from a hard disk is like walking to the library every time you need a fact. In-memory analytics keeps the books <b>on your desk (RAM)</b> — so answers come much faster.</div>
+<ul>
+<li>Data access from <b>non-volatile storage such as hard disk is a slow process</b>. The more data is fetched from hard disk/secondary storage, the slower the process gets.</li>
+<li>One way to combat this: <b>pre-process and store data</b> (cubes, aggregate tables, query sets, etc.) so the CPU fetches only a small subset of records. But this requires <b>thinking in advance</b> about what data will be needed.</li>
+<li>If different or more data is needed, it's back to pre-computing or fetching from secondary storage.</li>
+<li>This problem is solved by <mark>in-memory analytics</mark>: <b>all the relevant data is stored in RAM (primary storage)</b>, eliminating the need to access data from hard disk.</li>
+</ul>
+<div class="fig">
+<svg viewBox="0 0 600 120" width="600" font-family="Inter" font-size="10">
+ <text x="145" y="14" text-anchor="middle" font-weight="800" fill="#d6334a">Traditional: data repeatedly fetched from disk</text>
+ <rect x="30" y="35" width="70" height="55" rx="6" fill="#fdf0e8" stroke="#d9622b"/><text x="65" y="60" text-anchor="middle" font-weight="700">CPU</text>
+ <path d="M100 55 C 140 40, 160 40, 195 55" fill="none" stroke="#d6334a" stroke-width="2" stroke-dasharray="5 4"/><path d="M195 75 C 160 90, 140 90, 100 75" fill="none" stroke="#d6334a" stroke-width="2" stroke-dasharray="5 4"/>
+ <text x="148" y="70" text-anchor="middle" font-size="9" fill="#d6334a">slow 🐢</text>
+ <ellipse cx="235" cy="45" rx="35" ry="9" fill="#9aa3b5"/><rect x="200" y="45" width="70" height="40" fill="#9aa3b5"/><ellipse cx="235" cy="85" rx="35" ry="9" fill="#7d879b"/><text x="235" y="70" text-anchor="middle" fill="#fff" font-weight="700">Hard disk</text>
+ <line x1="300" y1="5" x2="300" y2="115" stroke="#e3e7ef" stroke-width="2"/>
+ <text x="455" y="14" text-anchor="middle" font-weight="800" fill="#1f9d55">In-memory: relevant data kept in RAM</text>
+ <rect x="340" y="35" width="70" height="55" rx="6" fill="#fdf0e8" stroke="#d9622b"/><text x="375" y="60" text-anchor="middle" font-weight="700">CPU</text>
+ <line x1="410" y1="62" x2="470" y2="62" stroke="#1f9d55" stroke-width="3"/><text x="440" y="55" text-anchor="middle" font-size="9" fill="#1f9d55">fast ⚡</text>
+ <rect x="470" y="40" width="100" height="45" rx="6" fill="#1f9d55"/><text x="520" y="60" text-anchor="middle" fill="#fff" font-weight="700">RAM</text><text x="520" y="74" text-anchor="middle" fill="#fff" font-size="8.5">(primary memory)</text>
+</svg>
+</div>
+<div class="box key"><div class="bt">🔑 Advantages of in-memory analytics</div><b>Faster access</b> · <b>rapid deployment</b> · <b>better (quicker) insights</b> · <b>minimal IT involvement</b> (less dependence on repeated disk access).</div>
+
+<h3>2. In-database processing</h3>
+<ul>
+<li>Also called <mark>in-database analytics</mark>. It works by <b>fusing data warehouses with analytical systems</b>.</li>
+<li>Typically, data from various enterprise <b>OLTP</b> (On-Line Transaction Processing) systems — after cleaning up (de-duplication, scrubbing, etc.) through <b>ETL</b> — is stored in the <b>Enterprise Data Warehouse (EDW)</b> or data marts.</li>
+<li><b>Without it</b>: the huge datasets are then <b>exported</b> to analytical programs for complex and extensive computations.</li>
+<li><b>With in-database processing</b>: the <mark>database program itself can run the computations</mark>, eliminating the need for export and thereby <b>saving time</b>. Leading database vendors offer this to large businesses.</li>
+</ul>
+<div class="flow">
+ <div class="st"><b>OLTP systems</b>operational data</div><div class="ar">→</div>
+ <div class="st"><b>ETL</b>clean / de-duplicate / scrub</div><div class="ar">→</div>
+ <div class="st"><b>EDW / Data mart</b>store prepared data</div><div class="ar">→</div>
+ <div class="st" style="background:#16244a;color:#fff"><b style="color:#ffd166">Analytics inside the DB</b>no export needed</div>
+</div>
+<p class="small center" style="margin-top:-2mm">ETL = Extract, Transform, Load · EDW = Enterprise Data Warehouse</p>
+<div class="box tip"><div class="bt">💡 Remember the pair</div><b>In-memory</b> → brings data <b>closer to the CPU</b> (RAM instead of disk). <b>In-database</b> → brings computation <b>to where the data lives</b> (no export). Both reduce <b>data movement</b> to save time.</div>
+
+<h3>3. Symmetric Multiprocessor System (SMP)</h3>
+<div class="two" style="grid-template-columns:1fr 1fr">
+<ul>
+<li>In SMP there is a <mark>single common main memory shared by two or more identical processors</mark>.</li>
+<li>The processors have <b>full access to all I/O devices</b> and are controlled by a <mark>single operating system instance</mark>.</li>
+<li>SMPs are <mark>tightly coupled</mark> multiprocessor systems. Each processor has its own <b>high-speed memory, called cache memory</b>, and they are connected using a <b>system bus</b>.</li>
+</ul>
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 300 175" width="300" font-family="Inter" font-size="9">
+ <rect x="110" y="5" width="80" height="30" rx="4" fill="#d9622b"/><text x="150" y="24" text-anchor="middle" fill="#fff" font-weight="700">Main memory</text>
+ <line x1="150" y1="35" x2="150" y2="58" stroke="#16244a" stroke-width="1.5"/>
+ <rect x="2" y="48" width="56" height="22" rx="3" fill="#7d879b"/><text x="30" y="62" text-anchor="middle" fill="#fff">Bus arbiter</text>
+ <line x1="58" y1="58" x2="295" y2="58" stroke="#16244a" stroke-width="2.5"/><text x="90" y="53" font-size="8" fill="#5b6478">System bus</text>
+ <g stroke="#16244a" stroke-width="1.3"><line x1="80" y1="58" x2="80" y2="85"/><line x1="135" y1="58" x2="135" y2="85"/><line x1="190" y1="58" x2="190" y2="85"/><line x1="245" y1="58" x2="245" y2="85"/><line x1="285" y1="58" x2="285" y2="85"/>
+ <line x1="80" y1="105" x2="80" y2="128"/><line x1="135" y1="105" x2="135" y2="128"/><line x1="190" y1="105" x2="190" y2="128"/><line x1="245" y1="105" x2="245" y2="128"/></g>
+ <g fill="#fdf0e8" stroke="#d9622b"><rect x="58" y="85" width="44" height="20" rx="3"/><rect x="113" y="85" width="44" height="20" rx="3"/><rect x="168" y="85" width="44" height="20" rx="3"/><rect x="223" y="85" width="44" height="20" rx="3"/></g>
+ <rect x="272" y="85" width="26" height="20" rx="3" fill="#e3e7ef"/><text x="285" y="99" text-anchor="middle">I/O</text>
+ <g text-anchor="middle"><text x="80" y="99">Cache</text><text x="135" y="99">Cache</text><text x="190" y="99">Cache</text><text x="245" y="99">Cache</text></g>
+ <g fill="#16244a"><rect x="55" y="128" width="50" height="26" rx="3"/><rect x="110" y="128" width="50" height="26" rx="3"/><rect x="165" y="128" width="50" height="26" rx="3"/><rect x="220" y="128" width="50" height="26" rx="3"/></g>
+ <g text-anchor="middle" fill="#fff" font-size="8.5"><text x="80" y="145">Proc 1</text><text x="135" y="145">Proc 2</text><text x="190" y="145">Proc 3</text><text x="245" y="145">Proc n</text></g>
+ <text x="150" y="171" text-anchor="middle" font-size="8.5" fill="#5b6478">one OS · one shared memory</text>
+</svg>
+<div class="cap">Figure 3.9 — Symmetric Multiprocessor System</div>
+</div>
+</div>
+
+<h3>4. Massively Parallel Processing (MPP)</h3>
+<div class="two" style="grid-template-columns:1fr 1fr">
+<ul>
+<li>MPP refers to the <mark>coordinated processing of programs by a number of processors working in parallel</mark>.</li>
+<li>The processors <b>each have their own operating system and dedicated memory</b>. They work on <b>different parts of the same program</b>.</li>
+<li>MPP processors communicate using some sort of <b>messaging interface</b>.</li>
+<li>MPP systems are <b>more difficult to program</b>: the application must be divided so that all executing segments can communicate with each other.</li>
+<li>MPP differs from SMP: SMP processors share the same OS and same memory; SMP is also called <b>tightly-coupled multiprocessing</b>.</li>
+</ul>
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 300 150" width="300" font-family="Inter" font-size="8.5">
+ <g>
+  <rect x="5" y="20" width="62" height="95" rx="6" fill="#fdf0e8" stroke="#d9622b"/><rect x="80" y="20" width="62" height="95" rx="6" fill="#fdf0e8" stroke="#d9622b"/><rect x="155" y="20" width="62" height="95" rx="6" fill="#fdf0e8" stroke="#d9622b"/><rect x="230" y="20" width="62" height="95" rx="6" fill="#fdf0e8" stroke="#d9622b"/>
+  <g font-weight="700" text-anchor="middle" fill="#d9622b"><text x="36" y="14">Node 1</text><text x="111" y="14">Node 2</text><text x="186" y="14">Node 3</text><text x="261" y="14">Node 4</text></g>
+  <g fill="#16244a"><rect x="12" y="28" width="48" height="22" rx="3"/><rect x="87" y="28" width="48" height="22" rx="3"/><rect x="162" y="28" width="48" height="22" rx="3"/><rect x="237" y="28" width="48" height="22" rx="3"/></g>
+  <g fill="#d9622b"><rect x="12" y="56" width="48" height="22" rx="3"/><rect x="87" y="56" width="48" height="22" rx="3"/><rect x="162" y="56" width="48" height="22" rx="3"/><rect x="237" y="56" width="48" height="22" rx="3"/></g>
+  <g fill="#7d879b"><rect x="12" y="84" width="48" height="22" rx="3"/><rect x="87" y="84" width="48" height="22" rx="3"/><rect x="162" y="84" width="48" height="22" rx="3"/><rect x="237" y="84" width="48" height="22" rx="3"/></g>
+  <g fill="#fff" text-anchor="middle"><text x="36" y="42">CPU</text><text x="111" y="42">CPU</text><text x="186" y="42">CPU</text><text x="261" y="42">CPU</text><text x="36" y="70">Memory</text><text x="111" y="70">Memory</text><text x="186" y="70">Memory</text><text x="261" y="70">Memory</text><text x="36" y="98">own OS</text><text x="111" y="98">own OS</text><text x="186" y="98">own OS</text><text x="261" y="98">own OS</text></g>
+ </g>
+ <line x1="20" y1="132" x2="280" y2="132" stroke="#2463eb" stroke-width="2.5"/>
+ <g stroke="#2463eb" stroke-width="1.4"><line x1="36" y1="115" x2="36" y2="132"/><line x1="111" y1="115" x2="111" y2="132"/><line x1="186" y1="115" x2="186" y2="132"/><line x1="261" y1="115" x2="261" y2="132"/></g>
+ <text x="150" y="146" text-anchor="middle" fill="#2463eb" font-weight="700">messaging interface ↔ each works on a part of the program</text>
+</svg>
+<div class="cap">Figure 3.10 — Massively Parallel Processing</div>
+</div>
+</div>
+<table class="t">
+<tr><th style="width:20%">Feature</th><th>SMP</th><th>MPP</th></tr>
+<tr><td>Memory</td><td>Common / shared main memory</td><td>Each node has <b>dedicated</b> memory</td></tr>
+<tr><td>Coupling</td><td><b>Tightly</b> coupled</td><td>Looser than SMP; nodes communicate</td></tr>
+<tr><td>Operating system</td><td><b>Single</b> OS instance</td><td>Each processor/node has its <b>own</b> OS</td></tr>
+<tr><td>Communication</td><td>Shared memory / system bus</td><td><b>Messaging</b> between nodes</td></tr>
+<tr><td>Programming</td><td>Easier</td><td>Harder — program must be divided into communicating segments</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick</div><b>SMP = "Same Memory, Please"</b> — everyone shares one memory &amp; one OS. <b>MPP = "My Private Partition"</b> — each processor has its own memory &amp; OS.</div>
+
+<h3>5. Parallel systems vs distributed systems</h3>
+<div class="two">
+<div>
+<h4>Parallel systems</h4>
+<ul>
+<li>A parallel database system is a <mark>tightly coupled</mark> system. The processors <b>co-operate for query processing</b>.</li>
+<li>The user is <b>unaware of the parallelism</b> since he/she has no access to a specific processor of the system.</li>
+<li>Either the processors have access to a <b>common memory</b> or make use of <b>message passing</b> for communication.</li>
+</ul>
+<div class="fig">
+<svg viewBox="0 0 270 160" width="270" font-family="Inter" font-size="9">
+ <g fill="#e3e7ef" stroke="#7d879b"><rect x="70" y="2" width="40" height="18" rx="3"/><rect x="160" y="2" width="40" height="18" rx="3"/></g><text x="90" y="15" text-anchor="middle">User</text><text x="180" y="15" text-anchor="middle">User</text>
+ <g stroke="#16244a"><line x1="90" y1="20" x2="135" y2="38"/><line x1="180" y1="20" x2="135" y2="38"/></g>
+ <rect x="45" y="38" width="180" height="22" rx="4" fill="#d9622b"/><text x="135" y="53" text-anchor="middle" fill="#fff" font-weight="700">Front-end computer</text>
+ <rect x="35" y="68" width="200" height="88" rx="6" fill="#fdf0e8" stroke="#d9622b" stroke-dasharray="4 3"/>
+ <g stroke="#16244a"><line x1="75" y1="60" x2="75" y2="80"/><line x1="135" y1="60" x2="135" y2="80"/><line x1="195" y1="60" x2="195" y2="80"/></g>
+ <g fill="#16244a"><circle cx="75" cy="90" r="10"/><circle cx="135" cy="90" r="10"/><circle cx="195" cy="90" r="10"/></g>
+ <g fill="#fff" text-anchor="middle" font-weight="700"><text x="75" y="93">P1</text><text x="135" y="93">P2</text><text x="195" y="93">P3</text></g>
+ <g fill="#7d879b"><rect x="58" y="108" width="34" height="24" rx="3"/><rect x="118" y="108" width="34" height="24" rx="3"/><rect x="178" y="108" width="34" height="24" rx="3"/></g>
+ <g stroke="#16244a"><line x1="75" y1="100" x2="75" y2="108"/><line x1="135" y1="100" x2="135" y2="108"/><line x1="195" y1="100" x2="195" y2="108"/></g>
+ <text x="135" y="150" text-anchor="middle" font-size="8.5">Back-end parallel system</text>
+</svg>
+<div class="cap">Figure 3.11 — Parallel system</div>
+</div>
+</div>
+<div>
+<h4>Distributed systems</h4>
+<ul>
+<li>Distributed database systems are <mark>loosely coupled</mark> and composed of <b>individual machines</b>.</li>
+<li>Each machine can run its <b>own application</b> and serve its <b>own users</b>.</li>
+<li>Data is usually <b>distributed across several machines</b>, so quite a number of machines may need to be accessed to answer a user query.</li>
+</ul>
+<div class="fig">
+<svg viewBox="0 0 270 160" width="270" font-family="Inter" font-size="9">
+ <ellipse cx="135" cy="125" rx="40" ry="14" fill="#2463eb"/><text x="135" y="129" text-anchor="middle" fill="#fff" font-weight="700">Network</text>
+ <g stroke="#2463eb" stroke-width="1.6"><line x1="60" y1="95" x2="100" y2="120"/><line x1="135" y1="60" x2="135" y2="111"/><line x1="210" y1="95" x2="170" y2="120"/></g>
+ <g fill="#fdf0e8" stroke="#d9622b"><rect x="25" y="55" width="70" height="42" rx="5"/><rect x="100" y="22" width="70" height="42" rx="5"/><rect x="175" y="55" width="70" height="42" rx="5"/></g>
+ <g fill="#16244a"><circle cx="45" cy="76" r="9"/><circle cx="120" cy="43" r="9"/><circle cx="195" cy="76" r="9"/></g>
+ <g fill="#fff" text-anchor="middle" font-weight="700" font-size="8"><text x="45" y="79">P1</text><text x="120" y="46">P2</text><text x="195" y="79">P3</text></g>
+ <g fill="#7d879b"><rect x="62" y="66" width="24" height="22" rx="3"/><rect x="137" y="33" width="24" height="22" rx="3"/><rect x="212" y="66" width="24" height="22" rx="3"/></g>
+ <g fill="#e3e7ef" stroke="#7d879b" font-size="7.5"><rect x="12" y="32" width="30" height="14" rx="2"/><rect x="52" y="32" width="30" height="14" rx="2"/><rect x="100" y="2" width="30" height="14" rx="2"/><rect x="140" y="2" width="30" height="14" rx="2"/><rect x="188" y="32" width="30" height="14" rx="2"/><rect x="228" y="32" width="30" height="14" rx="2"/></g>
+ <g text-anchor="middle" font-size="7.5"><text x="27" y="42">User</text><text x="67" y="42">User</text><text x="115" y="12">User</text><text x="155" y="12">User</text><text x="203" y="42">User</text><text x="243" y="42">User</text></g>
+ <text x="135" y="155" text-anchor="middle" font-size="8.5">each machine serves its own users</text>
+</svg>
+<div class="cap">Figure 3.12 — Distributed system</div>
+</div>
+</div>
+</div>
+<table class="t">
+<tr><th style="width:20%"></th><th>Parallel system</th><th>Distributed system</th></tr>
+<tr><td>Coupling</td><td><b>Tightly</b> coupled</td><td><b>Loosely</b> coupled</td></tr>
+<tr><td>Made of</td><td>Processors cooperating on the <b>same problem</b> (e.g., one large query)</td><td><b>Separate machines</b> connected by a network</td></tr>
+<tr><td>Memory/communication</td><td>Common memory or message passing</td><td>Network messages; data spread across machines</td></tr>
+<tr><td>User's view</td><td>User sees <b>one system</b>; unaware of parallelism</td><td>Each machine runs its own app and serves its own users; a query may contact several nodes</td></tr>
+</table>
+
+<h3>6. Shared nothing architecture</h3>
+<div class="avoid"><p>The three most common types of architecture for <b>multiprocessor, high-transaction-rate systems</b>:</p>
+<div class="fig">
+<svg viewBox="0 0 640 175" width="640" font-family="Inter" font-size="9">
+ <!-- SM -->
+ <text x="105" y="14" text-anchor="middle" font-weight="800" fill="#16244a" font-size="11">1 · Shared Memory (SM)</text>
+ <g fill="#16244a"><rect x="20" y="28" width="46" height="24" rx="3"/><rect x="82" y="28" width="46" height="24" rx="3"/><rect x="144" y="28" width="46" height="24" rx="3"/></g>
+ <g fill="#fff" text-anchor="middle"><text x="43" y="44">CPU</text><text x="105" y="44">CPU</text><text x="167" y="44">CPU</text></g>
+ <g stroke="#16244a"><line x1="43" y1="52" x2="90" y2="78"/><line x1="105" y1="52" x2="105" y2="78"/><line x1="167" y1="52" x2="120" y2="78"/></g>
+ <rect x="45" y="78" width="120" height="28" rx="4" fill="#d9622b"/><text x="105" y="96" text-anchor="middle" fill="#fff" font-weight="700">SHARED MEMORY</text>
+ <g fill="#7d879b"><rect x="35" y="125" width="40" height="24" rx="3"/><rect x="85" y="125" width="40" height="24" rx="3"/><rect x="135" y="125" width="40" height="24" rx="3"/></g><g stroke="#16244a"><line x1="105" y1="106" x2="55" y2="125"/><line x1="105" y1="106" x2="105" y2="125"/><line x1="105" y1="106" x2="155" y2="125"/></g>
+ <g fill="#fff" text-anchor="middle"><text x="55" y="140">Disk</text><text x="105" y="140">Disk</text><text x="155" y="140">Disk</text></g>
+ <text x="105" y="168" text-anchor="middle" fill="#d9622b" font-weight="700">Shared: MEMORY (+ disks)</text>
+ <line x1="215" y1="5" x2="215" y2="170" stroke="#e3e7ef" stroke-width="2"/>
+ <!-- SD -->
+ <text x="320" y="14" text-anchor="middle" font-weight="800" fill="#16244a" font-size="11">2 · Shared Disk (SD)</text>
+ <g fill="#16244a"><rect x="235" y="28" width="46" height="22" rx="3"/><rect x="297" y="28" width="46" height="22" rx="3"/><rect x="359" y="28" width="46" height="22" rx="3"/></g>
+ <g fill="#2463eb"><rect x="235" y="54" width="46" height="20" rx="3"/><rect x="297" y="54" width="46" height="20" rx="3"/><rect x="359" y="54" width="46" height="20" rx="3"/></g>
+ <g fill="#fff" text-anchor="middle"><text x="258" y="43">CPU</text><text x="320" y="43">CPU</text><text x="382" y="43">CPU</text><text x="258" y="68" font-size="7.5">own mem</text><text x="320" y="68" font-size="7.5">own mem</text><text x="382" y="68" font-size="7.5">own mem</text></g>
+ <g stroke="#16244a"><line x1="258" y1="74" x2="305" y2="98"/><line x1="320" y1="74" x2="320" y2="98"/><line x1="382" y1="74" x2="335" y2="98"/></g>
+ <rect x="250" y="98" width="140" height="52" rx="5" fill="#d9622b"/>
+ <g fill="#fdf0e8"><rect x="260" y="112" width="34" height="26" rx="3"/><rect x="303" y="112" width="34" height="26" rx="3"/><rect x="346" y="112" width="34" height="26" rx="3"/></g>
+ <text x="320" y="108" text-anchor="middle" fill="#fff" font-weight="700" font-size="8">SHARED DISKS</text>
+ <text x="320" y="168" text-anchor="middle" fill="#d9622b" font-weight="700">Shared: DISK (private memory)</text>
+ <line x1="425" y1="5" x2="425" y2="170" stroke="#e3e7ef" stroke-width="2"/>
+ <!-- SN -->
+ <text x="532" y="14" text-anchor="middle" font-weight="800" fill="#16244a" font-size="11">3 · Shared Nothing (SN)</text>
+ <g><rect x="440" y="26" width="58" height="104" rx="5" fill="#fdf0e8" stroke="#d9622b"/><rect x="503" y="26" width="58" height="104" rx="5" fill="#fdf0e8" stroke="#d9622b"/><rect x="566" y="26" width="58" height="104" rx="5" fill="#fdf0e8" stroke="#d9622b"/></g>
+ <g fill="#16244a"><rect x="447" y="34" width="44" height="22" rx="3"/><rect x="510" y="34" width="44" height="22" rx="3"/><rect x="573" y="34" width="44" height="22" rx="3"/></g>
+ <g fill="#2463eb"><rect x="447" y="62" width="44" height="22" rx="3"/><rect x="510" y="62" width="44" height="22" rx="3"/><rect x="573" y="62" width="44" height="22" rx="3"/></g>
+ <g fill="#7d879b"><rect x="447" y="90" width="44" height="30" rx="3"/><rect x="510" y="90" width="44" height="30" rx="3"/><rect x="573" y="90" width="44" height="30" rx="3"/></g>
+ <g fill="#fff" text-anchor="middle"><text x="469" y="49">CPU</text><text x="532" y="49">CPU</text><text x="595" y="49">CPU</text><text x="469" y="77">Mem</text><text x="532" y="77">Mem</text><text x="595" y="77">Mem</text><text x="469" y="109">Disk</text><text x="532" y="109">Disk</text><text x="595" y="109">Disk</text></g>
+ <line x1="450" y1="145" x2="615" y2="145" stroke="#2463eb" stroke-width="2.5"/><g stroke="#2463eb"><line x1="469" y1="130" x2="469" y2="145"/><line x1="532" y1="130" x2="532" y2="145"/><line x1="595" y1="130" x2="595" y2="145"/></g>
+ <text x="532" y="168" text-anchor="middle" fill="#d9622b" font-weight="700">Shared: NOTHING (network only)</text>
+</svg>
+<div class="cap">Figure 3.13 — Three multiprocessor architectures</div>
+</div></div>
+<ul>
+<li><b>Shared Memory (SM)</b>: a <b>common central memory</b> is shared by multiple processors.</li>
+<li><b>Shared Disk (SD)</b>: multiple processors share a <b>common collection of disks</b> while having their <b>own private memory</b>. Coordination is needed when many nodes access shared data.</li>
+<li><b>Shared Nothing (SN)</b>: <mark>neither memory nor disk is shared</mark> among processors. Each node has its own processor, memory and storage; nodes communicate through the network.</li>
+</ul>
+<h4>Advantages of a "Shared Nothing Architecture"</h4>
+<div class="cards c2">
+ <div class="card"><h5>🛡 1. Fault isolation</h5><p>A fault in a single node is <b>contained and confined to that node exclusively</b> and exposed only through messages (or lack of it). It doesn't spread through a common memory/disk.</p></div>
+ <div class="card"><h5>📈 2. Scalability</h5><p>If the disk is a shared resource, the controller and disk bandwidth are also shared. <b>Synchronisation</b> is needed to keep a consistent shared state, so nodes must <b>take turns</b> to access critical data — this <b>limits how many nodes can be added</b>. In SN nothing is shared → <b>add nodes freely</b>, no central bottleneck.</p></div>
+</div>
+<div class="box exam"><div class="bt">🎯 Exam tip</div>Hadoop/HDFS (Unit 2!) uses a <b>shared-nothing</b> architecture — each data node has its own CPU, memory and disk. Mention this link in answers; it shows understanding.</div>
+
+<!-- 3.9 -->
+<h2 id="s3-9"><span class="no">3.9</span>CAP theorem<span class="marker">@@s3-9@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>The CAP theorem is also called <mark>Brewer's Theorem</mark>. It states that in a <b>distributed computing environment</b> (a collection of interconnected nodes that share data), it is <b>impossible to provide all three</b> guarantees — <mark>Consistency, Availability and Partition tolerance</mark> — at the same time. <b>At best you can have two of the three — one must be sacrificed.</b></p></div>
+<div class="two" style="grid-template-columns:1fr 1fr">
+<div>
+<div class="cards" style="grid-template-columns:1fr; gap:2.4mm; margin-top:0">
+ <div class="card" style="border-top-color:#2463eb"><h5 style="color:#2463eb">C · Consistency</h5><p>Every read fetches the <b>last write</b> (latest data).</p></div>
+ <div class="card" style="border-top-color:#1f9d55"><h5 style="color:#1f9d55">A · Availability</h5><p>Reads and writes <b>always succeed</b>: each non-failing node returns a response in a reasonable amount of time.</p></div>
+ <div class="card" style="border-top-color:#d9622b"><h5>P · Partition tolerance</h5><p>The system <b>continues to function</b> when a <b>network partition</b> (communication break between nodes) occurs.</p></div>
+</div>
+</div>
+<div class="fig" style="margin-top:0">
+<svg viewBox="0 0 300 270" width="300" font-family="Inter" font-size="8.6">
+ <polygon points="150,30 40,215 260,215" fill="#16244a"/>
+ <text x="150" y="150" text-anchor="middle" fill="#ffd166" font-weight="800" font-size="11">Pick any two!</text>
+ <circle cx="150" cy="30" r="17" fill="#1f9d55"/><text x="150" y="35" text-anchor="middle" fill="#fff" font-weight="800" font-size="13">A</text>
+ <circle cx="40" cy="215" r="17" fill="#2463eb"/><text x="40" y="220" text-anchor="middle" fill="#fff" font-weight="800" font-size="13">C</text>
+ <circle cx="260" cy="215" r="17" fill="#d9622b"/><text x="260" y="220" text-anchor="middle" fill="#fff" font-weight="800" font-size="13">P</text>
+ <text x="72" y="115" text-anchor="end" font-weight="800" fill="#16244a" font-size="10">CA</text>
+ <text x="72" y="128" text-anchor="end">RDBMS:</text><text x="72" y="139" text-anchor="end">PostgreSQL,</text><text x="72" y="150" text-anchor="end">MySQL etc.</text>
+ <text x="228" y="115" font-weight="800" fill="#16244a" font-size="10">AP</text>
+ <text x="228" y="128">Riak, Cassandra,</text><text x="228" y="139">CouchDB,</text><text x="228" y="150">Dynamo-like</text>
+ <text x="150" y="238" text-anchor="middle" font-weight="800" fill="#16244a" font-size="10">CP</text>
+ <text x="150" y="251" text-anchor="middle">HBase, MongoDB, Redis,</text><text x="150" y="262" text-anchor="middle">MemcacheDB, BigTable-like</text>
+</svg>
+<div class="cap">Figure 3.14 — Databases and CAP</div>
+</div>
+</div>
+
+<h3>Understanding CAP with a story</h3>
+<div class="fig">
+<svg viewBox="0 0 640 140" width="640" font-family="Inter" font-size="9.6">
+ <rect x="5" y="10" width="190" height="120" rx="8" fill="#e9f0ff" stroke="#2463eb"/>
+ <text x="100" y="30" text-anchor="middle" font-weight="800" fill="#2463eb">Step 1 ✔</text>
+ <text x="100" y="50" text-anchor="middle">A training coordinator updates</text><text x="100" y="64" text-anchor="middle">your <tspan font-weight="700">3:00 PM training</tspan> schedule</text><text x="100" y="78" text-anchor="middle">with administrator <tspan font-weight="700">Raju</tspan>.</text>
+ <text x="100" y="105" text-anchor="middle" font-size="22">👨‍💼📝</text>
+ <text x="215" y="75" font-size="20" fill="#2463eb">→</text>
+ <rect x="235" y="10" width="190" height="120" rx="8" fill="#fdecee" stroke="#d6334a"/>
+ <text x="330" y="30" text-anchor="middle" font-weight="800" fill="#d6334a">Step 2 ✘</text>
+ <text x="330" y="50" text-anchor="middle">You ask administrator <tspan font-weight="700">Rahul</tspan>.</text><text x="330" y="64" text-anchor="middle">His file was not updated, so he</text><text x="330" y="78" text-anchor="middle">says: "No training at 3:00 PM."</text>
+ <text x="330" y="105" text-anchor="middle" font-size="22">🙅‍♂️❓</text>
+ <text x="445" y="75" font-size="20" fill="#d6334a">→</text>
+ <rect x="465" y="10" width="170" height="120" rx="8" fill="#fff7dc" stroke="#f6b100"/>
+ <text x="550" y="30" text-anchor="middle" font-weight="800" fill="#9a6b00">Problem ⚠</text>
+ <text x="550" y="50" text-anchor="middle">Two administrators give</text><text x="550" y="64" text-anchor="middle">different answers for the</text><text x="550" y="78" text-anchor="middle">same schedule → an</text><text x="550" y="96" text-anchor="middle" font-weight="800" fill="#d6334a">INCONSISTENT view</text><text x="550" y="110" text-anchor="middle">of the data.</text>
+</svg>
+<div class="cap">Figure 3.15 — Scenario: consistency</div>
+</div>
+<ul>
+<li><b>Availability:</b> if an administrator is working, the user should get a response in a reasonable time. Problem: if we force both administrators to <b>synchronise before every response</b>, users may have to <b>wait</b>.</li>
+<li><b>Partition tolerance:</b> suppose Raju and Rahul <b>cannot communicate</b> because of a network problem. A partition-tolerant system <b>continues to operate</b> despite this communication break.</li>
+</ul>
+<div class="cards c2">
+ <div class="card" style="border-top-color:#2463eb"><h5 style="color:#2463eb">C · Choose Consistency during a partition</h5><p><b>Stop or delay</b> some operations until nodes agree → correct/latest data, but <b>some requests may not be served immediately</b>.</p></div>
+ <div class="card" style="border-top-color:#1f9d55"><h5 style="color:#1f9d55">A · Choose Availability during a partition</h5><p><b>Keep answering</b> from reachable nodes → requests get responses, but some responses may <b>temporarily use older data</b>.</p></div>
+</div>
+<div class="box key"><div class="bt">🔑 Key point</div>Network partitions <b>will</b> happen in a distributed system, so P is usually a must. The real choice <b>during a partition</b> is <mark>Consistency vs Availability</mark>.</div>
+
+<h3>CAP combinations</h3>
+<table class="t">
+<tr><th style="width:16%">Combination</th><th>Meaning</th><th>Examples (textbook figure)</th></tr>
+<tr><td>CA</td><td>Consistency + Availability: up-to-date reads and responses while there is <b>no network partition</b> to handle</td><td>Traditional RDBMS — PostgreSQL, MySQL</td></tr>
+<tr><td>CP</td><td>Consistency + Partition tolerance: during a partition, prefer <b>correct/consistent data</b> even if some requests must wait or fail</td><td>HBase, MongoDB, Redis, MemcacheDB, BigTable-like systems</td></tr>
+<tr><td>AP</td><td>Availability + Partition tolerance: during a partition, keep the system <b>responsive</b>, accepting that replicas may <b>temporarily disagree</b></td><td>Riak, Cassandra, CouchDB, Dynamo-like systems</td></tr>
+</table>
+<div class="two">
+<div class="box exam" style="margin-top:0"><div class="bt">Prefer CONSISTENCY when…</div><ul style="margin:0"><li>Incorrect or stale data can cause <b>serious problems</b>.</li><li>Reads and writes must reflect the <b>latest confirmed</b> state.</li></ul><p style="margin-top:1mm">e.g., <b>bank balance</b>, critical inventory update.<br><i>Ask: "Can I tolerate an old value?"</i> → No → choose C.</p></div>
+<div class="box tip" style="margin-top:0"><div class="bt">Prefer AVAILABILITY when…</div><ul style="margin:0"><li>The service must <b>keep responding</b> even during network problems.</li><li>Temporary differences between replicas <b>can be corrected later</b>.</li></ul><p style="margin-top:1mm">e.g., <b>social feeds</b>, caches, highly available services.<br><i>Ask: "Can I tolerate temporary inconsistency?"</i> → Yes → choose A.</p></div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — which DB is where?</div><b>CA</b> = "<b>C</b>lassic <b>A</b>pps" → old RDBMS (MySQL, PostgreSQL).<br><b>CP</b> = "<b>C</b>orrect <b>P</b>lease" → <b>H M R M B</b>: "<b>H</b>appy <b>M</b>onkeys <b>R</b>un <b>M</b>any <b>B</b>ananas" — HBase, MongoDB, Redis, MemcacheDB, BigTable.<br><b>AP</b> = "<b>A</b>lways <b>P</b>resent" → <b>R C C D</b>: "<b>R</b>eal <b>C</b>ats <b>C</b>hase <b>D</b>ogs" — Riak, Cassandra, CouchDB, Dynamo.</div>
+
+<h3>Quick revision — terminologies</h3>
+<table class="t plain">
+<tr><th style="width:24%">Term</th><th>One-line meaning</th></tr>
+<tr><td><b>In-memory analytics</b></td><td>Keep data in RAM for faster analysis.</td></tr>
+<tr><td><b>In-database processing</b></td><td>Run analytics inside the database to reduce data movement.</td></tr>
+<tr><td><b>SMP</b></td><td>Many processors share common memory and one OS (tightly coupled).</td></tr>
+<tr><td><b>MPP</b></td><td>Many processors/nodes work in parallel with dedicated memory and own OS.</td></tr>
+<tr><td><b>Parallel system</b></td><td>Processors cooperate closely (tightly coupled) on the same work.</td></tr>
+<tr><td><b>Distributed system</b></td><td>Independent networked machines cooperate (loosely coupled).</td></tr>
+<tr><td><b>Shared nothing</b></td><td>Each node owns its processor, memory and disk → fault isolation + scalability.</td></tr>
+<tr><td><b>CAP</b></td><td>Consistency + Availability + Partition tolerance — you can guarantee only two.</td></tr>
+</table>
+
+<div class="check"><div class="bt">✅ Before you move on — can you…</div>
+<ul>
+<li>Explain the Amazon &amp; truck examples and draw the Data → Information → Knowledge → Insights pyramid?</li>
+<li>Draw the "What is BDA" figure and explain its 6 points (incl. moving code to data)? List 6 things BDA isn't?</li>
+<li>Explain both schools of classification + the 1.0/2.0/3.0 table and staircase?</li>
+<li>List the 7 top challenges and draw the 4-quadrant reactive/proactive figure?</li>
+<li>Define data science, draw the Venn diagram, and explain business, technology &amp; maths skills?</li>
+<li>Explain the 4 responsibilities of a data scientist with an example?</li>
+<li>Explain in-memory, in-database, SMP vs MPP, parallel vs distributed, SM/SD/SN with diagrams?</li>
+<li>State CAP, draw the triangle with databases, and say when to prefer C or A?</li>
+</ul></div>
+</section>
