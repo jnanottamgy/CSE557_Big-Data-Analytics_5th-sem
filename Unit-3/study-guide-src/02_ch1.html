@@ -1,0 +1,349 @@
+
+<!-- ================= CHAPTER 1 ================= -->
+<section class="ch3">
+<div class="chapter-open" id="ch1"><p class="marker">@@ch1@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Chapter 1</div>
+  <h1>Apache Spark Architecture</h1>
+  <div class="learn"><b>What you'll learn</b>
+    <ol><li>What Spark is and why it's fast</li><li>The 6 Spark components</li><li>SparkContext, Spark Shell, application</li><li>Job, stage and task</li><li>Master/slave: driver &amp; executors</li><li>Driver, executor, cluster manager, worker</li><li>DAG Scheduler &amp; Task Scheduler</li><li>Run-time flow, step by step</li></ol>
+  </div>
+  <div class="meta"><span>⏱ ≈ 2 hours</span><span>Slides: Spark Architecture (pp. 1–16)</span><span>Abbasi Ch. 1</span></div>
+</div>
+
+<!-- 1.1 -->
+<h2 id="s1-1"><span class="no">1.1</span>What is Apache Spark?<span class="marker">@@s1-1@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Spark is a tool for <b>processing large datasets quickly</b>. Like Hadoop MapReduce, it spreads work over many computers — but it keeps data <b>in memory (RAM)</b> between steps instead of writing to disk every time, so it is <b>much faster</b>. It works on <b>one computer or many computers</b>.</div>
+<div class="def"><span class="dt">Definition</span><p>Apache Spark is an <mark>open-source cluster computing framework for data analytics</mark>, designed for <b>quick computation</b> using a simple cluster technology. It supports <mark>in-memory cluster computing</mark> and <b>parallel processing</b>, and promises to be <mark>faster than Hadoop</mark>.</p></div>
+<div class="two">
+<div>
+<h4>Key features (from your slides)</h4>
+<ul>
+<li>Used for <b>data processing</b> — a tool for processing large datasets quickly.</li>
+<li>Works on <b>one computer or many computers</b> (a cluster).</li>
+<li>Supports <b>in-memory</b> cluster computing and <b>parallel processing</b>.</li>
+<li>Supports various <b>high-level tools</b> for data analysis (SQL, streaming, ML, graphs).</li>
+<li>Provides APIs for <mark>Scala, Java and Python</mark> (plus SQL and R).</li>
+<li>In your course you will use <mark>Python (PySpark) on one Ubuntu machine</mark>.</li>
+</ul>
+</div>
+<div>
+<h4>A little history <span class="textbook">from textbook</span></h4>
+<ul>
+<li>Started in <b>2009</b> at UC Berkeley's <b>AMPLab</b> by <b>Matei Zaharia</b>.</li>
+<li>Open-sourced in 2010; became an <b>Apache top-level project in 2014</b>.</li>
+<li>Written mainly in <b>Scala</b>; runs on the Java Virtual Machine.</li>
+<li>Claimed to run programs up to <mark>100× faster than Hadoop MapReduce in memory</mark>, and about <b>10× faster on disk</b>.</li>
+</ul>
+</div>
+</div>
+<div class="fig">
+<svg viewBox="0 0 640 150" width="640" font-family="Inter" font-size="9.6">
+ <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#5b6478"/></marker></defs>
+ <text x="155" y="14" text-anchor="middle" font-weight="800" fill="#16244a" font-size="11">Hadoop MapReduce — disk between every step</text>
+ <g fill="#2a9df4"><rect x="10" y="45" width="60" height="30" rx="4"/><rect x="125" y="45" width="60" height="30" rx="4"/><rect x="240" y="45" width="60" height="30" rx="4"/></g>
+ <g fill="#fff" text-anchor="middle" font-weight="700"><text x="40" y="64">Job 1</text><text x="155" y="64">Job 2</text><text x="270" y="64">Job 3</text></g>
+ <g fill="#7d879b"><ellipse cx="97" cy="105" rx="20" ry="6"/><rect x="77" y="105" width="40" height="18"/><ellipse cx="97" cy="123" rx="20" ry="6"/><ellipse cx="212" cy="105" rx="20" ry="6"/><rect x="192" y="105" width="40" height="18"/><ellipse cx="212" cy="123" rx="20" ry="6"/></g>
+ <g text-anchor="middle" font-size="8" fill="#fff"><text x="97" y="118">disk</text><text x="212" y="118">disk</text></g>
+ <g stroke="#d6334a" stroke-width="1.6" fill="none" marker-end="url(#a1)"><path d="M70 70 L 88 100"/><path d="M106 100 L 124 70"/><path d="M185 70 L 203 100"/><path d="M221 100 L 239 70"/></g>
+ <text x="155" y="145" text-anchor="middle" font-size="8.8" fill="#d6334a" font-weight="700">write to disk → read from disk (slow)</text>
+ <line x1="320" y1="10" x2="320" y2="145" stroke="#e3e7ef" stroke-width="2"/>
+ <text x="485" y="14" text-anchor="middle" font-weight="800" fill="#16244a" font-size="11">Spark — data stays in memory</text>
+ <g fill="#e0533a"><rect x="345" y="45" width="60" height="30" rx="4"/><rect x="455" y="45" width="60" height="30" rx="4"/><rect x="565" y="45" width="60" height="30" rx="4"/></g>
+ <g fill="#fff" text-anchor="middle" font-weight="700"><text x="375" y="64">Step 1</text><text x="485" y="64">Step 2</text><text x="595" y="64">Step 3</text></g>
+ <rect x="345" y="95" width="280" height="26" rx="5" fill="#e8f7ee" stroke="#1f9d55"/><text x="485" y="112" text-anchor="middle" font-weight="700" fill="#1f9d55">RAM (in-memory cache)</text>
+ <g stroke="#1f9d55" stroke-width="1.6" marker-end="url(#a1)"><line x1="405" y1="60" x2="453" y2="60"/><line x1="515" y1="60" x2="563" y2="60"/></g>
+ <text x="485" y="145" text-anchor="middle" font-size="8.8" fill="#1f9d55" font-weight="700">pass data in memory (fast — up to 100×)</text>
+</svg>
+<div class="cap">Figure 1.1 — Why Spark is faster than Hadoop MapReduce for multi-step work</div>
+</div>
+<div class="box key"><div class="bt">🔑 Key point</div>Spark's big idea is <mark>in-memory computing</mark>. That makes it great for <b>iterative</b> work (machine learning, which loops over the same data many times) and <b>interactive</b> work (asking many quick questions of the same data).</div>
+
+<!-- 1.2 -->
+<h2 id="s1-2"><span class="no">1.2</span>Spark components (the Spark stack)<span class="marker">@@s1-2@@</span></h2>
+<div class="fig">
+<svg viewBox="0 0 600 205" width="600" font-family="Inter" font-size="10">
+ <text x="300" y="16" text-anchor="middle" font-weight="800" fill="#16244a" font-size="12">Apache Spark Components</text>
+ <g fill="#fdf0e8" stroke="#d9622b" stroke-width="1.3">
+  <rect x="20" y="30" width="105" height="58" rx="6"/><rect x="135" y="30" width="105" height="58" rx="6"/><rect x="250" y="30" width="105" height="58" rx="6"/><rect x="365" y="30" width="105" height="58" rx="6"/><rect x="480" y="30" width="100" height="58" rx="6"/></g>
+ <g text-anchor="middle" font-weight="800" fill="#d9622b"><text x="72" y="54">Spark SQL</text><text x="187" y="54">Spark</text><text x="302" y="54">MLlib</text><text x="417" y="54">GraphX</text><text x="530" y="54">SparkR</text></g>
+ <g text-anchor="middle" font-size="8.6" fill="#5b6478"><text x="72" y="68">+ DataFrames</text><text x="72" y="80">structured data</text><text x="187" y="68">Streaming</text><text x="187" y="80">live data</text><text x="302" y="68">machine</text><text x="302" y="80">learning</text><text x="417" y="68">graph</text><text x="417" y="80">computation</text><text x="530" y="68">R front end</text><text x="530" y="80">R shell</text></g>
+ <rect x="20" y="98" width="560" height="62" rx="6" fill="#d9622b"/>
+ <text x="300" y="118" text-anchor="middle" fill="#fff" font-weight="800" font-size="12">Spark Core API</text>
+ <g fill="#fff" opacity=".92"><rect x="95" y="128" width="70" height="22" rx="4"/><rect x="180" y="128" width="70" height="22" rx="4"/><rect x="265" y="128" width="70" height="22" rx="4"/><rect x="350" y="128" width="70" height="22" rx="4"/><rect x="435" y="128" width="70" height="22" rx="4"/></g>
+ <g text-anchor="middle" font-weight="700" fill="#b4441c"><text x="130" y="143">R</text><text x="215" y="143">SQL</text><text x="300" y="143">Python</text><text x="385" y="143">Scala</text><text x="470" y="143">Java</text></g>
+ <rect x="20" y="170" width="560" height="28" rx="6" fill="#16244a"/>
+ <text x="300" y="188" text-anchor="middle" fill="#fff" font-weight="700">Cluster manager: Standalone · YARN · Mesos (· Kubernetes)</text>
+</svg>
+<div class="cap">Figure 1.2 — The Spark stack: libraries on top of Spark Core, running on a cluster manager</div>
+</div>
+<div class="cards c2">
+ <div class="card"><h5>⚙️ Spark Core</h5><p>The <mark>foundation everything else runs on</mark> — provides the <b>execution platform</b> for every Spark application (task scheduling, memory management, fault recovery, talking to storage). Language APIs: R, SQL, Python, Scala, Java.</p></div>
+ <div class="card"><h5>🗃 Spark SQL</h5><p>Lets you run <b>SQL and HiveQL queries</b> against <b>structured and semi-structured data</b>, often meaningfully <b>faster</b> than the same queries on older systems. Comes with <b>DataFrames</b>.</p></div>
+ <div class="card"><h5>🌊 Spark Streaming</h5><p>Processes <mark>live data</mark> by breaking it into <b>small micro-batches</b> that run on top of Spark Core. <span class="ex">e.g., live tweets, sensor feeds, server logs.</span></p></div>
+ <div class="card"><h5>🤖 MLlib</h5><p>Spark's <b>machine learning library</b>, built to use <b>in-memory processing</b> for <b>iterative algorithms</b> that would otherwise be slow. (Unit 4 topic.)</p></div>
+ <div class="card"><h5>🕸 GraphX</h5><p>A <b>graph computation engine</b> for processing <b>graph-structured data</b> at scale. <span class="ex">e.g., social networks, page rank.</span></p></div>
+ <div class="card"><h5>📊 SparkR</h5><p>A lightweight <b>front end for R users</b> to analyse large datasets and run jobs interactively from the <b>R shell</b> — R's usability + Spark's scalability.</p></div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — 6 components</div>"<b>C</b>ool <b>S</b>tudents <b>S</b>tream <b>M</b>ovies, <b>G</b>raphs &amp; <b>R</b>eels" → <b>C</b>ore · <b>S</b>QL · <b>S</b>treaming · <b>M</b>Llib · <b>G</b>raphX · Spark<b>R</b>. Core is the floor; the other five sit on top.</div>
+
+<!-- 1.3 -->
+<h2 id="s1-3"><span class="no">1.3</span>Apache Spark terminology<span class="marker">@@s1-3@@</span></h2>
+<div class="def"><span class="dt">SparkContext</span><p>The <mark>entry point of a Spark application</mark>. It <b>connects to the Spark execution environment</b> and is used to <b>create RDDs, accumulators and broadcast variables</b>, access Spark services, and <b>run jobs</b>.</p></div>
+<div class="two" style="grid-template-columns:1fr 1fr">
+<div>
+<h4>Responsibilities of SparkContext</h4>
+<ol>
+<li>Checking the <b>current status</b> of a Spark application</li>
+<li><b>Cancelling</b> a job or a stage</li>
+<li>Running a job <b>synchronously or asynchronously</b></li>
+<li>Accessing or <b>unpersisting a cached RDD</b></li>
+<li>Programmable <b>dynamic allocation</b> of resources</li>
+</ol>
+<div class="box mem" style="margin-top:2mm"><div class="bt">🧠 Memory trick</div>"<b>S C R A D</b>" → <b>S</b>tatus · <b>C</b>ancel · <b>R</b>un · <b>A</b>ccess cache · <b>D</b>ynamic allocation — "<b>S</b>park <b>C</b>an <b>R</b>un <b>A</b>ny <b>D</b>ata".</div>
+</div>
+<div>
+<div class="card" style="margin-bottom:3mm"><h5>💻 Spark Shell</h5><p>A Spark application written in <b>Scala</b> that gives you a <mark>command-line environment with auto-completion</mark>. Useful for getting familiar with Spark's features <b>before writing a standalone application</b>. (<code>spark-shell</code> for Scala, <code>pyspark</code> for Python.)</p></div>
+<div class="card"><h5>📦 Spark Application</h5><p>A <mark>self-contained computation that runs user-supplied code to produce a result</mark>. It can have processes running on its behalf <b>even when it is not actively running a job</b> (its executors stay alive).</p></div>
+<div class="box tip" style="margin-top:3mm"><div class="bt">💡 SparkSession <span class="textbook">from textbook</span></div>From <b>Spark 2.0</b>, <code>SparkSession</code> is the single, unified entry point. It wraps the SparkContext (plus SQLContext and HiveContext). Get the context with <code>spark.sparkContext</code>.</div>
+</div>
+</div>
+
+<h3>Task, Job and Stage</h3>
+<div class="cards c3">
+ <div class="card"><h5>🔹 Task</h5><p>The <mark>smallest unit of work</mark>, sent to a <b>single executor</b>. <b>Each partition</b> of an RDD gets its own task.</p></div>
+ <div class="card"><h5>🔷 Job</h5><p>A <mark>parallel computation made up of multiple tasks</mark>, created <b>in response to an action</b> (e.g., <code>count()</code>, <code>collect()</code>).</p></div>
+ <div class="card"><h5>🧱 Stage</h5><p>A <mark>set of tasks within a job</mark> that depend on each other. A job is split into stages because <b>not every computation can happen in one pass</b> — some steps must wait for others (e.g., a shuffle) to finish first.</p></div>
+</div>
+<div class="fig">
+<svg viewBox="0 0 620 175" width="620" font-family="Inter" font-size="9.5">
+ <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d9622b"/></marker></defs>
+ <rect x="5" y="70" width="95" height="36" rx="6" fill="#16244a"/><text x="52" y="86" text-anchor="middle" fill="#ffd166" font-weight="700">Action</text><text x="52" y="99" text-anchor="middle" fill="#fff" font-size="8.4">e.g. count()</text>
+ <line x1="100" y1="88" x2="125" y2="88" stroke="#d9622b" stroke-width="2" marker-end="url(#a2)"/>
+ <rect x="130" y="10" width="485" height="160" rx="8" fill="#fdf0e8" stroke="#d9622b"/>
+ <text x="145" y="28" font-weight="800" fill="#d9622b" font-size="11">JOB</text>
+ <rect x="145" y="38" width="210" height="120" rx="6" fill="#fff" stroke="#b4441c"/><text x="250" y="54" text-anchor="middle" font-weight="700" fill="#b4441c">Stage 1 (e.g. read + map)</text>
+ <rect x="390" y="38" width="210" height="120" rx="6" fill="#fff" stroke="#b4441c"/><text x="495" y="54" text-anchor="middle" font-weight="700" fill="#b4441c">Stage 2 (e.g. reduce)</text>
+ <g fill="#e0533a"><rect x="160" y="66" width="56" height="24" rx="4"/><rect x="222" y="66" width="56" height="24" rx="4"/><rect x="284" y="66" width="56" height="24" rx="4"/><rect x="160" y="98" width="56" height="24" rx="4"/><rect x="405" y="66" width="56" height="24" rx="4"/><rect x="467" y="66" width="56" height="24" rx="4"/><rect x="529" y="66" width="56" height="24" rx="4"/></g>
+ <g fill="#fff" text-anchor="middle" font-size="8.6" font-weight="700"><text x="188" y="82">Task</text><text x="250" y="82">Task</text><text x="312" y="82">Task</text><text x="188" y="114">Task</text><text x="433" y="82">Task</text><text x="495" y="82">Task</text><text x="557" y="82">Task</text></g>
+ <text x="250" y="145" text-anchor="middle" font-size="8.4" fill="#5b6478">one task per partition</text>
+ <line x1="355" y1="98" x2="388" y2="98" stroke="#d9622b" stroke-width="2" marker-end="url(#a2)"/><text x="372" y="122" text-anchor="middle" font-size="8">shuffle</text><text x="372" y="132" text-anchor="middle" font-size="8">(wait)</text>
+ <text x="495" y="145" text-anchor="middle" font-size="8.4" fill="#5b6478">starts after Stage 1 finishes</text>
+</svg>
+<div class="cap">Figure 1.3 — An action creates a job; the job is split into stages; each stage runs many tasks</div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick — size order</div><b>Application ⊃ Job ⊃ Stage ⊃ Task</b> — "<b>A</b>ll <b>J</b>obs <b>S</b>plit into <b>T</b>asks". An application can run many jobs; each action = one job.</div>
+<div class="box warn"><div class="bt">⚠️ Don't confuse with Hadoop (Unit 2)</div>In Hadoop, a <b>job</b> = one map phase + one reduce phase. In Spark, a <b>job</b> is triggered by an <b>action</b> and can have <b>many stages</b> — so one Spark job can do the work of several chained MapReduce jobs.</div>
+
+<!-- 1.4 -->
+<h2 id="s1-4"><span class="no">1.4</span>Internal working of Spark — master/slave<span class="marker">@@s1-4@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Think of a <b>restaurant</b>. The <b>driver</b> is the head chef who reads the order (your program) and plans the work. The <b>executors</b> are the cooks who actually chop and cook (process data). The <b>cluster manager</b> is the restaurant manager who decides how many cooks and stoves each head chef gets.</div>
+<ul>
+<li>Similar to Hadoop, Spark also uses a <mark>master–slave architecture</mark>: <b>one master and many slaves</b>.</li>
+<li>The <mark>driver is the central coordinator</mark>.</li>
+<li>The driver and each executor <b>run in their own Java process</b>. Drivers handle a <b>large number of executors</b>; each executor works as a <b>separate Java process</b>.</li>
+<li>A <mark>Spark application is a collaboration of a driver and its executors</mark>.</li>
+<li>Spark has its <b>own cluster manager</b>, the <mark>standalone cluster manager</mark>. It can also work with open-source cluster managers like <mark>YARN</mark> and <mark>Mesos</mark>.</li>
+</ul>
+
+<!-- 1.5 -->
+<h2 id="s1-5"><span class="no">1.5</span>Apache Spark architecture overview<span class="marker">@@s1-5@@</span></h2>
+<div class="fig">
+<svg viewBox="0 0 620 285" width="620" font-family="Inter" font-size="10">
+ <defs><marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#16244a"/></marker><marker id="b0" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0L0,5L10,10z" fill="#16244a"/></marker></defs>
+ <rect x="5" y="100" width="165" height="85" rx="7" fill="#fff" stroke="#16244a" stroke-width="1.4"/><text x="87" y="120" text-anchor="middle" font-weight="800" fill="#16244a">Driver Program</text>
+ <rect x="22" y="132" width="130" height="38" rx="5" fill="#fdf0e8" stroke="#d9622b"/><text x="87" y="155" text-anchor="middle" font-weight="700" fill="#b4441c">SparkContext</text>
+ <rect x="225" y="125" width="150" height="50" rx="7" fill="#16244a"/><text x="300" y="147" text-anchor="middle" fill="#fff" font-weight="800">Cluster Manager</text><text x="300" y="162" text-anchor="middle" fill="#c8d0ea" font-size="8.6">Standalone / YARN / Mesos</text>
+ <line x1="153" y1="151" x2="223" y2="151" stroke="#16244a" stroke-width="1.6" marker-start="url(#b0)" marker-end="url(#b1)"/>
+ <g>
+ <rect x="425" y="15" width="190" height="110" rx="7" fill="#fff" stroke="#16244a" stroke-width="1.4"/><text x="437" y="32" font-weight="800">Worker Node</text>
+ <rect x="440" y="40" width="160" height="75" rx="5" fill="#fdf0e8" stroke="#d9622b"/><text x="452" y="56" font-weight="700" fill="#b4441c">Executor</text>
+ <rect x="530" y="45" width="60" height="18" rx="3" fill="#fbd5bf" stroke="#d9622b"/><text x="560" y="58" text-anchor="middle" font-size="9">Cache</text>
+ <rect x="455" y="78" width="60" height="26" rx="3" fill="#e0533a"/><rect x="525" y="78" width="60" height="26" rx="3" fill="#e0533a"/><text x="485" y="95" text-anchor="middle" fill="#fff" font-weight="700">Task</text><text x="555" y="95" text-anchor="middle" fill="#fff" font-weight="700">Task</text>
+ </g>
+ <g>
+ <rect x="425" y="165" width="190" height="110" rx="7" fill="#fff" stroke="#16244a" stroke-width="1.4"/><text x="437" y="182" font-weight="800">Worker Node</text>
+ <rect x="440" y="190" width="160" height="75" rx="5" fill="#fdf0e8" stroke="#d9622b"/><text x="452" y="206" font-weight="700" fill="#b4441c">Executor</text>
+ <rect x="530" y="195" width="60" height="18" rx="3" fill="#fbd5bf" stroke="#d9622b"/><text x="560" y="208" text-anchor="middle" font-size="9">Cache</text>
+ <rect x="455" y="228" width="60" height="26" rx="3" fill="#e0533a"/><rect x="525" y="228" width="60" height="26" rx="3" fill="#e0533a"/><text x="485" y="245" text-anchor="middle" fill="#fff" font-weight="700">Task</text><text x="555" y="245" text-anchor="middle" fill="#fff" font-weight="700">Task</text>
+ </g>
+ <g stroke="#16244a" stroke-width="1.6" fill="none">
+  <line x1="375" y1="140" x2="423" y2="95" marker-start="url(#b0)" marker-end="url(#b1)"/>
+  <line x1="375" y1="160" x2="423" y2="205" marker-start="url(#b0)" marker-end="url(#b1)"/>
+  <path d="M90 100 C 120 30, 330 25, 423 40" marker-start="url(#b0)" marker-end="url(#b1)"/>
+  <path d="M90 185 C 120 270, 330 275, 423 260" marker-start="url(#b0)" marker-end="url(#b1)"/>
+  <line x1="600" y1="127" x2="600" y2="163" marker-start="url(#b0)" marker-end="url(#b1)"/>
+ </g>
+ <text x="250" y="62" text-anchor="middle" font-size="8.6" fill="#5b6478">driver sends tasks, executors report back</text>
+ <text x="190" y="143" text-anchor="middle" font-size="8.4" fill="#5b6478">request</text>
+ <text x="408" y="150" font-size="8.4" fill="#5b6478" text-anchor="end">launch</text>
+</svg>
+<div class="cap">Figure 1.4 — Apache Spark architecture overview (driver program, cluster manager, worker nodes)</div>
+</div>
+<div class="box exam"><div class="bt">🎯 Exam tip — this is THE diagram</div>"Explain the Spark architecture with a neat diagram" is the most likely question from this part. Draw <b>Driver Program (SparkContext) ↔ Cluster Manager ↔ Worker Nodes (Executor + Cache + Tasks)</b>, plus the direct arrows from driver to executors. Then explain each box using the table and cards below.</div>
+
+<h3>The three main roles</h3>
+<table class="t">
+<tr><th style="width:33%">Driver</th><th style="width:33%">Executor</th><th>Cluster Manager</th></tr>
+<tr><td style="font-weight:400">• <b>Job scheduling</b> &amp; <b>negotiation with the cluster manager</b><br>• <b>Stores RDD information</b> (metadata — how each RDD is built)</td><td style="font-weight:400">• <b>Performs all data processing</b><br>• <b>Stores computation results in memory</b> (cache)</td><td style="font-weight:400">• <b>Acquiring resources</b> from the Spark cluster<br>• e.g., <b>YARN, Mesos</b> (or Standalone)</td></tr>
+</table>
+
+<h3>Each part in detail</h3>
+<div class="cards c2">
+ <div class="card"><h5>🧠 Driver Program</h5>
+ <ul style="margin:0;font-size:9.2pt">
+ <li>A process that <mark>runs the main() function</mark> of the application and <mark>creates the SparkContext object</mark>.</li>
+ <li>The purpose of SparkContext is to <b>coordinate applications</b>, running as independent sets of processes on a cluster.</li>
+ <li>Can run in <b>client mode or cluster mode</b> on different types of cluster managers.</li>
+ <li>Tasks it performs: (1) it requires user code or methods to be <b>cleaned</b> (prepared to ship); (2) then it works over the application code to <b>process it</b>. The application code can be given as <b>JAR or Python files</b> passed to the SparkContext.</li>
+ </ul></div>
+ <div class="card"><h5>🧭 Cluster Manager</h5>
+ <ul style="margin:0;font-size:9.2pt">
+ <li>Its role is to <mark>allocate resources across applications</mark>.</li>
+ <li>Spark is capable of running on a <b>large number of clusters</b>.</li>
+ <li>Various types: <mark>Hadoop YARN, Apache Mesos and Standalone Scheduler</mark>.</li>
+ <li>The <b>Standalone Scheduler</b> is a standalone Spark cluster manager that makes it easy to install Spark on an <b>empty set of machines</b>.</li>
+ </ul></div>
+ <div class="card"><h5>🖥 Worker Node</h5>
+ <ul style="margin:0;font-size:9.2pt">
+ <li>The worker node is a <mark>slave node</mark>.</li>
+ <li>Its role is to <b>run the application code</b> in the cluster.</li>
+ </ul></div>
+ <div class="card"><h5>👷 Executor</h5>
+ <ul style="margin:0;font-size:9.2pt">
+ <li>A <mark>process launched for an application on a worker node</mark>.</li>
+ <li>It <b>runs tasks</b> and keeps data in <b>memory or disk storage</b> across them.</li>
+ <li>It <b>reads and writes data</b> to external sources.</li>
+ <li><b>Every application has its own executors.</b></li>
+ </ul></div>
+</div>
+<div class="card avoid" style="margin-bottom:4mm"><h5>🔹 Task</h5><p>A <b>unit of work that will be sent to one executor</b>.</p></div>
+<div class="box mem"><div class="bt">🧠 Memory trick — restaurant again</div><b>Driver</b> = head chef (plans, creates SparkContext) · <b>Cluster Manager</b> = restaurant manager (gives out stoves) · <b>Worker node</b> = kitchen station · <b>Executor</b> = cook at that station (cooks + keeps ingredients ready = cache) · <b>Task</b> = one dish order.</div>
+<div class="box warn"><div class="bt">⚠️ Common mistake</div>The <b>cluster manager does not run your code</b> and does not schedule tasks — it only <b>gives resources</b> (launches executors). <b>Task scheduling is done by the driver</b>.</div>
+
+<!-- 1.6 -->
+<h2 id="s1-6"><span class="no">1.6</span>Internals of job execution in Spark<span class="marker">@@s1-6@@</span></h2>
+<div class="fig">
+<svg viewBox="0 0 640 330" width="640" font-family="Inter" font-size="9.2">
+ <defs><marker id="c1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#16244a"/></marker></defs>
+ <rect x="5" y="40" width="175" height="105" rx="7" fill="#16244a"/>
+ <text x="15" y="58" fill="#ffd166" font-weight="800" font-size="10.5">Driver Program</text>
+ <g font-family="DejaVu Sans Mono" font-size="7.8" fill="#9be59b"><text x="15" y="76">spark = SparkSession.builder…</text><text x="15" y="89">sc = spark.sparkContext</text><text x="15" y="102">rdd = sc.textFile(…)</text><text x="15" y="115">rdd = rdd.filter(…)</text><text x="15" y="128">rdd = rdd.map(…)</text><text x="15" y="141" fill="#ffd166">rdd.count()  ← Action</text></g>
+ <rect x="240" y="40" width="150" height="75" rx="7" fill="#7d879b"/><text x="315" y="58" text-anchor="middle" fill="#fff" font-weight="800">Cluster Manager</text>
+ <g fill="#fff" font-size="8" text-anchor="middle"><text x="315" y="74">allocates resources &amp;</text><text x="315" y="86">instructs workers to execute</text><text x="315" y="98">the job; tracks submitted</text><text x="315" y="110">jobs, reports back status</text></g>
+ <line x1="180" y1="70" x2="238" y2="70" stroke="#16244a" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#c1)"/><text x="209" y="60" text-anchor="middle" font-size="7.8">request for</text><text x="209" y="85" text-anchor="middle" font-size="7.8">executors</text>
+ <rect x="60" y="160" width="330" height="22" rx="5" fill="#d9622b"/><text x="225" y="175" text-anchor="middle" fill="#fff" font-weight="800">SparkContext</text>
+ <line x1="92" y1="145" x2="92" y2="158" stroke="#16244a" stroke-width="1.4" marker-end="url(#c1)"/>
+ <rect x="5" y="195" width="400" height="125" rx="7" fill="#fdf0e8" stroke="#d9622b"/>
+ <text x="15" y="212" font-weight="800" fill="#b4441c" font-size="10">DAG Scheduler</text><text x="395" y="212" text-anchor="end" font-weight="800" fill="#b4441c" font-size="10">Task Scheduler</text>
+ <rect x="15" y="250" width="40" height="22" rx="4" fill="#16244a"/><text x="35" y="265" text-anchor="middle" fill="#fff" font-weight="700">Job</text>
+ <line x1="55" y1="261" x2="80" y2="261" stroke="#16244a" stroke-width="1.4" marker-end="url(#c1)"/>
+ <rect x="85" y="222" width="95" height="78" rx="6" fill="#fff" stroke="#b4441c" stroke-dasharray="4 2"/>
+ <g fill="#16244a"><rect x="95" y="230" width="34" height="16" rx="3"/><rect x="137" y="230" width="34" height="16" rx="3"/><rect x="116" y="254" width="34" height="16" rx="3"/><rect x="116" y="278" width="34" height="16" rx="3"/></g>
+ <g fill="#fff" text-anchor="middle" font-size="7.6" font-weight="700"><text x="112" y="241">RDD1</text><text x="154" y="241">RDD2</text><text x="133" y="265">RDD</text><text x="133" y="289">RDD</text></g>
+ <line x1="180" y1="261" x2="205" y2="261" stroke="#16244a" stroke-width="1.4" marker-end="url(#c1)"/>
+ <rect x="210" y="222" width="55" height="78" rx="6" fill="#fff" stroke="#b4441c" stroke-dasharray="4 2"/>
+ <g fill="#e0533a"><rect x="218" y="228" width="40" height="14" rx="3"/><rect x="218" y="246" width="40" height="14" rx="3"/><rect x="218" y="264" width="40" height="14" rx="3"/><rect x="218" y="282" width="40" height="14" rx="3"/></g>
+ <g fill="#fff" text-anchor="middle" font-size="7.4" font-weight="700"><text x="238" y="238">Task</text><text x="238" y="256">Task</text><text x="238" y="274">Task</text><text x="238" y="292">Task</text></g>
+ <line x1="265" y1="261" x2="295" y2="261" stroke="#16244a" stroke-width="1.4" marker-end="url(#c1)"/>
+ <g fill="#fff" stroke="#b4441c"><rect x="305" y="232" width="60" height="44" rx="3"/><rect x="311" y="238" width="60" height="44" rx="3"/><rect x="317" y="244" width="60" height="44" rx="3"/></g><text x="347" y="270" text-anchor="middle" font-weight="800" fill="#b4441c">Tasks</text>
+ <g font-size="7.6" fill="#5b6478"><text x="15" y="290">as the action is</text><text x="15" y="300">encountered, it</text><text x="15" y="310">creates the job</text>
+ <text x="85" y="314">build operator DAG, split graph into stages,</text><text x="300" y="300">launch tasks via</text><text x="300" y="310">cluster manager</text></g>
+ <g fill="#5b4a2e"><rect x="470" y="25" width="165" height="72" rx="7"/><rect x="470" y="125" width="165" height="72" rx="7"/><rect x="470" y="225" width="165" height="72" rx="7"/></g>
+ <g fill="#ffd166" font-weight="800" text-anchor="middle"><text x="552" y="41">Worker Node</text><text x="552" y="141">Worker Node</text><text x="552" y="241">Worker Node</text></g>
+ <g fill="#14b8a6"><rect x="485" y="48" width="135" height="40" rx="5"/><rect x="485" y="148" width="135" height="40" rx="5"/><rect x="485" y="248" width="135" height="40" rx="5"/></g>
+ <g fill="#fff" font-weight="700" text-anchor="middle"><text x="552" y="62">Executor</text><text x="552" y="162">Executor</text><text x="552" y="262">Executor</text></g>
+ <g fill="#16244a"><rect x="500" y="68" width="45" height="14" rx="7"/><rect x="560" y="68" width="45" height="14" rx="7"/><rect x="500" y="168" width="45" height="14" rx="7"/><rect x="560" y="168" width="45" height="14" rx="7"/><rect x="500" y="268" width="45" height="14" rx="7"/><rect x="560" y="268" width="45" height="14" rx="7"/></g>
+ <g fill="#fff" font-size="7.6" text-anchor="middle"><text x="522" y="78">Task</text><text x="582" y="78">Task</text><text x="522" y="178">Task</text><text x="582" y="178">Task</text><text x="522" y="278">Task</text><text x="582" y="278">Task</text></g>
+ <g stroke="#16244a" stroke-width="1.3" stroke-dasharray="4 3" fill="none" marker-end="url(#c1)"><line x1="390" y1="78" x2="468" y2="60"/><line x1="390" y1="85" x2="468" y2="160"/><line x1="405" y1="265" x2="468" y2="262"/></g>
+ <text x="320" y="18" text-anchor="middle" font-size="8">submit the code (jar files) and configured dependencies to executors</text>
+ <path d="M180 20 L 460 20" stroke="#16244a" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#c1)"/>
+</svg>
+<div class="cap">Figure 1.5 — Internals of job execution in Spark: Driver → SparkContext → DAG Scheduler → Task Scheduler → executors</div>
+</div>
+<ul class="stp">
+<li><span class="sn">1</span>The <b>driver program</b> creates a <code>SparkSession</code>/<code>SparkContext</code> and defines a chain of RDD operations (<code>textFile → filter → map</code>). Nothing runs yet.</li>
+<li><span class="sn">2</span>When an <b>action</b> (e.g., <code>count()</code>) is encountered, a <mark>job</mark> is created.</li>
+<li><span class="sn">3</span>The <mark>DAG Scheduler</mark> builds the <b>operator DAG</b> (graph of RDDs), <b>splits the graph into stages of tasks</b>, and submits each stage to the Task Scheduler as soon as it's ready.</li>
+<li><span class="sn">4</span>The <mark>Task Scheduler</mark> <b>launches the tasks via the cluster manager</b> onto executors.</li>
+<li><span class="sn">5</span>The <b>cluster manager</b> allocates resources and instructs workers to execute the job; it <b>tracks submitted jobs and reports back their status</b>.</li>
+<li><span class="sn">6</span>The application code (<b>JAR files</b>) and configured dependencies are sent to the <b>executors</b> on worker nodes, which run the tasks.</li>
+</ul>
+<div class="box key"><div class="bt">🔑 DAG = Directed Acyclic Graph</div>A graph of steps with arrows that <b>only go forward</b> (no loops). Spark records your operations as a DAG first, <b>optimises</b> it, then runs it — this is why Spark can combine many steps into one stage and be faster than MapReduce.</div>
+
+<!-- 1.7 -->
+<h2 id="s1-7"><span class="no">1.7</span>Run-time architecture of a Spark application<span class="marker">@@s1-7@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>From start to end: the driver <b>asks for workers</b>, the workers <b>report for duty</b>, the driver <b>turns your code into a plan of stages and tasks</b>, sends the tasks out, <b>watches</b> them run, and when you call <code>stop()</code> it <b>sends everyone home</b> and gives the resources back.</div>
+<div class="fig">
+<svg viewBox="0 0 620 125" width="620" font-family="Inter" font-size="8.8">
+ <defs><marker id="d1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#d9622b"/></marker></defs>
+ <g fill="#fdf0e8" stroke="#d9622b">
+  <rect x="5" y="10" width="110" height="46" rx="6"/><rect x="130" y="10" width="110" height="46" rx="6"/><rect x="255" y="10" width="110" height="46" rx="6"/><rect x="380" y="10" width="110" height="46" rx="6"/><rect x="505" y="10" width="110" height="46" rx="6"/>
+  <rect x="5" y="72" width="110" height="46" rx="6"/><rect x="130" y="72" width="110" height="46" rx="6"/><rect x="255" y="72" width="110" height="46" rx="6"/><rect x="380" y="72" width="110" height="46" rx="6"/></g>
+ <rect x="505" y="72" width="110" height="46" rx="6" fill="#16244a"/>
+ <g text-anchor="middle" font-weight="700" fill="#b4441c">
+  <text x="60" y="28">1 Negotiate</text><text x="185" y="28">2 Launch</text><text x="310" y="28">3 Register</text><text x="435" y="28">4 Logical DAG</text><text x="560" y="28">5 Optimise DAG</text>
+  <text x="60" y="90">6 Physical plan</text><text x="185" y="90">7 Tasks → cluster</text><text x="310" y="90">8 Execute</text><text x="435" y="90">9 Monitor &amp; schedule</text><text x="560" y="90" fill="#ffd166">10 stop()</text></g>
+ <g text-anchor="middle" font-size="7.8" fill="#16244a">
+  <text x="60" y="42">driver ↔ cluster mgr</text><text x="60" y="51">for resources</text>
+  <text x="185" y="42">cluster mgr starts</text><text x="185" y="51">executors</text>
+  <text x="310" y="42">executors register</text><text x="310" y="51">with the driver</text>
+  <text x="435" y="42">code → logical</text><text x="435" y="51">DAG</text>
+  <text x="560" y="42">e.g. pipeline</text><text x="560" y="51">transformations</text>
+  <text x="60" y="104">set of stages</text>
+  <text x="185" y="104">small units sent</text><text x="185" y="113">to executors</text>
+  <text x="310" y="104">executors run</text><text x="310" y="113">all assigned tasks</text>
+  <text x="435" y="104">driver tracks cached</text><text x="435" y="113">data placement</text>
+  <text x="560" y="104" fill="#fff">kill executors,</text><text x="560" y="113" fill="#fff">release resources</text></g>
+ <g stroke="#d9622b" stroke-width="1.6" marker-end="url(#d1)"><line x1="115" y1="33" x2="128" y2="33"/><line x1="240" y1="33" x2="253" y2="33"/><line x1="365" y1="33" x2="378" y2="33"/><line x1="490" y1="33" x2="503" y2="33"/><line x1="115" y1="95" x2="128" y2="95"/><line x1="240" y1="95" x2="253" y2="95"/><line x1="365" y1="95" x2="378" y2="95"/><line x1="490" y1="95" x2="503" y2="95"/></g>
+ <path d="M560 56 L 560 63 L 60 63 L 60 70" fill="none" stroke="#d9622b" stroke-width="1.4" marker-end="url(#d1)"/>
+</svg>
+<div class="cap">Figure 1.6 — Run-time flow of a Spark application (10 steps)</div>
+</div>
+<ul class="stp">
+<li><span class="sn">1</span>The <b>driver talks to the cluster manager</b> and <b>negotiates for resources</b>.</li>
+<li><span class="sn">2</span>The <b>cluster manager launches executors</b> on behalf of the driver.</li>
+<li><span class="sn">3</span>The <b>executors register themselves</b> with the driver.</li>
+<li><span class="sn">4</span>When a job enters, the driver <b>converts the code into a logical directed acyclic graph (DAG)</b>.</li>
+<li><span class="sn">5</span>The DAG is <b>optimised</b>.</li>
+<li><span class="sn">6</span>It is turned into a <b>physical execution plan</b> with a <b>set of stages</b>.</li>
+<li><span class="sn">7</span>Small execution units known as <mark>tasks</mark> are created and <b>sent to the cluster</b>.</li>
+<li><span class="sn">8</span><b>Executors execute all the tasks</b> assigned by the driver. The <b>driver monitors</b> the executors that run.</li>
+<li><span class="sn">9</span>The driver <b>schedules future tasks</b> by <b>tracking the location of cached data</b> (based on data placement) — so tasks run where their data already is.</li>
+<li><span class="sn">10</span>When the program calls the <code>stop()</code> method of SparkContext, it <b>terminates all executors</b> and <b>releases the resources</b> from the cluster manager.</li>
+</ul>
+<div class="box mem"><div class="bt">🧠 Memory trick — 10 steps</div>"<b>N L R</b> — <b>L O P T</b> — <b>E M S</b>": <b>N</b>egotiate · <b>L</b>aunch · <b>R</b>egister → <b>L</b>ogical DAG · <b>O</b>ptimise · <b>P</b>hysical plan · <b>T</b>asks → <b>E</b>xecute · <b>M</b>onitor · <b>S</b>top.<br>Story: "<b>N</b>ew <b>L</b>abourers <b>R</b>eport; the boss <b>L</b>ists, <b>O</b>rganises, <b>P</b>lans, gives <b>T</b>asks; they <b>E</b>xecute, he <b>M</b>onitors, then <b>S</b>ays stop."</div>
+<div class="box tip"><div class="bt">💡 Compare with Hadoop YARN (Unit 2)</div>The pattern is the same as YARN: <b>ask for resources → start workers → run tasks → monitor → release</b>. In Spark the <b>driver</b> plays the role that the <b>ApplicationMaster</b> plays in MapReduce on YARN. When Spark runs <i>on</i> YARN, the YARN ResourceManager is the cluster manager.</div>
+
+<!-- 1.8 -->
+<h2 id="s1-8"><span class="no">1.8</span>Spark vs Hadoop MapReduce<span class="marker">@@s1-8@@</span></h2>
+<p>A favourite exam comparison — it connects Unit 2 and Unit 3.</p>
+<table class="t">
+<tr><th style="width:22%">Point</th><th>Hadoop MapReduce</th><th>Apache Spark</th></tr>
+<tr><td>Processing</td><td>Disk-based — writes intermediate results to disk</td><td><b>In-memory</b> — keeps intermediate data in RAM</td></tr>
+<tr><td>Speed</td><td>Slower</td><td>Up to <b>100× faster in memory</b>, ~10× on disk</td></tr>
+<tr><td>Programming model</td><td>Only map and reduce</td><td>Many operations (map, filter, join, groupBy…) on RDDs/DataFrames</td></tr>
+<tr><td>Execution plan</td><td>Fixed: map → shuffle → reduce</td><td><b>DAG</b> of stages, optimised before running</td></tr>
+<tr><td>Iterative / interactive work</td><td>Poor (each iteration = new job + disk I/O)</td><td>Excellent (data cached in memory; interactive shell)</td></tr>
+<tr><td>Real-time</td><td>Batch only</td><td>Batch + streaming (Spark Streaming)</td></tr>
+<tr><td>Languages</td><td>Mainly Java</td><td>Scala, Java, Python, R, SQL</td></tr>
+<tr><td>Libraries</td><td>Separate tools (Hive, Pig, Mahout…)</td><td>Built-in: SQL, Streaming, MLlib, GraphX, SparkR</td></tr>
+<tr><td>Cluster manager</td><td>YARN</td><td>Standalone, YARN, Mesos, Kubernetes</td></tr>
+<tr><td>Storage</td><td>HDFS</td><td>No storage of its own — reads from HDFS, local files, S3, HBase, Cassandra…</td></tr>
+<tr><td>Master / workers</td><td>JobTracker/TaskTracker (MR1); RM/AM/NM (YARN)</td><td>Driver + executors (+ cluster manager)</td></tr>
+</table>
+<div class="box warn"><div class="bt">⚠️ Common mistake</div>Spark does <b>not replace HDFS</b> — Spark is a <b>processing engine</b>, not a storage system. A very common setup is <b>Spark on YARN reading from HDFS</b>.</div>
+
+<div class="check"><div class="bt">✅ Before you move on — can you…</div>
+<ul>
+<li>Define Spark and explain why in-memory computing makes it faster than MapReduce?</li>
+<li>Draw the Spark stack and explain the 6 components?</li>
+<li>Define SparkContext (+ 5 responsibilities), Spark Shell and Spark Application?</li>
+<li>Explain task, job and stage with a diagram?</li>
+<li>Explain the master/slave internal working (driver, executors, Java processes)?</li>
+<li>Draw the architecture diagram and explain driver, cluster manager, worker node, executor and task?</li>
+<li>Explain the internals of job execution (DAG Scheduler, Task Scheduler)?</li>
+<li>List the 10 run-time steps in order?</li>
+<li>Compare Spark with Hadoop MapReduce?</li>
+</ul></div>
+</section>

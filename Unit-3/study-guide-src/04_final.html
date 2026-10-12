@@ -1,0 +1,94 @@
+
+<!-- ================= FINAL REVISION ================= -->
+<section style="--acc:#16244a; --accl:#eef1f8">
+<div class="chapter-open" id="final" style="background:#16244a"><p class="marker">@@final@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Last-night revision</div>
+  <h1>Final Revision</h1>
+  <div class="learn"><b>Use these pages the night before the exam</b>
+    <ol><li>Cheat sheet</li><li>All memory tricks in one place</li><li>Important 2-mark questions</li><li>Important 5/10-mark questions</li></ol>
+  </div>
+  <div class="meta"><span>⏱ ≈ 20 minutes</span><span>Then redraw the architecture diagram once</span></div>
+</div>
+
+<h2 id="cheat"><span class="no">★</span>Cheat sheet<span class="marker">@@cheat@@</span></h2>
+<div style="columns:2; column-gap:6mm; font-size:8.3pt; line-height:1.34">
+<h4 style="color:#d9622b;margin-top:0">CHAPTER 1 · Spark architecture</h4>
+<ul>
+<li><b>Spark</b> = open-source cluster computing framework for data analytics; <b>in-memory</b> cluster computing + parallel processing; faster than Hadoop (up to 100× in memory). APIs: Scala, Java, Python, (SQL, R). Lab: PySpark on Ubuntu.</li>
+<li><b>Components:</b> Spark Core (foundation/execution platform) · Spark SQL (SQL &amp; HiveQL on structured/semi-structured data) · Spark Streaming (live data as micro-batches) · MLlib (ML, iterative, in-memory) · GraphX (graphs) · SparkR (R front end).</li>
+<li><b>SparkContext</b> = entry point; connects to execution environment; creates RDDs, accumulators, broadcast variables; runs jobs. Responsibilities: status · cancel job/stage · run sync/async · access/unpersist cached RDD · dynamic allocation. (Spark 2: SparkSession wraps it.)</li>
+<li><b>Spark Shell</b> = Scala command line with auto-completion. <b>Spark Application</b> = self-contained computation running user code.</li>
+<li><b>Task</b> = smallest unit, one executor, one per partition · <b>Job</b> = parallel computation of many tasks, created by an <b>action</b> · <b>Stage</b> = set of dependent tasks; jobs split where steps must wait (shuffle).</li>
+<li><b>Master/slave:</b> one driver (central coordinator) + many executors; each is its own Java process; app = driver + its executors. Own <b>standalone</b> cluster manager, or YARN / Mesos.</li>
+<li><b>Driver:</b> runs main(), creates SparkContext, job scheduling, negotiates with cluster manager, stores RDD info; client or cluster mode. <b>Executor:</b> process on a worker node; runs tasks; keeps data in memory/disk; reads/writes external data; one set per app. <b>Cluster manager:</b> allocates resources (YARN, Mesos, Standalone). <b>Worker node:</b> slave node running app code. <b>Task:</b> unit of work for one executor.</li>
+<li><b>Job execution:</b> action → job → <b>DAG Scheduler</b> (build DAG, split into stages) → <b>Task Scheduler</b> (launch tasks via cluster manager) → executors on worker nodes.</li>
+<li><b>Run-time (10):</b> negotiate → launch executors → register → logical DAG → optimise → physical plan (stages) → tasks to cluster → execute (driver monitors) → schedule by cached-data location → <code>stop()</code> kills executors, releases resources.</li>
+<li><b>vs MapReduce:</b> in-memory vs disk; DAG vs fixed map/reduce; iterative &amp; streaming; many languages; built-in libraries; no own storage (uses HDFS etc.).</li>
+</ul>
+<h4 style="color:#0f8b8d">CHAPTER 2 · Installation &amp; running</h4>
+<ul>
+<li><b>Install:</b> Java (JDK) → download pre-built .tgz → <code>tar -xzf</code> → <code>SPARK_HOME</code> + <code>PATH</code> → <code>pyspark</code> / <code>spark-shell --version</code>. Or <code>pip install pyspark</code>.</li>
+<li><b>Folders:</b> bin (shells, spark-submit, run-example) · sbin (start-master/worker) · conf · examples · jars · data.</li>
+<li><b>Shells:</b> spark-shell (Scala), pyspark (Python), sparkR, spark-sql. <code>sc</code> &amp; <code>spark</code> ready-made. Web UI at <b>localhost:4040</b>.</li>
+<li><b>First program:</b> <code>sc.textFile("README.md")</code> → <code>count()</code>, <code>first()</code>, <code>filter("Spark")</code>. Word count: flatMap → map (w,1) → reduceByKey → collect; <code>spark.stop()</code>.</li>
+<li><b>spark-submit:</b> --master, --deploy-mode, --class, --name, executor memory/cores.</li>
+<li><b>Cluster managers:</b> local (local, local[K], local[*]) · Standalone (spark://HOST:7077, UI 8080) · YARN (yarn) · Mesos (mesos://HOST:5050) · Kubernetes (k8s://…).</li>
+<li><b>Deploy modes:</b> client (driver on your machine; shells) vs cluster (driver inside cluster; production).</li>
+<li><b>Examples:</b> <code>./bin/run-example SparkPi 10</code> → "Pi is roughly 3.14…"; Python: <code>spark-submit examples/src/main/python/pi.py 10</code>.</li>
+</ul>
+</div>
+
+<h2 id="mnem" class="newpage"><span class="no">🧠</span>All memory tricks in one place<span class="marker">@@mnem@@</span></h2>
+<table class="t" style="font-size:8.7pt">
+<tr><th style="width:28%">To remember…</th><th>Trick</th><th style="width:38%">Expands to</th></tr>
+<tr><td>6 components</td><td>"Cool Students Stream Movies, Graphs &amp; Reels"</td><td>Core, SQL, Streaming, MLlib, GraphX, SparkR</td></tr>
+<tr><td>SparkContext responsibilities</td><td>"Spark Can Run Any Data" (S C R A D)</td><td>Status, Cancel, Run sync/async, Access cached RDD, Dynamic allocation</td></tr>
+<tr><td>Size order</td><td>"All Jobs Split into Tasks"</td><td>Application ⊃ Job ⊃ Stage ⊃ Task</td></tr>
+<tr><td>Architecture roles</td><td>Restaurant</td><td>Driver = head chef, Cluster manager = manager, Worker = station, Executor = cook, Task = one dish</td></tr>
+<tr><td>Run-time 10 steps</td><td>"New Labourers Report; boss Lists, Organises, Plans, gives Tasks; they Execute, he Monitors, then Says stop"</td><td>Negotiate, Launch, Register, Logical DAG, Optimise, Physical plan, Tasks, Execute, Monitor/schedule, Stop</td></tr>
+<tr><td>Cluster managers</td><td>"Let Spark Yell More Kindly"</td><td>Local, Standalone, YARN, Mesos, Kubernetes</td></tr>
+<tr><td>Slides' 3 managers</td><td>"Spark's Your Manager" (S Y M)</td><td>Standalone, YARN, Mesos</td></tr>
+</table>
+
+<h2 id="imp"><span class="no">🎯</span>Important exam questions<span class="marker">@@imp@@</span></h2>
+<div class="two">
+<div>
+<h3 style="--acc:#16244a">Short answers (2–3 marks)</h3>
+<ol style="font-size:8.8pt;margin:.2em 0 .4em">
+<li>What is Apache Spark? List its features. <span class="small">§1.1</span></li>
+<li>Why is Spark faster than Hadoop MapReduce? <span class="small">§1.1, §1.8</span></li>
+<li>What is SparkContext? List its responsibilities. <span class="small">§1.3</span></li>
+<li>Define task, job and stage. <span class="small">§1.3</span></li>
+<li>What is the Spark Shell? <span class="small">§1.3</span></li>
+<li>What is an executor? <span class="small">§1.5</span></li>
+<li>What is the role of the driver program? <span class="small">§1.5</span></li>
+<li>What is a DAG? What does the DAG Scheduler do? <span class="small">§1.6</span></li>
+<li>List the cluster managers supported by Spark. <span class="small">§2.3</span></li>
+<li>Client vs cluster deploy mode. <span class="small">§2.3</span></li>
+<li>What does <code>local[*]</code> mean? <span class="small">§2.3</span></li>
+<li>How do you run the SparkPi example? <span class="small">§2.4</span></li>
+</ol>
+</div>
+<div>
+<h3 style="--acc:#16244a">Long answers (5–10 marks)</h3>
+<ol style="font-size:8.8pt;margin:.2em 0 .4em">
+<li>Explain the Apache Spark architecture with a neat diagram. <span class="small">§1.4–1.5</span></li>
+<li>Explain the components of Apache Spark (Spark stack). <span class="small">§1.2</span></li>
+<li>Explain Spark terminology: SparkContext, Spark Shell, application, job, stage, task. <span class="small">§1.3</span></li>
+<li>Explain the internals of job execution in Spark. <span class="small">§1.6</span></li>
+<li>Explain the run-time architecture of a Spark application. <span class="small">§1.7</span></li>
+<li>Compare Apache Spark with Hadoop MapReduce. <span class="small">§1.8</span></li>
+<li>Explain the steps to install Apache Spark and write your first Spark program. <span class="small">§2.1–2.2</span></li>
+<li>Explain the different cluster manager types in Spark. <span class="small">§2.3</span></li>
+</ol>
+</div>
+</div>
+<div class="box exam" style="margin:2mm 0;font-size:9.2pt"><div class="bt">🎯 The 3 diagrams you must be able to draw</div>
+<ol style="margin:0">
+<li><b>Spark architecture</b> — Driver (SparkContext) ↔ Cluster Manager ↔ Worker Nodes (Executor, Cache, Tasks) (Fig 1.4)</li>
+<li><b>Spark components stack</b> — SQL, Streaming, MLlib, GraphX, SparkR on Spark Core (Fig 1.2)</li>
+<li><b>Job execution / run-time flow</b> — Driver → DAG Scheduler → Task Scheduler → executors (Fig 1.5, 1.6)</li>
+</ol><p class="small" style="margin:1.5mm 0 0">All the best for CIE-1! ⚡ — Made from your Unit 3 slides ("Spark Architecture") and Abbasi, <i>Learning Apache Spark 2</i>.</p></div>
+</section>
+</body></html>

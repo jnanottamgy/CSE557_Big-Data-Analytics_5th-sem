@@ -1,0 +1,246 @@
+
+<!-- ================= CHAPTER 2 ================= -->
+<section class="ch1">
+<div class="chapter-open" id="ch2"><p class="marker">@@ch2@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Chapter 2</div>
+  <h1>Installation &amp; Running Spark</h1>
+  <div class="learn"><b>What you'll learn</b>
+    <ol><li>Installing Spark on Ubuntu</li><li>Spark's folders &amp; shells</li><li>Your first program in the shell</li><li>A standalone word-count app</li><li>spark-submit</li><li>Local, Standalone, YARN, Mesos, Kubernetes</li><li>Client vs cluster deploy mode</li><li>Running the bundled examples</li></ol>
+  </div>
+  <div class="meta"><span>⏱ ≈ 1 hour</span><span>Slide agenda topics 2–5</span><span>Abbasi Ch. 1</span></div>
+</div>
+<div class="box warn"><div class="bt">⚠️ Note about this chapter</div>Your slide deck <b>lists</b> these four topics in its agenda (Installing Spark, first program, cluster manager types, running examples) and says <b>"We will use Python (PySpark) on one Ubuntu machine"</b>, but it doesn't explain them in detail. This chapter is written from the <b>prescribed textbook</b> and the official Spark docs. Version numbers are examples — use the version your lab uses.</div>
+
+<!-- 2.1 -->
+<h2 id="s2-1"><span class="no">2.1</span>Installing Apache Spark (Ubuntu)<span class="textbook">from textbook</span><span class="marker">@@s2-1@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In simple words</div>Spark runs on <b>Java</b>, so install Java first. Then download Spark, unzip it, tell your terminal where it is (environment variables), and start the <b>pyspark</b> shell to check it works. That's it — no cluster needed; one laptop is enough to learn.</div>
+<div class="flow">
+ <div class="st"><b>1 · Java</b>install JDK (8/11/17)</div><div class="ar">→</div>
+ <div class="st"><b>2 · Download</b>pre-built Spark .tgz</div><div class="ar">→</div>
+ <div class="st"><b>3 · Extract</b>tar -xzf, move to /opt/spark</div><div class="ar">→</div>
+ <div class="st"><b>4 · Env vars</b>SPARK_HOME, PATH</div><div class="ar">→</div>
+ <div class="st" style="background:#16244a;color:#fff"><b style="color:#ffd166">5 · Verify</b>run pyspark</div>
+</div>
+<pre class="code sh"><span class="c"># 1. Prerequisite: Java (and Python 3 for PySpark)</span>
+sudo apt update
+sudo apt install -y openjdk-11-jdk python3
+java -version                                  <span class="c"># check Java is installed</span>
+
+<span class="c"># 2. Download a pre-built Spark package from spark.apache.org/downloads</span>
+wget https://archive.apache.org/dist/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz
+
+<span class="c"># 3. Extract it and move it to /opt/spark</span>
+tar -xzf spark-3.5.1-bin-hadoop3.tgz
+sudo mv spark-3.5.1-bin-hadoop3 /opt/spark
+
+<span class="c"># 4. Set environment variables (add these lines to ~/.bashrc)</span>
+export SPARK_HOME=/opt/spark
+export PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
+export PYSPARK_PYTHON=python3
+source ~/.bashrc
+
+<span class="c"># 5. Verify</span>
+spark-shell --version                          <span class="c"># prints the Spark version banner</span>
+pyspark                                        <span class="c"># opens the Python shell with 'spark' and 'sc' ready</span></pre>
+<div class="box tip"><div class="bt">💡 Even quicker: pip</div>For Python-only use on one machine: <code>pip install pyspark</code> — this installs Spark inside Python. You still need Java installed.</div>
+
+<h3>What's inside the Spark folder</h3>
+<table class="t">
+<tr><th style="width:16%">Folder</th><th>Contains</th></tr>
+<tr><td><code>bin/</code></td><td>Commands you run: <code>spark-shell</code> (Scala), <code>pyspark</code> (Python), <code>sparkR</code> (R), <code>spark-sql</code>, <code>spark-submit</code> (submit apps), <code>run-example</code></td></tr>
+<tr><td><code>sbin/</code></td><td>Scripts to start/stop a <b>standalone cluster</b>: <code>start-master.sh</code>, <code>start-worker.sh</code> (called <code>start-slave.sh</code> in Spark 2), <code>start-all.sh</code>, <code>stop-all.sh</code></td></tr>
+<tr><td><code>conf/</code></td><td>Configuration templates: <code>spark-env.sh</code>, <code>spark-defaults.conf</code>, <code>log4j</code> settings, <code>workers</code> list</td></tr>
+<tr><td><code>examples/</code></td><td>Ready-made example programs (SparkPi, WordCount…) in Scala, Java, Python and R</td></tr>
+<tr><td><code>jars/</code> · <code>python/</code> · <code>R/</code></td><td>Spark's libraries for each language</td></tr>
+<tr><td><code>data/</code></td><td>Small sample datasets used by the examples</td></tr>
+</table>
+
+<h3>The Spark shells</h3>
+<div class="cards c4">
+ <div class="card"><h5>spark-shell</h5><p>Interactive <b>Scala</b> shell (the "Spark Shell" from §1.3).</p></div>
+ <div class="card"><h5>pyspark</h5><p>Interactive <b>Python</b> shell — what your lab uses.</p></div>
+ <div class="card"><h5>sparkR</h5><p>Interactive <b>R</b> shell (SparkR).</p></div>
+ <div class="card"><h5>spark-sql</h5><p>Type <b>SQL</b> queries directly.</p></div>
+</div>
+<div class="box key"><div class="bt">🔑 Inside a shell</div>When a shell starts, Spark <b>already creates the SparkContext (<code>sc</code>) and SparkSession (<code>spark</code>) for you</b>. While it runs, the <mark>Spark Web UI</mark> is at <code>http://localhost:4040</code> — it shows jobs, stages, tasks, storage and executors (great for seeing §1.3 and §1.6 in action).</div>
+
+<!-- 2.2 -->
+<h2 id="s2-2"><span class="no">2.2</span>Writing your first Spark program<span class="textbook">from textbook</span><span class="marker">@@s2-2@@</span></h2>
+<h3>A. Interactively in the shell</h3>
+<p>The textbook's first program loads Spark's own <code>README.md</code> as a text file and asks simple questions about it.</p>
+<div class="two">
+<div>
+<h4>In <code>pyspark</code> (Python)</h4>
+<pre class="code"><span class="k">&gt;&gt;&gt;</span> lines = sc.textFile(<span class="s">"README.md"</span>)   <span class="c"># an RDD of lines</span>
+<span class="k">&gt;&gt;&gt;</span> lines.count()                  <span class="c"># action → job</span>
+<span class="t">125</span>
+<span class="k">&gt;&gt;&gt;</span> lines.first()                  <span class="c"># first line</span>
+<span class="t">'# Apache Spark'</span>
+<span class="k">&gt;&gt;&gt;</span> spark_lines = lines.filter(
+...     <span class="k">lambda</span> l: <span class="s">"Spark"</span> <span class="k">in</span> l)        <span class="c"># transformation</span>
+<span class="k">&gt;&gt;&gt;</span> spark_lines.count()
+<span class="t">20</span></pre>
+</div>
+<div>
+<h4>In <code>spark-shell</code> (Scala)</h4>
+<pre class="code"><span class="k">scala&gt;</span> <span class="k">val</span> lines = sc.textFile(<span class="s">"README.md"</span>)
+<span class="k">scala&gt;</span> lines.count()
+<span class="t">res0: Long = 125</span>
+<span class="k">scala&gt;</span> lines.first()
+<span class="t">res1: String = # Apache Spark</span>
+<span class="k">scala&gt;</span> <span class="k">val</span> sparkLines =
+     |   lines.filter(l =&gt; l.contains(<span class="s">"Spark"</span>))
+<span class="k">scala&gt;</span> sparkLines.count()
+<span class="t">res2: Long = 20</span></pre>
+</div>
+</div>
+<p class="small">(The exact numbers depend on the Spark version's README.)</p>
+<div class="box tip"><div class="bt">💡 Connect it to the architecture</div><code>textFile()</code> and <code>filter()</code> only <b>record steps in the DAG</b> — nothing runs. <code>count()</code> and <code>first()</code> are <b>actions</b>: each one creates a <b>job</b>, which the DAG Scheduler splits into <b>stages</b> and <b>tasks</b> (one per partition) that run on executors (§1.6). Transformations vs actions are studied in detail after CIE-1.</div>
+
+<h3>B. A standalone application — word count</h3>
+<p>A real application creates its own SparkSession (the shell did it for you before). Save this as <code>wordcount.py</code>:</p>
+<pre class="code"><span class="k">from</span> pyspark.sql <span class="k">import</span> SparkSession
+
+<span class="c"># 1. Create the entry point (driver creates SparkSession / SparkContext)</span>
+spark = (SparkSession.builder
+         .appName(<span class="s">"WordCount"</span>)
+         .master(<span class="s">"local[*]"</span>)        <span class="c"># run locally using all CPU cores</span>
+         .getOrCreate())
+sc = spark.sparkContext
+
+<span class="c"># 2. Load data → 3. transform → 4. action</span>
+lines  = sc.textFile(<span class="s">"input.txt"</span>)
+words  = lines.flatMap(<span class="k">lambda</span> line: line.split())     <span class="c"># split lines into words</span>
+pairs  = words.map(<span class="k">lambda</span> w: (w, 1))                  <span class="c"># (word, 1) — like a mapper</span>
+counts = pairs.reduceByKey(<span class="k">lambda</span> a, b: a + b)        <span class="c"># add up — like a reducer</span>
+
+<span class="k">for</span> word, n <span class="k">in</span> counts.collect():                        <span class="c"># action → runs the job</span>
+    print(word, n)
+
+<span class="c"># 5. Stop — terminates executors, releases resources (run-time step 10)</span>
+spark.stop()</pre>
+<p>Run it with <b>spark-submit</b>:</p>
+<pre class="code sh">spark-submit wordcount.py
+<span class="c"># or choose where it runs:</span>
+spark-submit --master local[4] wordcount.py</pre>
+<div class="box eg"><div class="bt">📌 Same idea as Unit 2</div>This is the classic <b>word count</b>: <code>map</code> emits <code>(word, 1)</code> like a <b>Mapper</b>, <code>reduceByKey</code> sums them like a <b>Reducer</b> — but in about <b>6 lines</b> instead of three Java classes, and the data stays in memory between steps.</div>
+
+<h3>spark-submit — the main options</h3>
+<table class="t">
+<tr><th style="width:30%">Option</th><th>Meaning</th></tr>
+<tr><td><code>--master</code></td><td>Which cluster manager / where to run (see §2.3): <code>local[*]</code>, <code>spark://host:7077</code>, <code>yarn</code>…</td></tr>
+<tr><td><code>--deploy-mode</code></td><td><code>client</code> (driver on your machine) or <code>cluster</code> (driver inside the cluster)</td></tr>
+<tr><td><code>--class</code></td><td>Main class of a Java/Scala application (not needed for Python)</td></tr>
+<tr><td><code>--name</code></td><td>Application name shown in the Web UI</td></tr>
+<tr><td><code>--executor-memory</code>, <code>--executor-cores</code>, <code>--num-executors</code></td><td>Resources to ask the cluster manager for (run-time step 1)</td></tr>
+<tr><td><i>app file + arguments</i></td><td>The <code>.py</code> file or <code>.jar</code>, followed by its own arguments</td></tr>
+</table>
+
+<!-- 2.3 -->
+<h2 id="s2-3"><span class="no">2.3</span>Apache Spark cluster manager types<span class="marker">@@s2-3@@</span></h2>
+<p>From the slides: the cluster manager's role is to <b>allocate resources across applications</b>. Spark has its <b>own standalone cluster manager</b>, and can also work with <b>Hadoop YARN</b> and <b>Apache Mesos</b>. <span class="textbook">from textbook</span> Spark 2.3+ also supports <b>Kubernetes</b>, and <b>local mode</b> runs everything on one machine.</p>
+<div class="fig">
+<svg viewBox="0 0 620 145" width="620" font-family="Inter" font-size="9.5">
+ <defs><marker id="e1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#16244a"/></marker></defs>
+ <rect x="235" y="5" width="150" height="36" rx="7" fill="#16244a"/><text x="310" y="28" text-anchor="middle" fill="#fff" font-weight="800">Cluster Manager</text>
+ <g stroke="#16244a" stroke-width="1.5" marker-end="url(#e1)"><line x1="310" y1="41" x2="65" y2="80"/><line x1="310" y1="41" x2="188" y2="80"/><line x1="310" y1="41" x2="310" y2="80"/><line x1="310" y1="41" x2="432" y2="80"/><line x1="310" y1="41" x2="555" y2="80"/></g>
+ <rect x="10" y="82" width="110" height="56" rx="7" fill="#e3e7ef" stroke="#7d879b"/><text x="65" y="104" text-anchor="middle" font-weight="800">Local mode</text><text x="65" y="119" text-anchor="middle" font-size="8.4">one machine,</text><text x="65" y="130" text-anchor="middle" font-size="8.4">no cluster</text>
+ <rect x="133" y="82" width="110" height="56" rx="7" fill="#fff7dc" stroke="#f6b100"/><text x="188" y="104" text-anchor="middle" font-weight="800">Standalone</text><text x="188" y="119" text-anchor="middle" font-size="8.4">Spark's own</text><text x="188" y="130" text-anchor="middle" font-size="8.4">simple manager</text>
+ <rect x="255" y="82" width="110" height="56" rx="7" fill="#e8f7ee" stroke="#1f9d55"/><text x="310" y="104" text-anchor="middle" font-weight="800">Hadoop YARN</text><text x="310" y="119" text-anchor="middle" font-size="8.4">Hadoop 2 resource</text><text x="310" y="130" text-anchor="middle" font-size="8.4">manager</text>
+ <rect x="377" y="82" width="110" height="56" rx="7" fill="#e9f0ff" stroke="#2463eb"/><text x="432" y="104" text-anchor="middle" font-weight="800">Apache Mesos</text><text x="432" y="119" text-anchor="middle" font-size="8.4">general-purpose</text><text x="432" y="130" text-anchor="middle" font-size="8.4">cluster manager</text>
+ <rect x="500" y="82" width="110" height="56" rx="7" fill="#f1ebfb" stroke="#6a3fb5"/><text x="555" y="104" text-anchor="middle" font-weight="800">Kubernetes</text><text x="555" y="119" text-anchor="middle" font-size="8.4">containers</text><text x="555" y="130" text-anchor="middle" font-size="8.4">(Spark 2.3+)</text>
+</svg>
+<div class="cap">Figure 2.1 — Cluster manager types for Spark (slides list Standalone, YARN and Mesos)</div>
+</div>
+<div class="cards c2">
+ <div class="card"><h5>🖥 Local mode</h5><p>Driver and executor run in <b>one JVM on one machine</b> — no real cluster. Used for <b>learning, development and testing</b> (your Ubuntu lab setup). Master URL: <code>local</code> (1 thread), <code>local[4]</code> (4 threads), <code>local[*]</code> (all cores).</p></div>
+ <div class="card"><h5>⭐ Standalone cluster manager</h5><p><b>Spark's own</b> simple cluster manager, shipped with Spark. Makes it easy to set up a cluster on an <b>empty set of machines</b>. One <b>master</b> + several <b>workers</b>. Start with <code>sbin/start-master.sh</code> then <code>sbin/start-worker.sh spark://&lt;master&gt;:7077</code>. Master UI on port <b>8080</b>. Master URL: <code>spark://HOST:7077</code>.</p></div>
+ <div class="card"><h5>🐘 Hadoop YARN</h5><p>The <b>resource manager of Hadoop 2</b> (Unit 2!). Lets Spark run on an <b>existing Hadoop cluster</b>, sharing resources with MapReduce and reading data from <b>HDFS</b>. The YARN ResourceManager acts as the cluster manager; executors run in YARN <b>containers</b>. Master URL: <code>yarn</code>.</p></div>
+ <div class="card"><h5>🏛 Apache Mesos</h5><p>A <b>general-purpose cluster manager</b> that can run Spark alongside other frameworks (and also Hadoop MapReduce). Supports fine-grained sharing of resources. Master URL: <code>mesos://HOST:5050</code>. (Deprecated in newer Spark versions.)</p></div>
+</div>
+<div class="card avoid" style="margin-bottom:4mm"><h5>☸️ Kubernetes <span class="textbook">from textbook / docs</span></h5><p>Runs the driver and executors as <b>pods (containers)</b> on a Kubernetes cluster. Master URL: <code>k8s://https://HOST:PORT</code>.</p></div>
+
+<h3>Master URLs at a glance</h3>
+<table class="t">
+<tr><th style="width:28%">--master value</th><th>Runs on</th></tr>
+<tr><td><code>local</code></td><td>Locally with <b>one</b> worker thread (no parallelism)</td></tr>
+<tr><td><code>local[K]</code></td><td>Locally with <b>K</b> worker threads (e.g., <code>local[4]</code>)</td></tr>
+<tr><td><code>local[*]</code></td><td>Locally with as many threads as <b>CPU cores</b></td></tr>
+<tr><td><code>spark://HOST:7077</code></td><td>A Spark <b>Standalone</b> cluster master (default port 7077)</td></tr>
+<tr><td><code>yarn</code></td><td>A <b>YARN</b> cluster (location read from <code>HADOOP_CONF_DIR</code>)</td></tr>
+<tr><td><code>mesos://HOST:5050</code></td><td>A <b>Mesos</b> cluster</td></tr>
+<tr><td><code>k8s://https://HOST:PORT</code></td><td>A <b>Kubernetes</b> cluster</td></tr>
+</table>
+
+<h3>Deploy modes: client vs cluster</h3>
+<p>The slides say the driver "<b>can run in client or cluster mode</b>". The difference is <b>where the driver runs</b>:</p>
+<div class="fig">
+<svg viewBox="0 0 620 150" width="620" font-family="Inter" font-size="9.3">
+ <defs><marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#16244a"/></marker></defs>
+ <text x="150" y="14" text-anchor="middle" font-weight="800" fill="#16244a" font-size="10.5">Client mode</text>
+ <rect x="5" y="25" width="90" height="70" rx="6" fill="#fff7dc" stroke="#f6b100"/><text x="50" y="40" text-anchor="middle" font-size="8.4" font-weight="700">Your machine</text>
+ <rect x="15" y="50" width="70" height="30" rx="4" fill="#d9622b"/><text x="50" y="69" text-anchor="middle" fill="#fff" font-weight="700">Driver</text>
+ <rect x="130" y="20" width="170" height="125" rx="7" fill="#e6f5f5" stroke="#0f8b8d"/><text x="215" y="36" text-anchor="middle" font-weight="700" fill="#0f8b8d">Cluster</text>
+ <g fill="#0f8b8d"><rect x="145" y="48" width="65" height="26" rx="4"/><rect x="220" y="48" width="65" height="26" rx="4"/><rect x="145" y="84" width="65" height="26" rx="4"/><rect x="220" y="84" width="65" height="26" rx="4"/></g>
+ <g fill="#fff" text-anchor="middle" font-size="8.4"><text x="177" y="65">Executor</text><text x="252" y="65">Executor</text><text x="177" y="101">Executor</text><text x="252" y="101">Executor</text></g>
+ <line x1="85" y1="65" x2="143" y2="61" stroke="#16244a" stroke-width="1.4" marker-end="url(#f1)"/>
+ <text x="215" y="132" text-anchor="middle" font-size="8.2" fill="#5b6478">output shows on your terminal</text>
+ <line x1="315" y1="10" x2="315" y2="145" stroke="#e3e7ef" stroke-width="2"/>
+ <text x="470" y="14" text-anchor="middle" font-weight="800" fill="#16244a" font-size="10.5">Cluster mode</text>
+ <rect x="330" y="25" width="70" height="40" rx="6" fill="#fff7dc" stroke="#f6b100"/><text x="365" y="43" text-anchor="middle" font-size="8.4" font-weight="700">Your machine</text><text x="365" y="56" text-anchor="middle" font-size="8">(just submits)</text>
+ <rect x="420" y="20" width="195" height="125" rx="7" fill="#e6f5f5" stroke="#0f8b8d"/><text x="517" y="36" text-anchor="middle" font-weight="700" fill="#0f8b8d">Cluster</text>
+ <rect x="435" y="48" width="70" height="26" rx="4" fill="#d9622b"/><text x="470" y="65" text-anchor="middle" fill="#fff" font-weight="700">Driver</text>
+ <g fill="#0f8b8d"><rect x="530" y="48" width="70" height="26" rx="4"/><rect x="435" y="84" width="70" height="26" rx="4"/><rect x="530" y="84" width="70" height="26" rx="4"/></g>
+ <g fill="#fff" text-anchor="middle" font-size="8.4"><text x="565" y="65">Executor</text><text x="470" y="101">Executor</text><text x="565" y="101">Executor</text></g>
+ <line x1="400" y1="45" x2="433" y2="58" stroke="#16244a" stroke-width="1.4" marker-end="url(#f1)"/>
+ <text x="517" y="132" text-anchor="middle" font-size="8.2" fill="#5b6478">you can disconnect; driver lives in cluster</text>
+</svg>
+<div class="cap">Figure 2.2 — Client vs cluster deploy mode</div>
+</div>
+<table class="t">
+<tr><th style="width:22%"></th><th>Client mode</th><th>Cluster mode</th></tr>
+<tr><td>Where the driver runs</td><td>On the machine that <b>submitted</b> the job</td><td><b>Inside the cluster</b> (on YARN: inside the ApplicationMaster)</td></tr>
+<tr><td>Good for</td><td>Interactive work, shells, debugging</td><td>Production jobs</td></tr>
+<tr><td>If you close the terminal</td><td>The application stops</td><td>The application keeps running</td></tr>
+<tr><td>Shells (pyspark, spark-shell)</td><td>✅ Always client mode</td><td>❌ Not possible</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick — cluster managers</div>"<b>L S Y M K</b>" → "<b>L</b>et <b>S</b>park <b>Y</b>ell <b>M</b>ore <b>K</b>indly" — <b>L</b>ocal · <b>S</b>tandalone · <b>Y</b>ARN · <b>M</b>esos · <b>K</b>ubernetes. Slides' three: <b>S Y M</b> ("Spark's Your Manager").</div>
+<div class="box exam"><div class="bt">🎯 Exam tip</div>"Explain the cluster manager types in Spark" → draw Fig 2.1, explain <b>Standalone, YARN and Mesos</b> (the three on your slides) with their master URLs, add one line each on local mode and Kubernetes, then add the <b>client vs cluster</b> deploy mode table.</div>
+
+<!-- 2.4 -->
+<h2 id="s2-4"><span class="no">2.4</span>Running Spark examples<span class="textbook">from textbook</span><span class="marker">@@s2-4@@</span></h2>
+<p>Spark ships with ready-made examples in the <code>examples/</code> folder. Running them is the easiest way to check your installation and see a cluster at work.</p>
+<h3>SparkPi — estimating π</h3>
+<pre class="code sh"><span class="c"># Scala/Java examples: use run-example (the argument = number of partitions/slices)</span>
+./bin/run-example SparkPi 10
+<span class="t">…  Pi is roughly 3.1418</span>
+
+<span class="c"># Python version of the same example: use spark-submit</span>
+./bin/spark-submit examples/src/main/python/pi.py 10
+<span class="t">Pi is roughly 3.140960</span></pre>
+<div class="box eg"><div class="bt">📌 How SparkPi works (simple idea)</div>Throw lots of random "darts" at a 1×1 square. The fraction that land inside the quarter-circle ≈ π/4, so π ≈ 4 × (inside ÷ total). Spark splits the darts into <b>10 partitions → 10 tasks</b> that run in parallel on executors, then adds up the counts. More partitions = more parallel tasks.</div>
+
+<h3>Word count example</h3>
+<pre class="code sh">./bin/spark-submit --master local[4] examples/src/main/python/wordcount.py README.md</pre>
+
+<h3>Running an example on different cluster managers</h3>
+<pre class="code sh"><span class="c"># Local (all cores)</span>
+./bin/spark-submit --master local[*]            examples/src/main/python/pi.py 100
+<span class="c"># Standalone cluster</span>
+./bin/spark-submit --master spark://master:7077 examples/src/main/python/pi.py 100
+<span class="c"># YARN, driver inside the cluster</span>
+./bin/spark-submit --master yarn --deploy-mode cluster examples/src/main/python/pi.py 100</pre>
+<div class="box tip"><div class="bt">💡 Watch it run</div>While an example runs, open <code>http://localhost:4040</code>. You'll see the <b>job</b> created by the action, its <b>stages</b>, and the <b>10 tasks</b> — the terminology from §1.3 made visible.</div>
+
+<div class="check"><div class="bt">✅ Before you move on — can you…</div>
+<ul>
+<li>List the 5 steps to install Spark on Ubuntu (Java, download, extract, env vars, verify)?</li>
+<li>Name the important folders (bin, sbin, conf, examples) and the four shells?</li>
+<li>Write the first program (textFile, count, first, filter) and a word-count app?</li>
+<li>Explain what spark-submit does and its main options?</li>
+<li>Explain local, Standalone, YARN, Mesos (and Kubernetes) with their master URLs?</li>
+<li>Explain client vs cluster deploy mode?</li>
+<li>Run SparkPi with run-example and with spark-submit?</li>
+</ul></div>
+</section>
