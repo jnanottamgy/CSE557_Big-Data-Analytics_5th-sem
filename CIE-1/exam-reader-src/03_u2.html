@@ -1,0 +1,253 @@
+
+<!-- ================= UNIT 2 ================= -->
+<section class="ch2">
+<div class="chapter-open" id="u2"><p class="marker">@@u2@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Unit 2</div>
+  <h1>Data Analytics with Hadoop</h1>
+  <div class="learn story"><span class="st-h">The story of this unit</span>
+  One disk is too slow to read Big Data, so we read from <b>many disks in parallel</b>. That creates two problems — <b>machines fail</b> and <b>results must be combined</b>. Hadoop solves the first with <b>HDFS</b> (blocks stored 3 times) and the second with <b>MapReduce</b> (map → shuffle → reduce). We then see exactly how files are <b>read and written</b>, how a job <b>runs</b> (classic MapReduce, then <b>YARN</b>), how it survives <b>failures</b>, how jobs are <b>scheduled</b>, and the <b>shuffle</b> at its heart.</div>
+  <div class="meta"><span>Textbook: Tom White, Hadoop: The Definitive Guide</span></div>
+</div>
+
+<!-- 2.1 -->
+<h2 id="b1"><span class="no">2.1</span>Why Hadoop? What is Hadoop?<span class="marker">@@b1@@</span></h2>
+<p><b>Data!</b> The digital universe grew from <b>0.18 ZB (2006) to 1.8 ZB (2011)</b> — 1 ZB = 10<sup>21</sup> bytes = 1 billion TB. NYSE creates ~1 TB a day, Facebook stores ~10 billion photos (≈ 1 PB), the Large Hadron Collider ~15 PB a year. Machines (logs, RFID, sensors, GPS) generate even more. Good news: more data = more value. Bad news: <b>how do we store and analyse it?</b></p>
+<div class="box simple"><div class="bt">🗣 In plain words</div>Disks got <b>huge</b> but not much <b>faster</b> to read. So the fix is to read from <b>many disks at the same time</b>.</div>
+{{fig:u2_disk|Capacity grew ~730×, speed only ~23×}}
+{{fig:u2_par|1 TB split across 100 disks is read in under 2 minutes}}
+<p>Reading 100 disks in parallel creates <b>two new problems</b>:</p>
+<div class="cards c2">
+ <div class="card"><h5>1 · Hardware fails</h5><p>More machines = more failures. <b>Solution: replication</b> — keep redundant copies. <mark>HDFS</mark> does this.</p></div>
+ <div class="card"><h5>2 · Data must be combined</h5><p>Results from many disks must be merged correctly. <b>Solution: MapReduce</b> — map → shuffle → reduce, hiding the coordination.</p></div>
+</div>
+<div class="def"><span class="dt">Definition — Hadoop</span><p>An <mark>open-source framework</mark> that allows us to <mark>store and process large data sets in a parallel and distributed manner</mark>. In a nutshell: <b>reliable shared storage + reliable distributed analysis</b>.</p></div>
+<div class="two" style="grid-template-columns:1.15fr .85fr">
+<div>
+<ul>
+<li>Written in <b>Java</b>; created by <mark>Doug Cutting and Mike Cafarella</mark>; named after Doug's child's <b>toy elephant</b> (not an acronym).</li>
+<li><b>Core components:</b> <b>HDFS</b> — storage layer · <b>MapReduce</b> — processing layer · <b>YARN</b> — resource management layer · <b>Common</b> — shared utilities.</li>
+<li><b>Why use it:</b> ~90% of the Big Data market · scalable · fault tolerant · flexible with any data.</li>
+<li><b>History:</b> Nutch search engine (2002) → Google's GFS paper (2003) → NDFS (2004) → Google's MapReduce paper (2004) → Nutch on MapReduce (2005) → <b>Hadoop, Feb 2006</b>. Yahoo! grew it to <b>24,000 nodes</b> (2009); Apache top-level project (Jan 2008); sorted <b>1 TB in 209 s on 900 nodes</b> (2008).</li>
+</ul>
+</div>
+{{fig:u2_comp|Hadoop's core components}}
+</div>
+{{fig:u2_eco|The Hadoop ecosystem}}
+<div class="box mem"><div class="bt">🧠 Memory trick</div>"<b>HMY</b>": <b>H</b>DFS stores, <b>M</b>apReduce processes, <b>Y</b>ARN manages resources.</div>
+
+<!-- 2.2 -->
+<h2 id="b2"><span class="no">2.2</span>MapReduce with the weather example<span class="marker">@@b2@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In plain words</div><b>Map</b> = each worker reads its piece and writes down only what matters as (key, value) pairs. <b>Shuffle &amp; sort</b> = Hadoop collects all values with the same key together. <b>Reduce</b> = combine each group into one answer.</div>
+{{fig:u2_letters|MapReduce counting letters — input → split → map → shuffle → reduce → output}}
+<p><b>The dataset:</b> NCDC weather data — <mark>semi-structured and record-oriented</mark>. Each line is one observation with <b>fixed-width fields</b>. Temperature is stored as <b>°C × 10</b> (so −0128 = −12.8 °C); <b>9999</b> means missing. The original tens of thousands of small station files are <b>preprocessed into one file per year</b>, because Hadoop prefers a few large files.</p>
+{{fig:u2_record|One weather record}}
+<div class="def"><span class="dt">Map and Reduce</span><p>MapReduce breaks processing into <mark>two phases — map and reduce</mark>. Each phase has <mark>key–value pairs</mark> as input and output. The programmer writes <b>two functions</b>: the map function and the reduce function.</p></div>
+<p><b>Task: find the maximum temperature for each year.</b></p>
+<ol>
+<li><b>Map</b> — input is (line offset, line). The mapper extracts <b>(year, temperature)</b> and drops bad/missing records: (1950, 0), (1950, 22), (1950, −11), (1949, 111), (1949, 78).</li>
+<li><b>Shuffle &amp; sort</b> (automatic) — group by key: <code>1949 → [111, 78]</code>, <code>1950 → [0, 22, −11]</code>.</li>
+<li><b>Reduce</b> — pick the max of each list: <code>(1949, 111)</code>, <code>(1950, 22)</code>.</li>
+</ol>
+{{fig:u2_flow|✏️ must-draw · MapReduce logical data flow for maximum temperature}}
+<div class="two">
+<div>
+<p><b>The three Java pieces:</b></p>
+<ul>
+<li><b>Mapper</b> — <code>Mapper&lt;LongWritable, Text, Text, IntWritable&gt;</code> = (offset, line) → (year, temp). Reads year at chars 15–19 and temperature at 87–92, skips 9999 and bad quality codes, then <code>context.write(year, temp)</code>.</li>
+<li><b>Reducer</b> — <code>Reducer&lt;Text, IntWritable, Text, IntWritable&gt;</code>: loops through the values keeping <code>Math.max</code>; input types must match the mapper's output types.</li>
+<li><b>Driver</b> — creates a <code>Job</code>, sets the JAR, input path, output path (<b>must not exist</b>), mapper and reducer classes, output key/value types, then <code>waitForCompletion(true)</code>.</li>
+</ul>
+</div>
+<div>
+<pre class="code" style="font-size:7.4pt">public void reduce(Text key,
+    Iterable&lt;IntWritable&gt; values, Context ctx) {
+  int max = Integer.MIN_VALUE;
+  for (IntWritable v : values)
+    max = Math.max(max, v.get());
+  ctx.write(key, new IntWritable(max));
+}
+
+% hadoop MaxTemperature input/ncdc/sample.txt output
+% cat output/part-r-00000
+1949    111
+1950    22</pre>
+<p class="small">Hadoop types: LongWritable ≈ long, Text ≈ String, IntWritable ≈ int. Test first on a 5-record sample.</p>
+</div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick</div><b>Map = Extract · Shuffle = Group · Reduce = Summarise</b> — "<b>E</b>very <b>G</b>roup <b>S</b>ummarised". The programmer writes only map + reduce; Hadoop does distribution, grouping and passing to reducers.</div>
+
+<!-- 2.3 -->
+<h2 id="b3"><span class="no">2.3</span>Scaling out: splits, data locality and data flow<span class="marker">@@b3@@</span></h2>
+<ul>
+<li>A <mark>MapReduce job</mark> = input data + MapReduce program + configuration. Hadoop splits it into <b>map tasks</b> and <b>reduce tasks</b>, scheduled by <b>YARN</b>; a failed task is re-run on another node.</li>
+<li>The input is cut into fixed-size <mark>input splits</mark>; <b>one map task per split</b>. Many small splits = better load balancing (fast machines just do more splits).</li>
+<li><mark>Data locality optimisation</mark>: run the map task on the node that <b>already holds that block</b>, so no network bandwidth is used.</li>
+</ul>
+{{fig:u2_local|Data-local (a), rack-local (b) and off-rack (c) map tasks}}
+<p>Order of preference: <b>data-local</b> (same node) → <b>rack-local</b> (same rack, if the data's nodes are busy) → <b>off-rack</b> (other rack, inter-rack transfer). <mark>Optimal split size = block size (128 MB)</mark>, because a block is the largest input guaranteed to be on one node; a split spanning two blocks would need network transfer.</p>
+<ul>
+<li>Map output goes to <b>local disk</b> (it is temporary); reducers <b>copy</b> it over the network, <b>merge</b> it, reduce, and write the result to <b>HDFS</b> (replicated).</li>
+<li>With <b>multiple reducers</b>, each map <mark>partitions</mark> its output — one partition per reducer, all values of a key in the same partition, using the default <b>hash partitioner</b>. Because every reducer is fed by many mappers, this is called <mark>"the shuffle"</mark>.</li>
+<li>Number of reducers is chosen independently (can even be <b>zero</b>). A <b>combiner</b> is a mini-reducer run on map output to cut network traffic.</li>
+</ul>
+{{fig:u2_single|Data flow with a single reduce task}}
+{{fig:u2_multi|✏️ must-draw · Data flow with multiple reduce tasks}}
+<div class="box mem"><div class="bt">🧠 Memory trick</div>Locality = "<b>Home → Neighbour → Other town</b>".</div>
+
+<!-- 2.4 -->
+<h2 id="b4"><span class="no">2.4</span>HDFS: design, blocks, NameNode and DataNodes<span class="marker">@@b4@@</span></h2>
+<p>When a dataset outgrows one machine, it is partitioned across many. File systems that manage storage across a network of machines are <mark>distributed file systems</mark>. They are harder than normal file systems because of networking — the biggest challenge is <b>surviving node failure without losing data</b>. Hadoop's is <b>HDFS</b> (it can also use the local file system or Amazon S3).</p>
+<div class="def"><span class="dt">Definition — design of HDFS (word-for-word)</span><p style="font-size:10.3pt">HDFS is a file system designed for storing <mark>very large files</mark> with <mark>streaming data access patterns</mark>, running on clusters of <mark>commodity hardware</mark>.</p></div>
+<table class="t">
+<tr><th>HDFS is good at</th><th>HDFS is bad at</th></tr>
+<tr><td style="font-weight:400"><b>Very large files</b> — hundreds of MB to TB; clusters hold PB.<br><b>Streaming access</b> — <mark>write once, read many times</mark>; reading the whole dataset fast matters more than the first record.<br><b>Commodity hardware</b> — cheap machines; keeps working through failures.</td><td style="font-weight:400"><b>Low-latency access</b> (tens of ms) — it's built for throughput; use <b>HBase</b>.<br><b>Lots of small files</b> — the NameNode keeps metadata in memory: millions OK, billions not.<br><b>Multiple writers / random edits</b> — one writer, writes only at the end of the file.</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>Good: "<b>L S C</b>" (Large, Streaming, Cheap). Bad: "<b>L S M</b>" (Low latency, Small files, Multiple writers).</div>
+<h3>Blocks</h3>
+<p>A disk block is 512 bytes, a normal file-system block a few KB, but an HDFS block is <mark>128 MB by default</mark>. Files are cut into block-sized chunks stored independently. A file smaller than a block does <b>not</b> take a full block (a 1 MB file uses 1 MB).</p>
+{{fig:u2_blocks|A 500 MB file → 4 blocks, each stored 3 times on different DataNodes}}
+<p><b>Benefits of blocks:</b> (1) a file can be <b>bigger than any single disk</b>; (2) a fixed-size unit <b>simplifies storage management</b>; (3) blocks fit <b>replication</b> — each block is copied to <b>3</b> separate machines for fault tolerance.</p>
+<h3>NameNode and DataNodes</h3>
+<div class="box simple"><div class="bt">🗣 In plain words</div>A library: the <b>NameNode</b> is the <b>catalogue</b> (which book is made of which pages, on which shelf); <b>DataNodes</b> are the <b>shelves</b> holding the pages.</div>
+<ul>
+<li><b>Master–worker pattern.</b> The <mark>NameNode</mark> (master) manages the <b>namespace</b> — the file tree and metadata — stored on disk as the <mark>namespace image</mark> and the <mark>edit log</mark>. It learns block locations from DataNode reports.</li>
+<li><mark>DataNodes</mark> (workers) are the workhorses: store and retrieve blocks when told, and <b>report their block lists</b> to the NameNode periodically.</li>
+<li><b>Without the NameNode the file system is unusable</b> — all files would be lost. So it is protected two ways: (1) write its metadata to <b>several file systems</b> at once (local disk + remote <b>NFS</b>, synchronous and atomic); (2) run a <mark>Secondary NameNode</mark> that periodically <b>merges the namespace image with the edit log</b> so the log doesn't grow too large; it keeps a copy of the merged image for recovery.</li>
+</ul>
+{{fig:u2_arch|✏️ must-draw · HDFS architecture}}
+{{fig:u2_snn|Checkpointing by the Secondary NameNode}}
+<div class="box warn"><div class="bt">⚠️ Trap</div>The <b>Secondary NameNode is NOT a backup NameNode</b> — it only checkpoints. Automatic takeover is done by the <b>Standby NameNode</b> in High Availability (next section).</div>
+
+<!-- 2.5 -->
+<h2 id="b5"><span class="no">2.5</span>HDFS Federation and High Availability<span class="marker">@@b5@@</span></h2>
+<p><b>Federation — solves scaling.</b> The NameNode holds every file and block in memory, so memory limits cluster size. <mark>HDFS Federation</mark> (Hadoop 2.x) <b>adds NameNodes, each managing part of the namespace</b> (e.g., one for <code>/user</code>, one for <code>/share</code>). Each manages a <b>namespace volume</b> = metadata + a <b>block pool</b>. Volumes are independent: NameNodes don't talk to each other, and one failing doesn't affect the others.</p>
+{{fig:u2_fed|HDFS Federation}}
+<p><b>High Availability — solves the single point of failure.</b> Backups and checkpoints prevent data <i>loss</i>, but the NameNode is still a <mark>single point of failure (SPOF)</mark>: if it dies, nobody can read, write or list files. Starting a new one means (i) loading the namespace image, (ii) replaying the edit log, (iii) receiving enough block reports to leave <b>safe mode</b> — <mark>30+ minutes</mark> on big clusters.</p>
+<p>Hadoop 2 HA uses an <b>active–standby pair</b>; the standby takes over without significant interruption. Needed changes: (1) <b>shared edit log</b> on highly available storage; (2) DataNodes send <b>block reports to both</b> NameNodes; (3) clients handle <b>failover</b> transparently; (4) the <b>standby takes the checkpoints</b> (replacing the Secondary NameNode).</p>
+{{fig:u2_ha|Active and standby NameNodes}}
+
+<!-- 2.6 -->
+<h2 id="b6"><span class="no">2.6</span>Anatomy of a file read and a file write<span class="marker">@@b6@@</span></h2>
+<h3>File read — 6 steps</h3>
+<div class="box simple"><div class="bt">🗣 In plain words</div>Ask the NameNode <b>where the blocks are</b>, then read each block <b>directly from the nearest DataNode</b>, one after another. Data never passes through the NameNode.</div>
+{{fig:u2_read|✏️ must-draw · A client reading data from HDFS}}
+<ol>
+<li>Client calls <code>open()</code> on <b>DistributedFileSystem</b>.</li>
+<li>It calls the NameNode by <b>RPC</b> for the locations of the first blocks; for each block, DataNodes are returned <mark>sorted by closeness</mark>. The client gets an <b>FSDataInputStream</b> (wrapping a DFSInputStream).</li>
+<li>Client calls <code>read()</code>; the stream connects to the <b>closest DataNode</b> for the first block.</li>
+<li>Data is <b>streamed</b> back as the client keeps calling read().</li>
+<li>At the end of a block, it closes that connection and finds the best DataNode for the <b>next block</b> (asking the NameNode for more locations as needed).</li>
+<li>Client calls <code>close()</code>.</li>
+</ol>
+<p><b>Failures:</b> if a DataNode fails, try the <b>next closest</b> one and remember the bad node; data is checked with <b>checksums</b> — a corrupt block is read from another replica and <b>reported to the NameNode</b>. <b>Why this design is good:</b> clients go straight to DataNodes, so traffic is spread out and the NameNode only answers quick location lookups.</p>
+<h3>File write — 7 steps</h3>
+<div class="box simple"><div class="bt">🗣 In plain words</div>Ask the NameNode to <b>create</b> the file, then push data in <b>packets</b> down a <b>chain of 3 DataNodes</b>; each saves and passes it on, and <b>acknowledgements</b> come back up.</div>
+{{fig:u2_write|✏️ must-draw · A client writing data to HDFS}}
+<ol>
+<li>Client calls <code>create()</code> on DistributedFileSystem.</li>
+<li>RPC to the NameNode to create the file (no blocks yet). It checks the file <b>doesn't exist</b> and the client has <b>permission</b>, else <b>IOException</b>. Client gets an <b>FSDataOutputStream</b>.</li>
+<li>As the client writes, data is split into <mark>packets</mark> placed in the <mark>data queue</mark>. The <b>DataStreamer</b> asks the NameNode for new blocks and a list of DataNodes, which form a <mark>pipeline</mark> (3 nodes for replication 3).</li>
+<li>Packets go to DataNode 1, which stores and <b>forwards</b> to DataNode 2, then DataNode 3.</li>
+<li>Packets wait in the <mark>ack queue</mark> until <b>all</b> DataNodes acknowledge them.</li>
+<li>Client calls <code>close()</code> — remaining packets are flushed and acks awaited.</li>
+<li>The NameNode is told the file is <b>complete</b>.</li>
+</ol>
+<p><b>If a DataNode fails during writing:</b> the pipeline is closed; packets in the ack queue go back to the <b>front of the data queue</b>; the block on the good nodes gets a <b>new identity</b> (so the partial block on the failed node is deleted later); the failed node is removed and a <b>new pipeline</b> is built from the two good nodes. The NameNode later adds the missing replica.</p>
+<table class="t">
+<tr><th style="width:20%"></th><th>Read</th><th>Write</th></tr>
+<tr><td>Starts with</td><td><code>open()</code></td><td><code>create()</code></td></tr>
+<tr><td>Stream</td><td>FSDataInputStream / DFSInputStream</td><td>FSDataOutputStream / DFSOutputStream + DataStreamer</td></tr>
+<tr><td>Data path</td><td>Closest DataNode, block by block</td><td>Pipeline of 3 DataNodes, packet by packet</td></tr>
+<tr><td>Queues</td><td>—</td><td>Data queue + ack queue</td></tr>
+<tr><td>Steps</td><td>6</td><td>7</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>Read: "<b>O</b>nly <b>G</b>ood <b>R</b>eaders <b>R</b>eally <b>R</b>ead <b>C</b>arefully" (Open, Get locations, Read, stReam, Read next, Close). Write: "<b>C</b>ute <b>C</b>ats <b>W</b>rite <b>P</b>oems <b>A</b>nd <b>C</b>lose <b>C</b>arefully" (Create, Create, Write, Packet, Ack, Close, Complete).</div>
+
+<!-- 2.7 -->
+<h2 id="b7"><span class="no">2.7</span>MapReduce workflows and unit tests<span class="marker">@@b7@@</span></h2>
+<p>When a problem gets harder, use <mark>more MapReduce jobs, not more complex ones</mark> (or a higher-level tool: Pig, Hive, Cascading, Crunch, Spark). Example: <b>mean maximum temperature per station per day</b> needs two jobs — Job 1 finds the max per (station, date); Job 2 drops the year and averages per (station, day-month): (25 + 27 + 29) ÷ 3 = 27 °C.</p>
+{{fig:u2_jobs|Breaking a complex problem into two MapReduce jobs}}
+<p>Jobs in a <b>linear chain</b> are run one after another with <code>JobClient.runJob()</code> (a failure throws IOException and stops the chain). Jobs forming a <mark>DAG</mark> (directed acyclic graph) are managed by <mark>JobControl</mark>: it stores jobs, records dependencies, runs them in order, monitors progress, reports status, and skips dependents if a job fails.</p>
+<p><mark>MRUnit</mark> is a testing library (used with <b>JUnit</b>) that feeds known input to a mapper or reducer and checks the output; a mismatch fails the test. <b>MapDriver</b> tests the mapper (weather record → (1950, −11)); <b>ReduceDriver</b> tests the reducer (1950, [10, 5] → (1950, 10)); the <b>local job runner</b> tests the whole job on a small file.</p>
+
+<!-- 2.8 -->
+<h2 id="b8"><span class="no">2.8</span>How a job runs: classic MapReduce and YARN<span class="marker">@@b8@@</span></h2>
+<p>A job is started by one call — <code>submit()</code> or <code>waitForCompletion()</code>. The property <mark>mapreduce.framework.name</mark> chooses how it runs: <b>local</b> (whole job in one JVM, for testing), <b>classic</b> (MapReduce 1: JobTracker + TaskTrackers), or <b>yarn</b> (MapReduce 2).</p>
+<h3>Classic MapReduce (MR1)</h3>
+<p><b>Four entities:</b> the <b>client</b> (submits) · the <mark>JobTracker</mark> (coordinates the job) · <mark>TaskTrackers</mark> (run the tasks) · the <b>distributed file system</b> (shares job files).</p>
+{{fig:u2_mr1|✏️ must-draw · Job run in classic MapReduce (steps 1–10)}}
+<ol>
+<li><b>Submission (1–4):</b> JobSubmitter gets a <b>new job ID</b> from the JobTracker; checks the <b>output directory</b> (must not exist) and computes <b>input splits</b>; copies the <b>job JAR</b> (high replication), config and splits to the shared FS; calls <code>submitJob()</code>.</li>
+<li><b>Initialisation (5–6):</b> job goes into an internal queue; the scheduler creates the job object, retrieves the splits and makes <b>one map task per split</b> (reduce count from <code>mapred.reduce.tasks</code>).</li>
+<li><b>Assignment (7):</b> TaskTrackers send <mark>heartbeats</mark> — "I'm alive, I'm free" — and the JobTracker replies with a task.</li>
+<li><b>Execution (8–10):</b> the TaskTracker copies the JAR locally (plus distributed-cache files), and a <b>TaskRunner launches a new JVM</b> for each task, so bugs in user code can't crash the TaskTracker.</li>
+</ol>
+<h3>YARN (MapReduce 2)</h3>
+<div class="box simple"><div class="bt">🗣 In plain words</div>In MR1 the JobTracker did two jobs — managing cluster resources <b>and</b> babysitting every task — and choked at around <b>4,000 nodes</b>. YARN splits it: one <b>ResourceManager</b> for the cluster, plus an <b>ApplicationMaster</b> for each job.</div>
+{{fig:u2_yarnsplit|YARN splits the JobTracker into two daemons}}
+<p>YARN = <mark>Yet Another Resource Negotiator</mark> (designed at Yahoo!, 2010). <b>Five entities:</b> client · <mark>ResourceManager</mark> (allocates cluster resources) · <mark>NodeManagers</mark> (launch and monitor containers) · <mark>MRAppMaster</mark> (coordinates the job's tasks; runs in a container) · distributed file system.</p>
+{{fig:u2_yarn|✏️ must-draw · Job run on YARN (steps 1–11)}}
+<ol>
+<li><b>Submission (1–4):</b> get a new <b>application ID</b> from the ResourceManager; check output; compute splits; copy resources; <code>submitApplication()</code>.</li>
+<li><b>Initialisation (5a, 5b, 6, 7):</b> the scheduler allocates a container and the RM launches the <b>MRAppMaster</b> in it via a NodeManager; the AM creates bookkeeping objects and retrieves the splits.</li>
+<li><b>Assignment (8):</b> the AM requests containers from the RM — <b>map tasks first</b> (higher priority); reduce tasks only after <b>5%</b> of maps finish. (Tiny jobs may run as an <b>uber task</b> inside the AM.)</li>
+<li><b>Execution (9a, 9b, 10, 11):</b> the AM asks a NodeManager to start the container; <mark>YarnChild</mark> localises the JAR/config, then runs the map or reduce task. Tasks report progress to the AM.</li>
+</ol>
+<table class="t">
+<tr><th style="width:22%"></th><th>Classic MapReduce (MR1)</th><th>YARN (MR2)</th></tr>
+<tr><td>Master</td><td>JobTracker — scheduling <b>and</b> monitoring</td><td>ResourceManager (resources) + per-job ApplicationMaster (monitoring)</td></tr>
+<tr><td>Worker</td><td>TaskTracker (fixed slots)</td><td>NodeManager (flexible containers)</td></tr>
+<tr><td>Task runs in</td><td>Child JVM from TaskRunner</td><td>YarnChild in a container</td></tr>
+<tr><td>Entities / steps</td><td>4 / 10</td><td>5 / 11</td></tr>
+<tr><td>Scale</td><td>Bottleneck ~4,000 nodes</td><td>Much larger</td></tr>
+<tr><td>SPOF</td><td>JobTracker</td><td>Designed to remove SPOFs</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>Both runs have 4 phases: "<b>S</b>tudents <b>I</b>n <b>A</b>n <b>E</b>xam" — Submission, Initialisation, Assignment, Execution. MR1 entities "<b>C</b>lient <b>J</b>ust <b>T</b>alks to <b>D</b>FS"; YARN "<b>C</b>an <b>R</b>ahul <b>N</b>ot <b>A</b>ttend <b>D</b>aily?"</div>
+
+<!-- 2.9 -->
+<h2 id="b9"><span class="no">2.9</span>Failures and job scheduling<span class="marker">@@b9@@</span></h2>
+<p>Hadoop notices failures mainly through <b>missing heartbeats</b>, then re-runs the work elsewhere.</p>
+<table class="t">
+<tr><th style="width:16%">Failure</th><th>Classic MR1</th><th>YARN</th></tr>
+<tr><td>Task</td><td>User code throws an exception or the child JVM exits suddenly → TaskTracker marks the attempt failed (frees the slot). Streaming: non-zero exit code.</td><td>Reported to the ApplicationMaster; a hanging task is caught by a missing ping; a task fails after <b>4 attempts</b>.</td></tr>
+<tr><td>Worker node</td><td>TaskTracker stops heartbeats → removed from the pool. <b>Blacklisted</b> if more than 4 tasks of a job fail there and its faults are well above average.</td><td>NodeManager stops heartbeats → removed after <b>10 minutes</b>; the AM blacklists it if more than 3 tasks fail there.</td></tr>
+<tr><td>Job coordinator</td><td>—</td><td>ApplicationMaster fails → RM starts a new one in a new container.</td></tr>
+<tr><td>Master</td><td><b>JobTracker failure = most serious; it's a SPOF → the job fails.</b></td><td>ResourceManager recovers from <b>checkpointed state</b> saved to persistent storage.</td></tr>
+</table>
+{{fig:u2_fail|Who watches whom in YARN}}
+<div class="box mem"><div class="bt">🧠 Memory trick</div>MR1: "<b>T</b>wo <b>T</b>ired <b>J</b>ugglers" (Task, TaskTracker, JobTracker). YARN: "<b>T</b>he <b>A</b>nts <b>N</b>ever <b>R</b>est" (Task, AM, NodeManager, RM).</div>
+<h3>Job scheduling</h3>
+{{fig:u2_sched|FIFO vs Fair vs Capacity scheduling}}
+<ul>
+<li><b>FIFO</b> — default in MR1; one queue, first come first served.</li>
+<li><mark>Fair Scheduler</mark> — gives <b>every user a fair share over time</b>. A lone job gets the whole cluster; as jobs arrive, slots are shared so short jobs finish even while long jobs run. Jobs go in <b>pools</b> (one per user by default). Supports <b>preemption</b>: if a pool is starved, tasks in over-capacity pools are killed to free slots.</li>
+<li><mark>Capacity Scheduler</mark> — the cluster is split into <b>queues</b> (can be hierarchical), each with a <b>fixed capacity</b>; inside each queue jobs run <b>FIFO (with priorities)</b> — like a separate mini-cluster per team.</li>
+<li><mark>Preemption</mark> = forcefully taking resources from one job and giving them to a higher-priority one.</li>
+</ul>
+<div class="box mem"><div class="bt">🧠 Memory trick</div><b>F</b>air → <b>P</b>ools ("Friends Play fair"); <b>C</b>apacity → <b>Q</b>ueues ("Companies Queue up").</div>
+
+<!-- 2.10 -->
+<h2 id="b10"><span class="no">2.10</span>Shuffle and sort<span class="marker">@@b10@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>MapReduce guarantees that the <mark>input to every reducer is sorted by key</mark>. The process of performing this sort and <b>transferring map outputs to reducers</b> is the <mark>shuffle</mark> — "the heart of MapReduce, where the magic happens".</p></div>
+{{fig:u2_shuffle|✏️ must-draw · Shuffle and sort}}
+<div class="two">
+<div><b>Map side</b>
+<ol>
+<li>Output goes to a <mark>circular memory buffer of 100 MB</mark>.</li>
+<li>At <mark>80%</mark> full, a background thread <b>spills</b> to disk (round-robin into mapred.local.dir); the map blocks only if the buffer fills completely.</li>
+<li>Before writing, data is <b>partitioned</b> by destination reducer.</li>
+<li>Each partition is <b>sorted by key in memory</b>; the <b>combiner</b> (if any) runs on it.</li>
+<li>Several spill files are <b>merged</b> into one partitioned, sorted output file (optionally compressed).</li>
+<li>Partitions are served to reducers over <b>HTTP</b>.</li>
+</ol></div>
+<div><b>Reduce side</b>
+<ol>
+<li><b>Copy phase</b> — starts copying each map's output <b>as soon as that map finishes</b>, using <b>5</b> copier threads.</li>
+<li>Small outputs go to memory, large ones to disk; buffers are <b>merged and spilled</b>, and background threads merge disk files.</li>
+<li><b>Sort phase</b> (really a <b>merge</b> phase — sorting was done map-side) — merges outputs in rounds, keeping order.</li>
+<li><b>Reduce phase</b> — the last merge feeds the reduce function directly; it runs <b>once per key</b>; output goes to <b>HDFS</b>.</li>
+</ol></div>
+</div>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>Map side: "<b>B</b>ig <b>S</b>pills <b>P</b>lease <b>S</b>weep, <b>C</b>lean, <b>M</b>op" — Buffer, Spill, Partition, Sort, Combine, Merge. Reduce side: <b>Copy → Merge → Reduce</b>.</div>
+</section>

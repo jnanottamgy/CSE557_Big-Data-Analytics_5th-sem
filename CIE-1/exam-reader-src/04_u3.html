@@ -1,0 +1,196 @@
+
+<!-- ================= UNIT 3 ================= -->
+<section class="ch3">
+<div class="chapter-open" id="u3"><p class="marker">@@u3@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Unit 3 · CIE-1 part</div>
+  <h1>Apache Spark Overview</h1>
+  <div class="learn story"><span class="st-h">The story of this unit</span>
+  MapReduce writes to disk after every step, which is slow. <b>Spark</b> does the same kind of distributed work but keeps data <b>in memory</b>. A Spark program is a <b>driver</b> that plans the work and <b>executors</b> on worker nodes that do it, with a <b>cluster manager</b> handing out machines. Your code becomes a <b>job</b>, split into <b>stages</b> and <b>tasks</b>. Finally: how to <b>install</b> Spark, write a first program and choose a <b>cluster manager</b>.</div>
+  <div class="meta"><span>Slides: "Spark Architecture" · Textbook: Abbasi, Learning Apache Spark 2</span><span>Stops before RDDs</span></div>
+</div>
+
+<!-- 3.1 -->
+<h2 id="c1"><span class="no">3.1</span>What Spark is and its components<span class="marker">@@c1@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>Apache Spark is an <mark>open-source cluster computing framework for data analytics</mark>, designed for quick computation. It supports <mark>in-memory cluster computing</mark> and parallel processing, and is <mark>faster than Hadoop</mark>.</p></div>
+<ul>
+<li>A tool for processing large datasets quickly, on <b>one computer or many</b>.</li>
+<li>APIs for <b>Scala, Java, Python</b> (and SQL, R). Your lab uses <b>PySpark on one Ubuntu machine</b>.</li>
+<li>Up to <b>100× faster than MapReduce in memory</b> (~10× on disk). Started at UC Berkeley's AMPLab (2009, Matei Zaharia); Apache top-level project 2014.</li>
+</ul>
+{{fig:u3_vsmr|Why Spark is faster: no disk trip between steps}}
+{{fig:u3_stack|✏️ must-draw · The Spark stack}}
+<table class="t">
+<tr><th style="width:20%">Component</th><th>What it does</th></tr>
+<tr><td>Spark Core</td><td>The <b>foundation</b> — execution platform for every Spark application</td></tr>
+<tr><td>Spark SQL</td><td>SQL and HiveQL queries on structured and semi-structured data (DataFrames)</td></tr>
+<tr><td>Spark Streaming</td><td>Live data, processed as small <b>micro-batches</b></td></tr>
+<tr><td>MLlib</td><td>Machine learning; uses in-memory processing for iterative algorithms</td></tr>
+<tr><td>GraphX</td><td>Graph computation at scale</td></tr>
+<tr><td>SparkR</td><td>Front end for R users, from the R shell</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>"<b>C</b>ool <b>S</b>tudents <b>S</b>tream <b>M</b>ovies, <b>G</b>raphs &amp; <b>R</b>eels" — Core, SQL, Streaming, MLlib, GraphX, SparkR.</div>
+
+<!-- 3.2 -->
+<h2 id="c2"><span class="no">3.2</span>Terminology: SparkContext, job, stage, task<span class="marker">@@c2@@</span></h2>
+<div class="def"><span class="dt">SparkContext</span><p>The <mark>entry point of a Spark application</mark>. It connects to the Spark execution environment and is used to create RDDs, accumulators and broadcast variables, access Spark services and run jobs.</p></div>
+<div class="two">
+<div><b>Responsibilities of SparkContext</b>
+<ol>
+<li>Check the current <b>status</b> of the application</li>
+<li><b>Cancel</b> a job or stage</li>
+<li><b>Run</b> a job synchronously or asynchronously</li>
+<li><b>Access</b> or unpersist a cached RDD</li>
+<li><b>Dynamic allocation</b> of resources</li>
+</ol>
+<p class="small">From Spark 2.0, <b>SparkSession</b> wraps SparkContext as the single entry point.</p></div>
+<div>
+<p><b>Spark Shell</b> — a Scala command line with auto-completion, for trying Spark before writing an application (<code>pyspark</code> for Python).</p>
+<p><b>Spark application</b> — a self-contained computation running user code; its processes can stay alive even when no job is running.</p>
+<div class="box mem" style="margin:1mm 0 0"><div class="bt">🧠 Memory trick</div>"<b>S</b>park <b>C</b>an <b>R</b>un <b>A</b>ny <b>D</b>ata" — Status, Cancel, Run, Access, Dynamic.</div>
+</div>
+</div>
+<ul>
+<li><mark>Task</mark> — the <b>smallest unit of work</b>, sent to <b>one executor</b>; one task per data <b>partition</b>.</li>
+<li><mark>Job</mark> — a parallel computation of many tasks, created when an <b>action</b> (e.g., <code>count()</code>) runs.</li>
+<li><mark>Stage</mark> — a set of tasks that depend on each other; a job is split into stages where some steps must <b>wait</b> for others (a shuffle).</li>
+</ul>
+{{fig:u3_jst|One action → one job → stages → tasks}}
+<div class="box warn"><div class="bt">⚠️ Trap</div>A Hadoop job = one map + one reduce. A Spark job can have <b>many stages</b>, so it can do the work of several chained MapReduce jobs. Order of size: <b>Application ⊃ Job ⊃ Stage ⊃ Task</b> ("All Jobs Split into Tasks").</div>
+
+<!-- 3.3 -->
+<h2 id="c3"><span class="no">3.3</span>Spark architecture<span class="marker">@@c3@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In plain words</div>A restaurant: the <b>driver</b> is the head chef who reads the order and plans; <b>executors</b> are the cooks; the <b>cluster manager</b> is the manager who gives each chef cooks and stoves; a <b>task</b> is one dish.</div>
+<p>Like Hadoop, Spark uses a <mark>master–slave architecture</mark>: one master and many slaves. The <mark>driver is the central coordinator</mark>. The driver and each executor run in their <b>own Java process</b>. A Spark application = <b>a driver and its executors</b>. Spark has its own <b>standalone cluster manager</b> and also works with <b>YARN</b> and <b>Mesos</b>.</p>
+{{fig:u3_arch|✏️ must-draw · Apache Spark architecture}}
+<table class="t">
+<tr><th style="width:18%">Part</th><th>Role</th></tr>
+<tr><td>Driver program</td><td>Runs the <b>main()</b> function and <b>creates the SparkContext</b>; does <b>job scheduling</b> and <b>negotiates with the cluster manager</b>; stores RDD information. Runs in <b>client or cluster mode</b>; prepares user code and ships it (as JAR or Python files) to executors.</td></tr>
+<tr><td>Cluster manager</td><td><b>Allocates resources</b> across applications — <b>Hadoop YARN, Apache Mesos, Standalone scheduler</b>. Standalone makes it easy to set up Spark on an empty set of machines.</td></tr>
+<tr><td>Worker node</td><td>A <b>slave node</b> that runs application code.</td></tr>
+<tr><td>Executor</td><td>A process launched for an application <b>on a worker node</b>: <b>runs tasks</b>, keeps data in <b>memory/disk (cache)</b>, reads and writes external data. Every application has its own executors.</td></tr>
+<tr><td>Task</td><td>A unit of work sent to one executor.</td></tr>
+</table>
+<div class="box warn"><div class="bt">⚠️ Trap</div>The <b>cluster manager only hands out resources</b> — it does not schedule tasks or run your code. <b>The driver schedules tasks.</b></div>
+
+<!-- 3.4 -->
+<h2 id="c4"><span class="no">3.4</span>How a Spark job executes<span class="marker">@@c4@@</span></h2>
+{{fig:u3_exec|✏️ must-draw · Internals of job execution}}
+<ol>
+<li>The driver creates a SparkSession/SparkContext and defines operations (read → filter → map) — <b>nothing runs yet</b>.</li>
+<li>When an <b>action</b> (e.g., <code>count()</code>) appears, a <b>job</b> is created.</li>
+<li>The <mark>DAG Scheduler</mark> builds the graph of operations (<b>DAG</b> = directed acyclic graph, arrows only go forward) and <b>splits it into stages</b>.</li>
+<li>The <mark>Task Scheduler</mark> <b>launches the tasks through the cluster manager</b>.</li>
+<li>The cluster manager allocates resources and tracks the job; the code (JARs) goes to <b>executors</b> on worker nodes, which run the tasks.</li>
+</ol>
+<h3>Run-time architecture — 10 steps</h3>
+{{fig:u3_runtime|Run-time flow of a Spark application}}
+<ol>
+<li>Driver <b>negotiates</b> resources with the cluster manager.</li>
+<li>Cluster manager <b>launches executors</b> for the driver.</li>
+<li>Executors <b>register</b> with the driver.</li>
+<li>Code is converted into a <b>logical DAG</b>.</li>
+<li>The DAG is <b>optimised</b>.</li>
+<li>It becomes a <b>physical execution plan</b> with stages.</li>
+<li>Small units called <b>tasks</b> are sent to the cluster.</li>
+<li>Executors <b>execute</b> the tasks; the driver <b>monitors</b> them.</li>
+<li>The driver <b>schedules future tasks</b> by tracking where cached data is.</li>
+<li><code>stop()</code> on SparkContext <b>terminates the executors and releases resources</b>.</li>
+</ol>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>"<b>N</b>ew <b>L</b>abourers <b>R</b>eport; the boss <b>L</b>ists, <b>O</b>rganises, <b>P</b>lans, gives <b>T</b>asks; they <b>E</b>xecute, he <b>M</b>onitors, then <b>S</b>ays stop." Same shape as YARN: ask for resources → start workers → run → monitor → release (the driver plays the ApplicationMaster's role).</div>
+<h3>Spark vs Hadoop MapReduce</h3>
+<table class="t">
+<tr><th style="width:20%"></th><th>MapReduce</th><th>Spark</th></tr>
+<tr><td>Processing</td><td>Disk-based</td><td><b>In-memory</b></td></tr>
+<tr><td>Speed</td><td>Slower</td><td>Up to 100× faster (memory)</td></tr>
+<tr><td>Execution plan</td><td>Fixed map → reduce</td><td>Optimised <b>DAG</b> of stages</td></tr>
+<tr><td>Workloads</td><td>Batch</td><td>Batch, iterative, interactive, streaming</td></tr>
+<tr><td>Languages</td><td>Mainly Java</td><td>Scala, Java, Python, R, SQL</td></tr>
+<tr><td>Libraries</td><td>Separate (Hive, Pig, Mahout)</td><td>Built in (SQL, Streaming, MLlib, GraphX)</td></tr>
+<tr><td>Storage</td><td>HDFS</td><td><b>None of its own</b> — uses HDFS, S3, local files</td></tr>
+</table>
+
+<!-- 3.5 -->
+<h2 id="c5"><span class="no">3.5</span>Installing and running Spark, cluster managers<span class="marker">@@c5@@</span></h2>
+<p class="small">Your slides list these topics in the agenda; the details below are from the textbook.</p>
+<p><b>Installing on Ubuntu:</b> (1) install <b>Java</b> (JDK) → (2) download the pre-built Spark <code>.tgz</code> → (3) extract with <code>tar -xzf</code> and move to <code>/opt/spark</code> → (4) set <code>SPARK_HOME</code> and add <code>bin</code>/<code>sbin</code> to <code>PATH</code> → (5) verify with <code>pyspark</code> or <code>spark-shell --version</code>. (Python-only shortcut: <code>pip install pyspark</code>.) Folders: <b>bin</b> (shells, spark-submit, run-example), <b>sbin</b> (start-master/worker), conf, examples, jars, data. Shells: spark-shell (Scala), pyspark, sparkR, spark-sql — <code>sc</code> and <code>spark</code> are ready-made. Web UI: <b>localhost:4040</b>.</p>
+<div class="two">
+<div><b>First program (shell)</b>
+<pre class="code" style="font-size:7.6pt">&gt;&gt;&gt; lines = sc.textFile("README.md")
+&gt;&gt;&gt; lines.count()       # action → job
+&gt;&gt;&gt; lines.first()
+&gt;&gt;&gt; lines.filter(lambda l: "Spark" in l).count()</pre></div>
+<div><b>Word count app</b>
+<pre class="code" style="font-size:7.6pt">counts = (sc.textFile("input.txt")
+  .flatMap(lambda l: l.split())
+  .map(lambda w: (w, 1))          # like a mapper
+  .reduceByKey(lambda a, b: a+b)) # like a reducer
+print(counts.collect()); spark.stop()
+$ spark-submit --master local[4] wc.py</pre></div>
+</div>
+<p><b>spark-submit</b> runs an application; main options: <code>--master</code> (where to run), <code>--deploy-mode</code> (client/cluster), <code>--class</code> (Java/Scala main class), executor memory/cores.</p>
+{{fig:u3_cm|✏️ must-draw · Cluster manager types}}
+<table class="t">
+<tr><th style="width:16%">Type</th><th style="width:26%">--master</th><th>What it is</th></tr>
+<tr><td>Local</td><td>local, local[K], local[*]</td><td>Everything on one machine (1, K or all-core threads) — learning and testing</td></tr>
+<tr><td>Standalone</td><td>spark://HOST:7077</td><td><b>Spark's own</b> simple manager: one master + workers (UI on 8080)</td></tr>
+<tr><td>Hadoop YARN</td><td>yarn</td><td>Runs Spark on an existing Hadoop cluster, reading HDFS; executors in YARN containers</td></tr>
+<tr><td>Apache Mesos</td><td>mesos://HOST:5050</td><td>General-purpose cluster manager shared with other frameworks</td></tr>
+<tr><td>Kubernetes</td><td>k8s://https://HOST:PORT</td><td>Driver and executors as pods (Spark 2.3+)</td></tr>
+</table>
+{{fig:u3_mode|Client mode vs cluster mode}}
+<p><b>Client mode:</b> driver runs on the machine that submitted the job (shells always use this; good for interactive work). <b>Cluster mode:</b> driver runs inside the cluster (production; you can disconnect). <b>Running the examples:</b> <code>./bin/run-example SparkPi 10</code> → "Pi is roughly 3.14…" (10 partitions = 10 tasks); Python: <code>spark-submit examples/src/main/python/pi.py 10</code>.</p>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>"<b>L</b>et <b>S</b>park <b>Y</b>ell <b>M</b>ore <b>K</b>indly" — Local, Standalone, YARN, Mesos, Kubernetes. The slides' three: Standalone, YARN, Mesos.</div>
+</section>
+
+<!-- ================= EXAM PACK ================= -->
+<section style="--acc:#16244a; --accl:#eef1f8">
+<div class="chapter-open" id="z" style="background:#16244a;break-before:auto;margin-top:6mm"><p class="marker">@@z@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Read last</div>
+  <h1>Exam pack</h1>
+  <div class="learn story"><span class="st-h">Everything to have fresh in your head as you walk in</span>How to write answers, the numbers, the likely questions and the classic traps.</div>
+</div>
+<h3>How to write a long answer (5–10 marks)</h3>
+<div class="flow" style="font-size:9pt">
+ <div class="st"><b>1 · Definition</b>exact textbook words</div><div class="ar">→</div>
+ <div class="st"><b>2 · Diagram</b>neat, labelled, numbered arrows</div><div class="ar">→</div>
+ <div class="st"><b>3 · Points / steps</b>one heading each, 1–2 lines</div><div class="ar">→</div>
+ <div class="st"><b>4 · Example</b>weather data, Amazon, bank</div><div class="ar">→</div>
+ <div class="st"><b>5 · Conclusion</b>one line on value</div>
+</div>
+<h3>Numbers to remember</h3>
+<table class="t">
+<tr><th>Fact</th><th>Value</th><th>Fact</th><th>Value</th></tr>
+<tr><td>Unstructured share</td><td>80–90%</td><td>HDFS block</td><td>128 MB</td></tr>
+<tr><td>Digital universe 2006 → 2011</td><td>0.18 → 1.8 ZB</td><td>Replication</td><td>3</td></tr>
+<tr><td>Disk 1990 vs ~2010</td><td>1,370 MB @ 4.4 MB/s (5 min) vs 1 TB @ 100 MB/s (&gt;2.5 h)</td><td>NameNode cold start</td><td>30+ min</td></tr>
+<tr><td>1 TB on 100 disks</td><td>&lt; 2 min</td><td>Map buffer / spill</td><td>100 MB / 80%</td></tr>
+<tr><td>Hadoop born</td><td>Feb 2006</td><td>Reduce copier threads</td><td>5</td></tr>
+<tr><td>1 TB sort</td><td>209 s, 900 nodes</td><td>Task attempts</td><td>4</td></tr>
+<tr><td>MR1 limit</td><td>~4,000 nodes</td><td>NodeManager timeout</td><td>10 min</td></tr>
+<tr><td>Spark vs MapReduce</td><td>up to 100× (memory)</td><td>Reduce slow start</td><td>5% maps</td></tr>
+<tr><td>NCDC temperature</td><td>°C × 10; 9999 = missing</td><td>Spark UI / Standalone</td><td>4040 / 7077</td></tr>
+</table>
+<h3>Most likely questions</h3>
+<div class="unitmap">
+ <div class="card" style="border-top-color:#0f8b8d"><h5 style="color:#0f8b8d">Unit 1</h5><ol style="margin:0;padding-left:1.1em">
+ <li>Classify digital data (+ comparison)</li><li>Techniques for unstructured data</li><li>Define Big Data; 3 Vs + other Vs</li><li>Challenges with / facing Big Data</li><li>BI vs Big Data</li><li>What is BDA; Analytics 1.0/2.0/3.0</li><li>Data scientist skills &amp; roles</li><li>SMP vs MPP; shared nothing; CAP</li></ol></div>
+ <div class="card" style="border-top-color:#6a3fb5"><h5 style="color:#6a3fb5">Unit 2</h5><ol style="margin:0;padding-left:1.1em">
+ <li>MapReduce max-temperature flow</li><li>Design of HDFS; NameNode/DataNode</li><li>File read (6 steps)</li><li>File write (7 steps)</li><li>Federation &amp; HA</li><li>Classic MR vs YARN job run</li><li>Failures; Fair vs Capacity</li><li>Shuffle and sort</li></ol></div>
+ <div class="card" style="border-top-color:#d9622b"><h5 style="color:#d9622b">Unit 3</h5><ol style="margin:0;padding-left:1.1em">
+ <li>Spark architecture (diagram)</li><li>Spark components</li><li>SparkContext; job/stage/task</li><li>Job execution / 10-step run-time</li><li>Cluster managers; client vs cluster</li><li>Spark vs MapReduce</li><li>Install &amp; first program</li></ol></div>
+</div>
+<div class="box warn"><div class="bt">⚠️ Classic traps — check before you hand in</div>
+<ul style="margin:0">
+<li>Secondary NameNode is <b>not</b> a backup (it checkpoints).</li>
+<li>Cluster manager gives resources; the <b>driver</b> schedules tasks.</li>
+<li>Spark has no storage of its own — it reads HDFS etc.</li>
+<li>Velocity ≠ Variability ≠ Volatility.</li>
+<li>"Challenges with Big Data" (6) ≠ "Top challenges facing Big Data" (7).</li>
+<li>Block size = <b>128 MB</b>; map output → local disk, reduce output → HDFS.</li>
+<li>XML ↔ SOAP, JSON ↔ REST; UIMA is by IBM.</li>
+</ul></div>
+<p class="center small" style="margin-top:3mm">All the best for CIE-1! 🚀</p>
+</section>
+</body></html>

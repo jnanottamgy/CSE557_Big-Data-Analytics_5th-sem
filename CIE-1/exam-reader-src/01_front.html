@@ -1,0 +1,108 @@
+
+<!-- ============ COVER ============ -->
+<section class="cover">
+  <div class="grid"></div>
+  <div class="blob" style="width:150mm;height:150mm;right:-55mm;top:-50mm;background:radial-gradient(circle at 30% 30%,#6a3fb5,#16244a 70%)"></div>
+  <div class="blob" style="width:120mm;height:120mm;left:-45mm;bottom:-35mm;background:radial-gradient(circle at 60% 40%,#0f8b8d,#16244a 72%)"></div>
+  <div class="blob" style="width:70mm;height:70mm;right:15mm;bottom:40mm;background:radial-gradient(circle at 50% 50%,#d9622b,#16244a 72%);opacity:.7"></div>
+  <div class="inner">
+    <span class="tag">CSE557 · Big Data Analytics · CIE-1</span>
+    <h1>The Exam<br><span>Reader</span></h1>
+    <p class="sub">Units 1, 2 &amp; 3 (CIE-1 part) in one continuous read.<br>Read it twice before the exam — that's enough to understand and write everything.</p>
+    <div class="chips">
+      <div class="chip"><div class="n" style="background:#0f8b8d">1</div><div><div class="t">Unit 1 · Big Data &amp; Analytics</div><div class="d">Digital data · Big Data &amp; the Vs · BI vs Big Data · Analytics · Data science · SMP/MPP · CAP</div></div></div>
+      <div class="chip"><div class="n" style="background:#6a3fb5">2</div><div><div class="t">Unit 2 · Hadoop</div><div class="d">Why Hadoop · MapReduce · HDFS · File read/write · MR1 · YARN · Failures · Scheduling · Shuffle</div></div></div>
+      <div class="chip"><div class="n" style="background:#d9622b">3</div><div><div class="t">Unit 3 · Apache Spark (CIE-1 part)</div><div class="d">Components · Terminology · Architecture · Job execution · Installation · Cluster managers</div></div></div>
+    </div>
+  </div>
+  <div class="foot"><span>From your lecture slides + Acharya &amp; Chellappan · Tom White · Abbasi</span><span>Exam-eve edition</span></div>
+</section>
+
+<!-- ============ HOW TO READ ============ -->
+<section>
+  <h1 class="page-title">How to read this (2 passes)</h1>
+  <p class="lead2">This reader is written as <b>one story</b>, not as notes. Every topic follows the same order, so your brain knows what's coming:</p>
+  <div class="flow" style="font-size:9pt">
+   <div class="st"><b>1 · Plain words</b>what it really means</div><div class="ar">→</div>
+   <div class="st"><b>2 · Definition</b>the exam sentence</div><div class="ar">→</div>
+   <div class="st"><b>3 · Key points</b>what to write</div><div class="ar">→</div>
+   <div class="st"><b>4 · Diagram</b>what to draw</div><div class="ar">→</div>
+   <div class="st"><b>5 · Trick / trap</b>how to remember</div>
+  </div>
+  <div class="two" style="gap:4mm">
+   <div class="box exam" style="margin:0"><div class="bt">📖 Pass 1 — understand (≈ 3 hrs)</div>Read slowly from start to end. Read the <b>"In plain words"</b> box first, then the rest. At each diagram, stop and say out loud what each arrow means. Don't try to memorise yet.</div>
+   <div class="box key" style="margin:0"><div class="bt">⚡ Pass 2 — lock it in (≈ 1.5 hrs)</div>Read only the <b>definitions</b>, <b>bold words</b>, <mark>highlights</mark>, tables and 🧠 tricks. For the diagrams marked <b>✏️ must-draw</b>, cover the figure and draw it from memory.</div>
+  </div>
+  <h3 style="--acc:var(--navy)">The boxes</h3>
+  <div class="legend">
+    <div class="box simple" style="--acc:#16244a;--accl:#eef1f8"><div class="bt">🗣 In plain words</div>The idea in everyday language — read this first.</div>
+    <div class="box key"><div class="bt">🔑 Key point</div>The one thing to remember if you forget the rest.</div>
+    <div class="box mem"><div class="bt">🧠 Memory trick</div>Mnemonic for a list or an order of steps.</div>
+    <div class="box warn"><div class="bt">⚠️ Trap</div>Things students mix up and lose marks on.</div>
+    <div class="box eg"><div class="bt">📌 Example</div>A real-life case to quote in answers.</div>
+    <div class="box exam"><div class="bt">🎯 Exam</div>How it's asked and how to answer it.</div>
+  </div>
+
+  <h2 style="--acc:#16244a;margin-top:5mm">The whole course in one picture</h2>
+  <p>Before the details, here is how the three units connect. Keep this story in mind — every topic fits somewhere in it.</p>
+  <div class="fig">
+  <svg viewBox="0 0 640 215" width="640" font-family="Inter" font-size="9.4">
+   <defs><marker id="bp1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#16244a"/></marker></defs>
+   <rect x="5" y="20" width="195" height="185" rx="9" fill="#e6f5f5" stroke="#0f8b8d"/>
+   <text x="102" y="38" text-anchor="middle" font-weight="800" fill="#0f8b8d" font-size="11">UNIT 1 · the problem</text>
+   <g font-size="9"><rect x="18" y="48" width="170" height="30" rx="5" fill="#fff" stroke="#0f8b8d"/><text x="103" y="61" text-anchor="middle" font-weight="700">What kinds of data exist?</text><text x="103" y="73" text-anchor="middle" fill="#5b6478">structured · semi · unstructured</text>
+   <rect x="18" y="84" width="170" height="30" rx="5" fill="#fff" stroke="#0f8b8d"/><text x="103" y="97" text-anchor="middle" font-weight="700">It became BIG DATA</text><text x="103" y="109" text-anchor="middle" fill="#5b6478">volume · velocity · variety</text>
+   <rect x="18" y="120" width="170" height="30" rx="5" fill="#fff" stroke="#0f8b8d"/><text x="103" y="133" text-anchor="middle" font-weight="700">We want value: ANALYTICS</text><text x="103" y="145" text-anchor="middle" fill="#5b6478">descriptive → prescriptive</text>
+   <rect x="18" y="156" width="170" height="38" rx="5" fill="#fff" stroke="#0f8b8d"/><text x="103" y="170" text-anchor="middle" font-weight="700">Needs many machines</text><text x="103" y="183" text-anchor="middle" fill="#5b6478">MPP · shared nothing · CAP</text></g>
+   <line x1="200" y1="112" x2="222" y2="112" stroke="#16244a" stroke-width="2.4" marker-end="url(#bp1)"/>
+   <rect x="225" y="20" width="195" height="185" rx="9" fill="#f1ebfb" stroke="#6a3fb5"/>
+   <text x="322" y="38" text-anchor="middle" font-weight="800" fill="#6a3fb5" font-size="11">UNIT 2 · Hadoop solution</text>
+   <g font-size="9"><rect x="238" y="48" width="170" height="40" rx="5" fill="#fff" stroke="#6a3fb5"/><text x="323" y="63" text-anchor="middle" font-weight="700">HDFS — store it</text><text x="323" y="76" text-anchor="middle" fill="#5b6478">blocks on many DataNodes,</text><text x="323" y="85" text-anchor="middle" fill="#5b6478">NameNode keeps the map</text>
+   <rect x="238" y="94" width="170" height="40" rx="5" fill="#fff" stroke="#6a3fb5"/><text x="323" y="109" text-anchor="middle" font-weight="700">MapReduce — process it</text><text x="323" y="122" text-anchor="middle" fill="#5b6478">map → shuffle &amp; sort → reduce</text>
+   <rect x="238" y="140" width="170" height="54" rx="5" fill="#fff" stroke="#6a3fb5"/><text x="323" y="155" text-anchor="middle" font-weight="700">YARN — manage resources</text><text x="323" y="168" text-anchor="middle" fill="#5b6478">ResourceManager +</text><text x="323" y="180" text-anchor="middle" fill="#5b6478">ApplicationMaster + NodeManagers</text></g>
+   <line x1="420" y1="112" x2="442" y2="112" stroke="#16244a" stroke-width="2.4" marker-end="url(#bp1)"/>
+   <rect x="445" y="20" width="190" height="185" rx="9" fill="#fdf0e8" stroke="#d9622b"/>
+   <text x="540" y="38" text-anchor="middle" font-weight="800" fill="#d9622b" font-size="11">UNIT 3 · faster: Spark</text>
+   <g font-size="9"><rect x="457" y="48" width="166" height="40" rx="5" fill="#fff" stroke="#d9622b"/><text x="540" y="63" text-anchor="middle" font-weight="700">Same idea, in memory</text><text x="540" y="76" text-anchor="middle" fill="#5b6478">up to 100× faster than</text><text x="540" y="85" text-anchor="middle" fill="#5b6478">MapReduce</text>
+   <rect x="457" y="94" width="166" height="40" rx="5" fill="#fff" stroke="#d9622b"/><text x="540" y="109" text-anchor="middle" font-weight="700">Driver + executors</text><text x="540" y="122" text-anchor="middle" fill="#5b6478">on a cluster manager</text>
+   <rect x="457" y="140" width="166" height="54" rx="5" fill="#fff" stroke="#d9622b"/><text x="540" y="155" text-anchor="middle" font-weight="700">Job → stages → tasks</text><text x="540" y="168" text-anchor="middle" fill="#5b6478">planned as a DAG,</text><text x="540" y="180" text-anchor="middle" fill="#5b6478">runs on YARN / Standalone…</text></g>
+   <text x="320" y="13" text-anchor="middle" font-weight="700" fill="#16244a">Data grew too big for one computer → split storage &amp; work across many → then do it faster in memory</text>
+  </svg>
+  <div class="cap">The story of CIE-1: problem (Unit 1) → Hadoop's answer (Unit 2) → Spark's faster answer (Unit 3)</div>
+  </div>
+</section>
+
+<!-- ============ CONTENTS ============ -->
+<section class="pb">
+  <h1 class="page-title">Contents</h1>
+  <div class="toc">
+    <div class="row ch"><a href="#u1">Unit 1 · Big Data &amp; Big Data Analytics</a><span class="dots"></span><span class="pg">{{pg:u1}}</span></div>
+    <div class="row sub"><a href="#a1">1.1 Data and its three types</a><span class="dots"></span><span class="pg">{{pg:a1}}</span></div>
+    <div class="row sub"><a href="#a2">1.2 Structured data</a><span class="dots"></span><span class="pg">{{pg:a2}}</span></div>
+    <div class="row sub"><a href="#a3">1.3 Semi-structured &amp; unstructured data</a><span class="dots"></span><span class="pg">{{pg:a3}}</span></div>
+    <div class="row sub"><a href="#a4">1.4 What Big Data is (3 Cs, evolution, definition, Vs)</a><span class="dots"></span><span class="pg">{{pg:a4}}</span></div>
+    <div class="row sub"><a href="#a5">1.5 Challenges, why Big Data, BI vs Big Data</a><span class="dots"></span><span class="pg">{{pg:a5}}</span></div>
+    <div class="row sub"><a href="#a6">1.6 Big Data Analytics &amp; its classification</a><span class="dots"></span><span class="pg">{{pg:a6}}</span></div>
+    <div class="row sub"><a href="#a7">1.7 Data science &amp; the data scientist</a><span class="dots"></span><span class="pg">{{pg:a7}}</span></div>
+    <div class="row sub"><a href="#a8">1.8 Terminologies: in-memory, in-DB, SMP, MPP, shared nothing</a><span class="dots"></span><span class="pg">{{pg:a8}}</span></div>
+    <div class="row sub"><a href="#a9">1.9 CAP theorem</a><span class="dots"></span><span class="pg">{{pg:a9}}</span></div>
+    <div class="row ch"><a href="#u2">Unit 2 · Data Analytics with Hadoop</a><span class="dots"></span><span class="pg">{{pg:u2}}</span></div>
+    <div class="row sub"><a href="#b1">2.1 Why Hadoop? What is Hadoop?</a><span class="dots"></span><span class="pg">{{pg:b1}}</span></div>
+    <div class="row sub"><a href="#b2">2.2 MapReduce with the weather example</a><span class="dots"></span><span class="pg">{{pg:b2}}</span></div>
+    <div class="row sub"><a href="#b3">2.3 Scaling out: splits, locality, data flow</a><span class="dots"></span><span class="pg">{{pg:b3}}</span></div>
+    <div class="row sub"><a href="#b4">2.4 HDFS design, blocks, NameNode &amp; DataNodes</a><span class="dots"></span><span class="pg">{{pg:b4}}</span></div>
+    <div class="row sub"><a href="#b5">2.5 Federation &amp; High Availability</a><span class="dots"></span><span class="pg">{{pg:b5}}</span></div>
+    <div class="row sub"><a href="#b6">2.6 Anatomy of a file read &amp; write</a><span class="dots"></span><span class="pg">{{pg:b6}}</span></div>
+    <div class="row sub"><a href="#b7">2.7 Workflows &amp; unit tests</a><span class="dots"></span><span class="pg">{{pg:b7}}</span></div>
+    <div class="row sub"><a href="#b8">2.8 How a job runs: classic MapReduce &amp; YARN</a><span class="dots"></span><span class="pg">{{pg:b8}}</span></div>
+    <div class="row sub"><a href="#b9">2.9 Failures &amp; job scheduling</a><span class="dots"></span><span class="pg">{{pg:b9}}</span></div>
+    <div class="row sub"><a href="#b10">2.10 Shuffle and sort</a><span class="dots"></span><span class="pg">{{pg:b10}}</span></div>
+    <div class="row ch"><a href="#u3">Unit 3 · Apache Spark Overview (CIE-1 part)</a><span class="dots"></span><span class="pg">{{pg:u3}}</span></div>
+    <div class="row sub"><a href="#c1">3.1 What Spark is &amp; its components</a><span class="dots"></span><span class="pg">{{pg:c1}}</span></div>
+    <div class="row sub"><a href="#c2">3.2 Terminology: SparkContext, job, stage, task</a><span class="dots"></span><span class="pg">{{pg:c2}}</span></div>
+    <div class="row sub"><a href="#c3">3.3 Spark architecture</a><span class="dots"></span><span class="pg">{{pg:c3}}</span></div>
+    <div class="row sub"><a href="#c4">3.4 How a Spark job executes</a><span class="dots"></span><span class="pg">{{pg:c4}}</span></div>
+    <div class="row sub"><a href="#c5">3.5 Installing &amp; running Spark, cluster managers</a><span class="dots"></span><span class="pg">{{pg:c5}}</span></div>
+    <div class="row ch"><a href="#z">Exam pack</a><span class="dots"></span><span class="pg">{{pg:z}}</span></div>
+  </div>
+</section>

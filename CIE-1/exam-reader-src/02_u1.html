@@ -1,0 +1,297 @@
+
+<!-- ================= UNIT 1 ================= -->
+<section class="ch1">
+<div class="chapter-open" id="u1"><p class="marker">@@u1@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Unit 1</div>
+  <h1>Big Data &amp; Big Data Analytics</h1>
+  <div class="learn story"><span class="st-h">The story of this unit</span>
+  Data comes in three shapes. Most of it is messy (unstructured). There is now so much, arriving so fast, in so many shapes, that we call it <b>Big Data</b>. Analysing it — <b>Big Data Analytics</b> — gives businesses better decisions. Doing that needs <b>data scientists</b> and special <b>architectures</b> (many machines, sharing nothing), which run into the <b>CAP trade-off</b>.</div>
+  <div class="meta"><span>Textbook: Seema Acharya &amp; Subhashini Chellappan</span></div>
+</div>
+
+<!-- 1.1 -->
+<h2 id="a1"><span class="no">1.1</span>Data and its three types<span class="marker">@@a1@@</span></h2>
+<div class="box simple"><div class="bt">🗣 In plain words</div>Data = raw facts a computer can store and work on. Organise it and it becomes <b>information</b>; understand it and it gives <b>insights</b>.</div>
+<div class="def"><span class="dt">Definition — data</span><p>The <mark>quantities, characters or symbols on which operations are performed by a computer</mark>, which may be stored and transmitted as electrical signals and recorded on magnetic, optical or mechanical recording media.</p></div>
+<div class="two" style="grid-template-columns:1.1fr .9fr">
+<div>
+<ul>
+<li><b>Quantitative</b> (numbers) — <b>discrete</b> = counted (20 dogs), <b>continuous</b> = measured (18 cm). <b>Qualitative</b> = descriptive (red, soft).</li>
+<li>Data sits <b>inside</b> the enterprise and <b>outside</b> its firewall, in <b>homogeneous</b> (same kind) and <b>heterogeneous</b> (mixed) sources.</li>
+<li>Computer data = text, images, audio, programs… processed by the CPU, stored in files/folders.</li>
+</ul>
+</div>
+{{fig:u1_dtypes|Types of data}}
+</div>
+<p>Digital data comes in <b>three types</b>. Think of three cupboards: labelled boxes in neat rows (<b>structured</b>), items with name-tags but no fixed boxes (<b>semi-structured</b>), and a pile (<b>unstructured</b>).</p>
+{{fig:u1_three|✏️ must-draw · Classification of digital data and their share of enterprise data}}
+<div class="box key"><div class="bt">🔑 Key point</div><mark>80–90% of an organisation's data is unstructured</mark> (Gartner: 80%). That is why ordinary databases are not enough and Big Data tools exist.</div>
+
+<!-- 1.2 -->
+<h2 id="a2"><span class="no">1.2</span>Structured data<span class="marker">@@a2@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>Data in an <mark>organised form (rows and columns)</mark> that can be <mark>easily used by a computer program</mark>; relationships exist between entities (like classes and objects). Example: data stored in databases.</p></div>
+<ul>
+<li>Lives mostly in an <b>RDBMS</b> (Oracle, MySQL, SQL Server, DB2, Teradata, PostgreSQL; also MS Access, Excel, OLTP systems).</li>
+<li>A table = a <b>relation</b>. <mark>Cardinality</mark> = number of <b>rows</b>; <mark>degree</mark> = number of <b>columns</b>.</li>
+<li><b>Designing it:</b> (1) choose columns and data types; (2) add <b>constraints</b> — UNIQUE, NOT NULL, business rules (e.g., value ≥ 50), permissible values (e.g., only CS/IS/MS); (3) <b>relate tables</b> through a common column (primary key ↔ foreign key).</li>
+</ul>
+<div class="two" style="grid-template-columns:.95fr 1.05fr">
+<div class="box eg" style="margin-top:0"><div class="bt">📌 Example — Employee table</div>EmpNo (<b>primary key</b>), EmpName, Designation (NOT NULL), DeptNo, ContactNo (NOT NULL). Rows: E101 Allen, E102 Simon → cardinality 2, degree 5. It links to a Department table through <b>DeptNo</b>.</div>
+{{fig:u1_tables|Tables related through a common column}}
+</div>
+<h3>Why structured data is easy to work with — 5 reasons</h3>
+<table class="t">
+<tr><th style="width:24%">Reason</th><th>Meaning</th></tr>
+<tr><td>Insert / update / delete</td><td>DML statements make input, storage, access and processing easy</td></tr>
+<tr><td>Security</td><td>Encryption and tokenization; only authorised people see sensitive data</td></tr>
+<tr><td>Indexing / searching</td><td>An index speeds up retrieval (SELECT), at the cost of extra storage and writes</td></tr>
+<tr><td>Scalability</td><td>Scale the server up — more CPU, RAM, disk</td></tr>
+<tr><td>Transaction processing</td><td>Supports <b>ACID</b>: <b>A</b>tomicity (all or nothing) · <b>C</b>onsistency (valid state → valid state) · <b>I</b>solation (runs as if alone) · <b>D</b>urability (changes are permanent)</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick</div><b>ISIST</b> — Insert, Security, Indexing, Scalability, Transactions. Cardinality = <b>C</b>ount of rows. ACID with a bank transfer: money leaves and arrives together (A), totals stay right (C), parallel transfers don't mix (I), a power cut can't undo it (D).</div>
+
+<!-- 1.3 -->
+<h2 id="a3"><span class="no">1.3</span>Semi-structured and unstructured data<span class="marker">@@a3@@</span></h2>
+<h3>Semi-structured data</h3>
+<div class="def"><span class="dt">Definition</span><p>Data that <mark>does not conform to a data model but has some structure</mark>; not easily used by a program. Also called a <mark>self-describing structure</mark>. Examples: emails, XML, HTML, JSON.</p></div>
+<div class="two">
+<div><b>5 features</b>
+<ol>
+<li>Doesn't follow the relational data model.</li>
+<li>Uses <b>tags</b> to separate meaning (semantic elements).</li>
+<li>Tags also build <b>hierarchies</b> of records and fields.</li>
+<li><b>No separation between data and schema.</b></li>
+<li>Entities of the same class can have <b>different attributes</b>, in any order.</li>
+</ol></div>
+<div><b>4 characteristics</b>
+<ol>
+<li>Inconsistent structure.</li>
+<li>Self-describing — <b>label/value pairs</b>.</li>
+<li>Schema information blended with data.</li>
+<li>Attributes may not be known beforehand.</li>
+</ol>
+<p><b>Sources:</b> <mark>XML</mark> (popularised by <b>SOAP</b> web services), <mark>JSON</mark> (sends data between server and web app; popularised by <b>REST</b>; <b>MongoDB</b> and <b>Couchbase/CouchDB</b> store JSON natively), HTML.</p></div>
+</div>
+<div class="box eg"><div class="bt">📌 Self-describing JSON</div><code>{ _id: 9, BookTitle: "Fundamentals of Business Analytics", AuthorName: "Seema Acharya", Publisher: "Wiley India" }</code> — each value carries its own label. An <b>email</b> is semi-structured: the header (To, From, Subject) has fields, the body is free text.</div>
+
+<h3>Unstructured data</h3>
+<div class="def"><span class="dt">Definition</span><p>Data that <mark>does not conform to a data model</mark> or is <mark>not in a form easily used by a computer program</mark>. 80–90% of organisational data. Examples: memos, chat rooms, PPTs, images, videos, letters, research papers, body of an email.</p></div>
+<p>It is un-organised, has no predefined model, cannot be stored in rows and columns, and is hard to search (e.g., storing users' Aadhaar images, CCTV footage, social media posts).</p>
+{{fig:u1_unstr|Unstructured data is machine-generated or human-generated}}
+<p><b>Why "unstructured" is an imperfect label (3 issues):</b> structure may be <b>implied</b> but not formally defined · data may have structure that <b>doesn't help</b> the task at hand · data may have structure that is <b>unexpected</b> or unannounced.</p>
+<h3>How we find patterns in unstructured data — 7 techniques</h3>
+{{fig:u1_tech|✏️ must-draw · Techniques for dealing with unstructured data}}
+<table class="t">
+<tr><th style="width:24%">Technique</th><th>What it does</th><th style="width:30%">Example</th></tr>
+<tr><td>Data mining</td><td>Finds patterns in large data — "knowledge discovery in databases" (KDD). Algorithms: <b>association rules</b>, <b>regression</b>, <b>collaborative filtering</b></td><td>Bread buyers also buy butter; marks from study hours; "people like you liked…"</td></tr>
+<tr><td>Text analytics / mining</td><td>Patterns from text: categorisation, clustering, sentiment analysis, entity extraction</td><td>10,000 reviews → "battery life is the main complaint"</td></tr>
+<tr><td>NLP</td><td>Computers understanding human language</td><td>Google Translate, chatbots, spam filters</td></tr>
+<tr><td>Noisy text analytics</td><td>Useful info from messy text — typos, slang, abbreviations</td><td>"hey!!! u coming tmrw??"</td></tr>
+<tr><td>Manual tagging with metadata</td><td>A person adds tags (metadata = data about data)</td><td>Article tagged Sports, Cricket, India</td></tr>
+<tr><td>POS tagging</td><td>Grammatical role of each word</td><td>Rahul (noun) plays (verb) cricket (noun)</td></tr>
+<tr><td>UIMA</td><td>Unstructured Information Management Architecture — open-source, by <b>IBM</b>; extracts info from text (content analytics)</td><td>"Apple" → organisation, "California" → location</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>"<b>D</b>ark <b>T</b>ea <b>N</b>ever <b>N</b>eeds <b>M</b>ore <b>P</b>ure <b>U</b>pgrades" — Data mining, Text analytics, NLP, Noisy text, Manual tagging, POS tagging, UIMA.</div>
+<h3>The big comparison</h3>
+<table class="t">
+<tr><th style="width:18%">Property</th><th>Structured</th><th>Semi-structured</th><th>Unstructured</th></tr>
+<tr><td>Technology</td><td>Relational tables</td><td>XML / RDF</td><td>Character &amp; binary data</td></tr>
+<tr><td>Transactions</td><td>Matured, with concurrency</td><td>Adapted from DBMS, not matured</td><td>None</td></tr>
+<tr><td>Versioning</td><td>Over tuples, rows, tables</td><td>Over tuples or graphs</td><td>As a whole</td></tr>
+<tr><td>Flexibility</td><td>Schema-dependent, least</td><td>Medium</td><td>Most (no schema)</td></tr>
+<tr><td>Scalability</td><td>Very difficult</td><td>Simpler</td><td>Most scalable</td></tr>
+<tr><td>Robustness</td><td>Very robust</td><td>New, not widespread</td><td>—</td></tr>
+<tr><td>Query</td><td>Complex joins</td><td>Queries over anonymous nodes</td><td>Only textual queries</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Read the table as a pattern</div>Moving <b>structured → unstructured</b>: <b>flexibility and scalability go up</b>; robustness, transactions and query power go <b>down</b>. Rows: "<b>T</b>he <b>T</b>iny <b>V</b>ampire <b>F</b>lew <b>S</b>wiftly, <b>R</b>arely <b>Q</b>uerying".</div>
+
+<!-- 1.4 -->
+<h2 id="a4"><span class="no">1.4</span>What Big Data is<span class="marker">@@a4@@</span></h2>
+<div class="two" style="grid-template-columns:1.2fr .8fr">
+<div>
+<p><b>Characteristics of any data — the 3 Cs:</b></p>
+<ul>
+<li><b>Composition</b> — its structure: sources, granularity, types, static or real-time streaming.</li>
+<li><b>Condition</b> — its state: usable as is, or needs cleansing?</li>
+<li><b>Context</b> — where and why it was generated.</li>
+</ul>
+</div>
+{{fig:u1_3c|The 3 Cs of data}}
+</div>
+{{fig:u1_evol|Evolution of Big Data: mainframes → RDBMS → WWW &amp; IoT}}
+<p>Data went from <b>primitive and structured</b> (mainframes, ≤1970s) to <b>complex and relational</b> (RDBMS, 1980s–90s) to <b>complex and unstructured</b> (web, IoT, social media, 2000s+). The web and IoT caused the explosion we call Big Data.</p>
+<div class="def"><span class="dt">Gartner definition — learn word-for-word</span><p style="font-size:10.4pt">"Big Data is <mark>high-volume, high-velocity and high-variety</mark> information assets that demand <mark>cost-effective, innovative forms of information processing</mark> for <mark>enhanced insight and decision making</mark>."</p></div>
+<p>Three parts: <b>what it is</b> (3 Vs) → <b>what it needs</b> (new processing) → <b>what it gives</b> (insight, decisions). Chain: data → information → actionable intelligence → better decisions → enhanced business value. Informal views from the slides: "anything beyond our infrastructure", "today's BIG is tomorrow's NORMAL", "TB, PB, ZB of data", "the 3 Vs".</p>
+<h3>The 3 Vs</h3>
+<div class="two" style="grid-template-columns:.9fr 1.1fr">
+{{fig:u1_3v|✏️ must-draw · Big in volume, velocity and variety}}
+<div>
+<ul>
+<li><b>Volume — how much.</b> KB → MB → GB → TB → PB → EB → ZB → YB, each ×1024 (≈ ×1000).</li>
+<li><b>Velocity — how fast.</b> Batch → periodic → near real time → real time (e.g., card-fraud check at swipe).</li>
+<li><b>Variety — how many kinds.</b> Structured + semi-structured + unstructured.</li>
+</ul>
+<div class="box mem" style="margin-top:2mm"><div class="bt">🧠 Memory trick</div>A <b>river</b>: how much water (volume), how fast (velocity), how many things floating in it (variety). Units: "<b>K</b>ind <b>M</b>en <b>G</b>ive <b>T</b>ea, <b>P</b>lease <b>E</b>at <b>Z</b>esty <b>Y</b>ogurt".</div>
+</div>
+</div>
+{{fig:u1_sources|Where the volume comes from: internal, external and both}}
+<p><b>Other characteristics</b> (not part of the definition): <b>Veracity</b> — can we trust it (noise, bias)? and <b>Validity</b> — is it correct for this problem? · <b>Volatility</b> — how long it stays useful (stock price today vs birth date) · <b>Variability</b> — the flow is irregular, with sudden peaks (festival-sale traffic).</p>
+<div class="box warn"><div class="bt">⚠️ Trap</div><b>Velocity</b> (speed of arrival) ≠ <b>Variability</b> (irregular flow) ≠ <b>Volatility</b> (how long it stays valid).</div>
+
+<!-- 1.5 -->
+<h2 id="a5"><span class="no">1.5</span>Challenges, why Big Data, and BI vs Big Data<span class="marker">@@a5@@</span></h2>
+<div class="two" style="grid-template-columns:1.3fr .7fr">
+<div>
+<p><b>Challenges with Big Data (6):</b></p>
+<ol>
+<li><b>Huge growth</b> — hard to tell useful data from noise.</li>
+<li><b>Cloud computing &amp; virtualisation</b> — cheap, flexible infrastructure, but deciding what to host where.</li>
+<li><b>Data retention</b> — how long to keep data.</li>
+<li><b>Lack of skilled professionals</b>.</li>
+<li><b>Capture, storage, processing &amp; security</b> — traditional databases can't cope with data that is large, fast and varied.</li>
+<li><b>Visualisation</b> — showing it with charts/dashboards; shortage of experts.</li>
+</ol>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>"<b>G</b>iant <b>C</b>louds <b>R</b>arely <b>L</b>ack <b>S</b>ome <b>V</b>iews".</div>
+</div>
+{{fig:u1_chall|Challenges with Big Data}}
+</div>
+<p><b>Why Big Data?</b> More data → more accurate analysis → more confidence in decisions → greater efficiency: <b>cost reduction, time reduction, new product development, optimised offerings, smart decisions</b>. The value lies in how you use the data you own.</p>
+<h3>Traditional BI vs Big Data</h3>
+<div class="box simple"><div class="bt">🗣 In plain words</div><b>BI</b> = the old way: neat company data on one big server, reports about the past. <b>Big Data</b> = all kinds of data, from inside and outside, spread over many cheap machines, analysed in real time too.</div>
+<table class="t">
+<tr><th style="width:22%">Point</th><th>Traditional BI</th><th>Big Data</th></tr>
+<tr><td>Storage</td><td>Central server</td><td>Distributed file system</td></tr>
+<tr><td>Scaling</td><td><b>Vertical</b> — bigger machine (scale up)</td><td><b>Horizontal</b> — more machines (scale out)</td></tr>
+<tr><td>Analysis mode</td><td>Offline</td><td>Real-time and offline</td></tr>
+<tr><td>Data</td><td>Structured</td><td>Variety (all types)</td></tr>
+<tr><td>Movement</td><td><b>Data taken to the processing functions</b></td><td><b>Processing functions taken to the data</b></td></tr>
+<tr><td>Schema</td><td>Schema-on-write (define first)</td><td>Schema-on-read (store raw, structure when reading)</td></tr>
+</table>
+{{fig:u1_scale|Scale up (BI) vs scale out (Big Data)}}
+
+<!-- 1.6 -->
+<h2 id="a6"><span class="no">1.6</span>Big Data Analytics and its classification<span class="marker">@@a6@@</span></h2>
+<div class="box eg"><div class="bt">📌 Two examples from the slides</div><b>Amazon:</b> uses your past purchases, browsing history and similar customers' buys to recommend books. <b>Truck company with 500 trucks:</b> for an urgent double-pay delivery, it analyses location, load capacity, fuel, traffic, distance and delivery time to pick the right truck. Pattern: <b>large data → analyse → patterns → better decisions</b>.</div>
+<div class="two">
+{{fig:u1_pyramid|Raw data becomes actionable insight}}
+{{fig:u1_where|Where analytics data comes from}}
+</div>
+<p>Steps: <b>collect</b> (data) → <b>organise</b> (information) → <b>summarise &amp; analyse</b> (knowledge) → <b>synthesise</b> (actionable insights) → <b>decide</b>.</p>
+<h3>What Big Data Analytics is — 6 points</h3>
+{{fig:u1_bda|✏️ must-draw · What is Big Data Analytics?}}
+<ol>
+<li><b>Technology-enabled analytics</b> — tools from IBM, Tableau, SAS, R, WPS.</li>
+<li><b>Deeper, meaningful insights</b> — who are our customers, what do they buy, what else can we sell?</li>
+<li><b>Competitive edge</b> — faster, better decisions than competitors.</li>
+<li><b>A tight handshake of three communities</b> — <b>IT</b> (infrastructure), <b>data scientists</b> (analysis), <b>business users</b> (decisions).</li>
+<li><b>Very large and varied datasets</b> — volume and variety beyond traditional systems.</li>
+<li><b>Moving code to data</b> — the program (KB/MB) travels to where the data (TB/PB) is stored.</li>
+</ol>
+{{fig:u1_movecode|Moving code to data}}
+<p><b>What BDA isn't:</b> only about volume · just technology · a replacement for RDBMS · a replacement for the data warehouse · only for Google/Amazon · a one-size-fits-all RDBMS. <b>Why the sudden hype:</b> huge data growth · cheaper storage · analytics tools available.</p>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>"<b>T</b>he <b>D</b>eep <b>C</b>ompetitive <b>H</b>andshake <b>W</b>ith <b>M</b>ovement" — the 6 points in order.</div>
+<h3>Classification of analytics — two schools of thought</h3>
+<p><b>School 1 (BOAM):</b> <b>Basic</b> (reports, slicing and dicing of past data) · <b>Operationalised</b> (woven into business processes) · <b>Advanced</b> (forecasting with predictive/prescriptive models) · <b>Monetised</b> (earns direct revenue).</p>
+<p><b>School 2:</b> Analytics 1.0 → 2.0 → 3.0, each adding a new type of analytics.</p>
+{{fig:u1_stairs|✏️ must-draw · Hindsight → insight → foresight}}
+<table class="t">
+<tr><th style="width:15%"></th><th>Analytics 1.0</th><th>Analytics 2.0</th><th>Analytics 3.0</th></tr>
+<tr><td>Era</td><td>Mid-1950s – 2009</td><td>2005 – 2012</td><td>2012 – present</td></tr>
+<tr><td>Type</td><td>Descriptive</td><td>Descriptive + predictive</td><td>Descriptive + predictive + prescriptive</td></tr>
+<tr><td>Question</td><td>What happened? Why?</td><td>What will happen? Why?</td><td>What will happen, when, why — and what should we do?</td></tr>
+<tr><td>Data</td><td>Small, structured, internal (data warehouses, ERP, CRM)</td><td>Big, mostly unstructured, often external; on Hadoop</td><td>Blend of big + legacy data; internal + external</td></tr>
+<tr><td>Technology</td><td>Relational databases</td><td>Database appliances, Hadoop clusters, SQL-to-Hadoop</td><td>In-memory, in-database, agile methods, machine learning</td></tr>
+<tr><td>Example</td><td>"Sales fell last month"</td><td>"Sales may rise next month"</td><td>"Increase stock next month"</td></tr>
+</table>
+<h3>Top challenges facing Big Data (7)</h3>
+<p><b>Scale</b> (store &amp; manage growing data) · <b>Security</b> · <b>Schema</b> (rigid schemas don't fit; need dynamic ones) · <b>Continuous availability</b> (24/7) · <b>Consistency</b> (users see correct, updated data) · <b>Partition tolerance</b> (survive hardware/software failures) · <b>Data quality</b> (accuracy, completeness, timeliness, metadata).</p>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>"<b>S</b>ix <b>S</b>tudents <b>S</b>at <b>C</b>almly, <b>C</b>opying <b>P</b>ast <b>Q</b>uizzes". Notice C + A + P = the CAP theorem in §1.9.</div>
+<div class="box warn"><div class="bt">⚠️ Trap</div>"Challenges <i>with</i> Big Data" (6: growth, cloud, retention…) ≠ "<i>Top</i> challenges <i>facing</i> Big Data" (7: scale, security, schema…). Read the question wording.</div>
+<h3>Why Big Data Analytics is important — 4 approaches</h3>
+{{fig:u1_4appr|Reactive vs proactive, traditional vs big data}}
+<p>Reactive = looks at the <b>past</b>; proactive = looks at the <b>future</b>. Only <mark>proactive Big Data Analytics</mark> combines future-looking analysis with huge data (TB, PB, EB) — that is why BDA matters: it turns huge data into better decisions, predictions and solutions to complex problems.</p>
+
+<!-- 1.7 -->
+<h2 id="a7"><span class="no">1.7</span>Data science and the data scientist<span class="marker">@@a7@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>Data science is <mark>the science of extracting knowledge from data</mark> — finding hidden patterns using mathematics, statistics, IT, machine learning, data engineering, probability models and pattern recognition.</p></div>
+<p>Used in weather prediction, oil drilling, seismic activity, financial fraud, social media analytics, retail &amp; manufacturing (churn, market-basket analysis). Process: <b>collect → prepare → analyse → visualise → communicate → decide</b>.</p>
+<div class="two" style="grid-template-columns:.75fr 1.25fr">
+{{fig:u1_venn|Three skill sets of a data scientist}}
+<div>
+<ul>
+<li><b>Business acumen</b> — domain knowledge, business strategy, problem solving (turn a business question into a data question), communication, presentation, inquisitiveness.</li>
+<li><b>Technology</b> — RDBMS, NoSQL (MongoDB, Cassandra, HBase), programming (Python, Java), data warehousing, data mining, visualisation (Tableau).</li>
+<li><b>Mathematics</b> — maths, statistics, algorithms, machine learning, pattern recognition, NLP.</li>
+</ul>
+<div class="box mem" style="margin-top:2mm"><div class="bt">🧠 Memory trick</div><b>BTM</b> — a three-legged stool: remove one leg and it falls.</div>
+</div>
+</div>
+{{fig:u1_ds|The data scientist's 4 responsibilities}}
+<ol>
+<li><b>Data management</b> — raw → clean (fix errors, remove duplicates, fill missing) → integrate → ready dataset.</li>
+<li><b>Analytical techniques</b> — models and algorithms to find relationships, trends and patterns, chosen to fit the question.</li>
+<li><b>Business / domain expertise</b> — "attendance and marks are related" becomes "low-attendance students need early mentoring".</li>
+<li><b>Communication &amp; presentation</b> — turn hundreds of numbers into a chart and a clear message.</li>
+</ol>
+<p><b>Data science</b> is a <b>field</b>; a <b>data scientist</b> is a <b>person</b> who applies it. Careers: data analyst, data scientist, ML engineer, data engineer, BI professional, AI/NLP/vision roles.</p>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>"<b>M</b>y <b>A</b>unt <b>B</b>akes <b>C</b>akes" — Manage, Analyse, Business context, Communicate.</div>
+
+<!-- 1.8 -->
+<h2 id="a8"><span class="no">1.8</span>Terminologies used in Big Data environments<span class="marker">@@a8@@</span></h2>
+<h3>In-memory analytics &amp; in-database processing</h3>
+<p>Reading from a hard disk is slow. Pre-computing cubes or aggregate tables helps, but you must guess in advance what you will need. <mark>In-memory analytics</mark> keeps <b>all relevant data in RAM</b>, so nothing has to be fetched from disk. Advantages: faster access, rapid deployment, better insights, minimal IT involvement.</p>
+{{fig:u1_inmem|Disk vs in-memory}}
+<p><mark>In-database processing</mark> (in-database analytics): normally OLTP data is cleaned through <b>ETL</b> into an <b>Enterprise Data Warehouse</b>, then <b>exported</b> to a separate analytics program. In-database processing runs the computation <b>inside the database itself</b> — no export, saving time.</p>
+<div class="box tip"><div class="bt">💡 The pair</div>In-memory brings data <b>closer to the CPU</b>; in-database brings computation <b>to where the data lives</b>. Both cut data movement.</div>
+<h3>SMP vs MPP</h3>
+<div class="two">
+{{fig:u1_smp|SMP: one shared memory, one OS}}
+{{fig:u1_mpp|MPP: each node has its own memory and OS}}
+</div>
+<table class="t">
+<tr><th style="width:20%"></th><th>SMP — Symmetric Multiprocessor</th><th>MPP — Massively Parallel Processing</th></tr>
+<tr><td>Memory</td><td>One common main memory shared by identical processors</td><td>Each processor has its own dedicated memory</td></tr>
+<tr><td>OS</td><td>Single OS instance</td><td>Each has its own OS</td></tr>
+<tr><td>Coupling</td><td>Tightly coupled; caches + system bus</td><td>Looser; communicate by messaging</td></tr>
+<tr><td>Programming</td><td>Easier</td><td>Harder — program split into communicating parts</td></tr>
+</table>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>SMP = "<b>S</b>ame <b>M</b>emory, <b>P</b>lease"; MPP = "<b>M</b>y <b>P</b>rivate <b>P</b>artition".</div>
+<h3>Parallel vs distributed systems</h3>
+<div class="two">
+{{fig:u1_par|Parallel system}}
+{{fig:u1_dist|Distributed system}}
+</div>
+<p><b>Parallel:</b> tightly coupled; processors cooperate on the same query; user is unaware of the parallelism; shared memory or message passing. <b>Distributed:</b> loosely coupled separate machines on a network; each runs its own applications and serves its own users; data spread across machines, so a query may touch several.</p>
+<h3>Shared nothing architecture</h3>
+{{fig:u1_snsd|✏️ must-draw · Shared memory, shared disk, shared nothing}}
+<p>Three multiprocessor architectures: <b>shared memory</b> (common memory), <b>shared disk</b> (private memory, common disks), <b>shared nothing</b> (<mark>neither memory nor disk shared</mark>; nodes talk over the network). Advantages of shared nothing:</p>
+<ul>
+<li><b>Fault isolation</b> — a fault in one node stays in that node, visible only through messages (or their absence).</li>
+<li><b>Scalability</b> — with a shared disk, nodes must take turns (synchronisation), which limits how many can be added; with nothing shared there is no central bottleneck. <b>Hadoop uses shared nothing.</b></li>
+</ul>
+
+<!-- 1.9 -->
+<h2 id="a9"><span class="no">1.9</span>CAP theorem<span class="marker">@@a9@@</span></h2>
+<div class="def"><span class="dt">Definition</span><p>Also called <mark>Brewer's theorem</mark>: in a distributed system it is <b>impossible to guarantee Consistency, Availability and Partition tolerance all at once</b> — at best you get <mark>two of the three</mark>.</p></div>
+<div class="two" style="grid-template-columns:1.1fr .9fr">
+<div>
+<ul>
+<li><b>Consistency</b> — every read gets the <b>latest write</b>.</li>
+<li><b>Availability</b> — every request gets a response from a non-failing node in reasonable time.</li>
+<li><b>Partition tolerance</b> — the system keeps working when the <b>network breaks</b> between nodes.</li>
+</ul>
+<p>Network breaks <b>will</b> happen, so P is usually required; the real choice during a partition is <b>C vs A</b>.</p>
+<table class="t">
+<tr><th>Pair</th><th>Examples</th></tr>
+<tr><td>CA</td><td>Traditional RDBMS — MySQL, PostgreSQL</td></tr>
+<tr><td>CP</td><td>HBase, MongoDB, Redis, MemcacheDB, BigTable</td></tr>
+<tr><td>AP</td><td>Riak, Cassandra, CouchDB, Dynamo</td></tr>
+</table>
+</div>
+{{fig:u1_cap|✏️ must-draw · CAP triangle with databases}}
+</div>
+{{fig:u1_capstory|The training-schedule story: two administrators give different answers = inconsistent}}
+<p>Choose <b>consistency</b> when stale data is dangerous (bank balance) — some requests wait. Choose <b>availability</b> when the service must keep answering and small differences can be fixed later (social feeds, caches).</p>
+<div class="box mem"><div class="bt">🧠 Memory trick</div>CP = "<b>C</b>orrect <b>P</b>lease": "<b>H</b>appy <b>M</b>onkeys <b>R</b>un <b>M</b>any <b>B</b>ananas". AP = "<b>A</b>lways <b>P</b>resent": "<b>R</b>eal <b>C</b>ats <b>C</b>hase <b>D</b>ogs". CA = classic RDBMS.</div>
+</section>
