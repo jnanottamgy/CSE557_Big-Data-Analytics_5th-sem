@@ -1,0 +1,176 @@
+
+<!-- ================= UNIT 3 ================= -->
+<section class="ch3">
+<div class="chapter-open" id="u3"><p class="marker">@@u3@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Unit 3 · CIE-1 part</div>
+  <h1>Apache Spark Overview</h1>
+  <div class="learn story"><span class="st-h">Most-tested areas</span>Spark architecture diagram · components · SparkContext · job/stage/task · run-time flow · DAG &amp; task schedulers · cluster managers &amp; deploy modes · Spark vs MapReduce · installation &amp; first program.</div>
+</div>
+
+<div class="mhead" id="u3-2"><span class="mk m2">2 MARKS</span><b>Short answers</b><span class="note">Q37 – Q42</span><span class="marker">@@u3-2@@</span></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q37.</span><span class="qt">What is Apache Spark?</span><span class="mk m2">2M</span></div><div class="ans">
+<p>Apache Spark is an <b>open-source cluster computing framework for data analytics</b>, designed for quick computation. It supports <b>in-memory cluster computing</b> and parallel processing, runs on one or many computers, provides APIs in <b>Scala, Java and Python</b>, and is much <b>faster than Hadoop MapReduce</b> (up to 100× in memory).</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q38.</span><span class="qt">What is SparkContext?</span><span class="mk m2">2M</span></div><div class="ans">
+<p>SparkContext is the <b>entry point of a Spark application</b>. It connects to the Spark execution environment and is used to <b>create RDDs, accumulators and broadcast variables</b>, access Spark services and <b>run jobs</b>. It is created by the driver program (from Spark 2.0 it is wrapped by SparkSession).</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q39.</span><span class="qt">What is an executor in Spark?</span><span class="mk m2">2M</span></div><div class="ans">
+<p>An executor is a <b>process launched for an application on a worker node</b>. It <b>runs the tasks</b> sent by the driver, <b>keeps data in memory or disk storage</b> (cache) across them, and reads/writes data to external sources. Every Spark application has its own executors, each running as a separate Java process.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q40.</span><span class="qt">What is the Spark Shell?</span><span class="mk m2">2M</span></div><div class="ans">
+<p>The Spark Shell is a Spark application written in <b>Scala</b> that provides an interactive <b>command-line environment with auto-completion</b>. It is used to explore Spark's features before writing a standalone application; <code>sc</code> (SparkContext) is created automatically. The Python equivalent is <code>pyspark</code>.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q41.</span><span class="qt">List the cluster managers supported by Spark.</span><span class="mk m2">2M</span></div><div class="ans">
+<p>A cluster manager <b>allocates resources across applications</b>. Spark supports: <b>Standalone</b> (Spark's own cluster manager), <b>Hadoop YARN</b>, <b>Apache Mesos</b>, and <b>Kubernetes</b> (Spark 2.3+); <b>local mode</b> runs everything on a single machine for testing.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q42.</span><span class="qt">Differentiate client mode and cluster mode.</span><span class="mk m2">2M</span></div><div class="ans">
+<p>In <b>client mode</b> the <b>driver runs on the machine that submits the application</b> — used for interactive work and shells; closing the terminal stops the app. In <b>cluster mode</b> the <b>driver runs inside the cluster</b> (on YARN, inside the ApplicationMaster) — used for production; the client can disconnect.</p>
+</div></div>
+
+<div class="mhead" id="u3-3"><span class="mk m3">3 MARKS</span><b>Medium answers</b><span class="note">Q43 – Q48</span><span class="marker">@@u3-3@@</span></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q43.</span><span class="qt">Define task, job and stage in Spark.</span><span class="mk m3">3M</span></div><div class="ans">
+<ol>
+<li><b>Task</b> — the <b>smallest unit of work</b>, sent to a single executor; each partition of an RDD gets its own task.</li>
+<li><b>Job</b> — a <b>parallel computation made up of multiple tasks</b>, created in response to an <b>action</b> such as <code>count()</code> or <code>collect()</code>.</li>
+<li><b>Stage</b> — a <b>set of tasks within a job that depend on each other</b>; a job is split into stages because some steps must wait for others to finish (e.g., a shuffle).</li>
+</ol>
+<p class="small">Application ⊃ Job ⊃ Stage ⊃ Task.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q44.</span><span class="qt">List the responsibilities of SparkContext.</span><span class="mk m3">3M</span></div><div class="ans">
+<p>SparkContext, the entry point of a Spark application, is responsible for:</p>
+<ol>
+<li>Checking the <b>current status</b> of the Spark application.</li>
+<li><b>Cancelling</b> a job or a stage.</li>
+<li>Running a job <b>synchronously or asynchronously</b>.</li>
+<li><b>Accessing or unpersisting a cached RDD</b>.</li>
+<li>Programmable <b>dynamic allocation</b> of resources.</li>
+</ol>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q45.</span><span class="qt">Differentiate Apache Spark and Hadoop MapReduce.</span><span class="mk m3">3M</span></div><div class="ans">
+<table class="t" style="margin:0">
+<tr><th style="width:22%">Point</th><th>Hadoop MapReduce</th><th>Apache Spark</th></tr>
+<tr><td>Processing</td><td><b>Disk-based</b>; writes intermediate results to disk</td><td><b>In-memory</b>; up to 100× faster</td></tr>
+<tr><td>Execution</td><td>Fixed map → shuffle → reduce; batch only</td><td>Optimised <b>DAG</b> of stages; batch, iterative, interactive, streaming</td></tr>
+<tr><td>APIs &amp; libraries</td><td>Mainly Java; separate tools (Hive, Pig)</td><td>Scala, Java, Python, R, SQL; built-in SQL, Streaming, MLlib, GraphX</td></tr>
+</table>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q46.</span><span class="qt">Explain the role of the driver program.</span><span class="mk m3">3M</span></div><div class="ans">
+<ol>
+<li>The driver is a process that <b>runs the main() function</b> of the application and <b>creates the SparkContext</b>; it is the <b>central coordinator</b> of the master–slave architecture.</li>
+<li>It handles <b>job scheduling and negotiation with the cluster manager</b>, and <b>stores RDD information</b>; it converts code into a DAG, stages and tasks and sends tasks to executors.</li>
+<li>It can run in <b>client or cluster mode</b>; it prepares the user code and ships the application (JAR or Python files) to the executors, then monitors them until <code>stop()</code>.</li>
+</ol>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q47.</span><span class="qt">Explain the internal (master–slave) working of Spark.</span><span class="mk m3">3M</span></div><div class="ans">
+<ol>
+<li>Like Hadoop, Spark uses a <b>master–slave architecture</b> with one master and many slaves; the <b>driver is the central coordinator</b>.</li>
+<li>The driver and each <b>executor run in their own Java process</b>; one driver handles a large number of executors.</li>
+<li>A <b>Spark application is a collaboration of the driver and its executors</b>. Resources come from Spark's own <b>standalone cluster manager</b> or from open-source managers like <b>YARN</b> and <b>Mesos</b>.</li>
+</ol>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q48.</span><span class="qt">What is a DAG? Explain the roles of the DAG Scheduler and the Task Scheduler.</span><span class="mk m3">3M</span></div><div class="ans">
+<ol>
+<li>A <b>DAG (Directed Acyclic Graph)</b> is a graph of operations whose arrows only move forward (no loops); Spark records a program's operations as a DAG and <b>optimises</b> it before running.</li>
+<li>When an action creates a job, the <b>DAG Scheduler</b> builds the operator DAG and <b>splits it into stages of tasks</b>, submitting each stage when it is ready.</li>
+<li>The <b>Task Scheduler</b> <b>launches the tasks via the cluster manager</b> onto executors on the worker nodes.</li>
+</ol>
+</div></div>
+
+<div class="mhead pb" id="u3-5"><span class="mk m5">5 MARKS</span><b>Long answers</b><span class="note">Q49 – Q53</span><span class="marker">@@u3-5@@</span></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q49.</span><span class="qt">Explain the Apache Spark architecture with a neat diagram.</span><span class="mk m5">5M</span></div><div class="ans">
+<p>Spark follows a <b>master–slave architecture</b>: one <b>driver</b> (central coordinator) and many <b>executors</b>, with a <b>cluster manager</b> allocating resources. A Spark application is the collaboration of a driver and its executors, each running in its own Java process.</p>
+{{fig:u3_arch|Apache Spark architecture overview}}
+<ol>
+<li><b>Driver program</b> — runs the <b>main()</b> function and creates the <b>SparkContext</b>; performs job scheduling, negotiates with the cluster manager, stores RDD information; converts code into tasks; runs in client or cluster mode.</li>
+<li><b>SparkContext</b> — the entry point that connects the driver to the cluster and coordinates the application.</li>
+<li><b>Cluster manager</b> — <b>acquires/allocates resources</b> from the cluster across applications: Standalone, Hadoop YARN or Apache Mesos.</li>
+<li><b>Worker node</b> — a slave node that runs application code.</li>
+<li><b>Executor</b> — a process on a worker node that <b>performs all data processing</b> (runs tasks) and <b>stores results in memory (cache)</b>; reads/writes external data.</li>
+<li><b>Task</b> — a unit of work sent by the driver to one executor.</li>
+</ol>
+<span class="split">Marks split: intro 0.5 · diagram 1.5 · driver, cluster manager, worker, executor, task 3</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q50.</span><span class="qt">Explain the components of Apache Spark.</span><span class="mk m5">5M</span></div><div class="ans">
+{{fig:u3_stack|Apache Spark components}}
+<ol>
+<li><b>Spark Core</b> — the <b>foundation</b> everything else runs on; provides the execution platform for every Spark application (task scheduling, memory management, fault recovery, interaction with storage) and APIs in R, SQL, Python, Scala and Java.</li>
+<li><b>Spark SQL</b> — runs <b>SQL and HiveQL</b> queries on structured and semi-structured data, often faster than older systems; provides DataFrames.</li>
+<li><b>Spark Streaming</b> — processes <b>live data</b> by breaking it into small <b>micro-batches</b> that run on Spark Core (e.g., live logs, tweets).</li>
+<li><b>MLlib</b> — Spark's <b>machine learning library</b>, built to use in-memory processing for iterative algorithms.</li>
+<li><b>GraphX</b> — a <b>graph computation engine</b> for graph-structured data at scale.</li>
+<li><b>SparkR</b> — a lightweight <b>front end for R</b> users to analyse large datasets interactively from the R shell.</li>
+</ol>
+<p>All of these run on a cluster manager (Standalone, YARN, Mesos).</p>
+<span class="split">Marks split: diagram 1.5 · six components 3.5</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q51.</span><span class="qt">Explain the run-time architecture of a Spark application.</span><span class="mk m5">5M</span></div><div class="ans">
+{{fig:u3_exec|Internals of job execution in Spark}}
+<ol>
+<li>The <b>driver talks to the cluster manager</b> and negotiates for resources.</li>
+<li>The <b>cluster manager launches executors</b> on behalf of the driver.</li>
+<li>The <b>executors register</b> themselves with the driver.</li>
+<li>When a job enters (an action is called), the driver <b>converts the code into a logical DAG</b>.</li>
+<li>The DAG is <b>optimised</b>.</li>
+<li>It is converted into a <b>physical execution plan</b> with a set of <b>stages</b> (DAG Scheduler).</li>
+<li>Small execution units called <b>tasks</b> are created and <b>sent to the cluster</b> (Task Scheduler).</li>
+<li><b>Executors execute</b> all the tasks assigned by the driver, while the <b>driver monitors</b> them.</li>
+<li>The driver <b>schedules future tasks</b> by tracking the location of cached data (data placement).</li>
+<li>When <code>stop()</code> is called on SparkContext, it <b>terminates all executors</b> and <b>releases the resources</b> from the cluster manager.</li>
+</ol>
+<span class="split">Marks split: diagram 1.5 · ten steps 3.5</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q52.</span><span class="qt">Explain the different cluster manager types in Spark.</span><span class="mk m5">5M</span></div><div class="ans">
+<p>The <b>cluster manager</b> allocates resources (CPU, memory) across Spark applications by launching executors; it does not schedule tasks. It is chosen with <code>--master</code> in <code>spark-submit</code>.</p>
+{{fig:u3_cm|Cluster manager types}}
+<ol>
+<li><b>Standalone</b> — Spark's <b>own simple cluster manager</b>, shipped with Spark; easy to set up a cluster on an empty set of machines (one master + workers). <code>spark://HOST:7077</code>.</li>
+<li><b>Hadoop YARN</b> — the <b>resource manager of Hadoop 2</b>; runs Spark on an existing Hadoop cluster, sharing resources and reading HDFS; executors run in YARN containers. <code>--master yarn</code>.</li>
+<li><b>Apache Mesos</b> — a <b>general-purpose cluster manager</b> that can run Spark alongside other frameworks. <code>mesos://HOST:5050</code>.</li>
+<li><b>Kubernetes</b> — runs the driver and executors as <b>pods</b> (Spark 2.3+). <code>k8s://…</code>.</li>
+<li><b>Local mode</b> — no cluster; everything on one machine using <code>local</code>, <code>local[K]</code> or <code>local[*]</code> threads — for learning and testing.</li>
+</ol>
+<p><b>Deploy modes:</b> <b>client</b> (driver on the submitting machine) vs <b>cluster</b> (driver inside the cluster).</p>
+<span class="split">Marks split: role 1 · diagram 1 · Standalone, YARN, Mesos (+ others) 2.5 · deploy modes 0.5</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q53.</span><span class="qt">Explain the steps to install Apache Spark and write your first Spark program.</span><span class="mk m5">5M</span></div><div class="ans">
+<p><b>Installation (Ubuntu):</b></p>
+<ol>
+<li>Install <b>Java (JDK)</b> and Python 3: <code>sudo apt install openjdk-11-jdk python3</code>.</li>
+<li><b>Download</b> a pre-built Spark package (<code>spark-x.y.z-bin-hadoop3.tgz</code>) from spark.apache.org.</li>
+<li><b>Extract</b> it (<code>tar -xzf …</code>) and move it to <code>/opt/spark</code>.</li>
+<li>Set <b>environment variables</b> in <code>~/.bashrc</code>: <code>SPARK_HOME=/opt/spark</code>, add <code>$SPARK_HOME/bin</code> and <code>sbin</code> to <code>PATH</code>.</li>
+<li><b>Verify</b>: run <code>spark-shell --version</code> or <code>pyspark</code> (Web UI at localhost:4040). Alternatively <code>pip install pyspark</code>.</li>
+</ol>
+<p><b>First Spark program (word count in PySpark):</b></p>
+<pre class="code" style="font-size:7.8pt">from pyspark.sql import SparkSession
+spark = SparkSession.builder.appName("WordCount").master("local[*]").getOrCreate()
+sc = spark.sparkContext
+counts = (sc.textFile("input.txt")
+            .flatMap(lambda line: line.split())   # split lines into words
+            .map(lambda w: (w, 1))                # (word, 1)
+            .reduceByKey(lambda a, b: a + b))     # add counts per word
+print(counts.collect())                           # action → job runs
+spark.stop()</pre>
+<p>Run it with <code>spark-submit --master local[4] wordcount.py</code>. Shell version: <code>sc.textFile("README.md").count()</code>. Bundled example: <code>./bin/run-example SparkPi 10</code> → "Pi is roughly 3.14".</p>
+<span class="split">Marks split: installation steps 2.5 · program 2 · running it 0.5</span>
+</div></div>
+</section>
+</body></html>

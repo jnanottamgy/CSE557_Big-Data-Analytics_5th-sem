@@ -1,0 +1,178 @@
+
+<!-- ================= UNIT 2 ================= -->
+<section class="ch2">
+<div class="chapter-open" id="u2"><p class="marker">@@u2@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Unit 2</div>
+  <h1>Data Analytics with Hadoop</h1>
+  <div class="learn story"><span class="st-h">Most-tested areas</span>MapReduce with the weather example · HDFS design · NameNode/DataNode · file read &amp; write · Federation &amp; HA · classic MapReduce vs YARN job run · failures · schedulers · shuffle and sort.</div>
+</div>
+
+<div class="mhead" id="u2-2"><span class="mk m2">2 MARKS</span><b>Short answers</b><span class="note">Q19 – Q24</span><span class="marker">@@u2-2@@</span></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q19.</span><span class="qt">What is Hadoop? Name its core components.</span><span class="mk m2">2M</span></div><div class="ans">
+<p>Hadoop is an <b>open-source framework</b>, written in Java (by Doug Cutting and Mike Cafarella), that allows us to <b>store and process large data sets in a parallel and distributed manner</b>. Core components: <b>HDFS</b> (storage layer), <b>MapReduce</b> (processing layer) and <b>YARN</b> (resource management layer), plus Hadoop Common utilities.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q20.</span><span class="qt">What is data locality optimisation?</span><span class="mk m2">2M</span></div><div class="ans">
+<p>Hadoop tries to run each <b>map task on the node where its input data (HDFS block) already resides</b>, so that valuable cluster network bandwidth is not used. If that node is busy, it uses a node in the <b>same rack</b> (rack-local); only rarely a node in another rack (off-rack, with an inter-rack transfer).</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q21.</span><span class="qt">What is the default HDFS block size? Why is it so large?</span><span class="mk m2">2M</span></div><div class="ans">
+<p>The default HDFS block size is <b>128 MB</b> (64 MB in older versions), much larger than a disk block (512 bytes). Large blocks keep the <b>time spent seeking small</b> compared to the time spent transferring data, and they reduce the <b>metadata the NameNode keeps in memory</b>. A file smaller than a block uses only its actual size on disk.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q22.</span><span class="qt">What is the role of the Secondary NameNode?</span><span class="mk m2">2M</span></div><div class="ans">
+<p>The Secondary NameNode <b>periodically merges the namespace image with the edit log</b> (checkpointing) so the edit log does not grow too large. It runs on a separate machine and keeps a copy of the merged image that can be used if the NameNode fails. It is <b>not a backup NameNode</b> and cannot take over automatically.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q23.</span><span class="qt">What is MRUnit?</span><span class="mk m2">2M</span></div><div class="ans">
+<p>MRUnit is a <b>testing library</b> for MapReduce, used with <b>JUnit</b>, that passes known inputs to a mapper or reducer and checks that the outputs are as expected. <b>MapDriver</b> tests a mapper (e.g., weather record → (1950, −11)) and <b>ReduceDriver</b> tests a reducer (e.g., (1950, [10, 5]) → (1950, 10)); a mismatch fails the test.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q24.</span><span class="qt">Expand YARN. Why was it introduced?</span><span class="mk m2">2M</span></div><div class="ans">
+<p>YARN = <b>Yet Another Resource Negotiator</b> (MapReduce 2). Classic MapReduce hit <b>scalability bottlenecks around 4,000 nodes</b> because the single JobTracker did both job scheduling and task monitoring. YARN splits these into a <b>ResourceManager</b> (cluster resources) and a per-application <b>ApplicationMaster</b> (job lifecycle).</p>
+</div></div>
+
+<div class="mhead" id="u2-3"><span class="mk m3">3 MARKS</span><b>Medium answers</b><span class="note">Q25 – Q30</span><span class="marker">@@u2-3@@</span></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q25.</span><span class="qt">Explain the design of HDFS.</span><span class="mk m3">3M</span></div><div class="ans">
+<p><b>HDFS is a file system designed for storing very large files with streaming data access patterns, running on clusters of commodity hardware.</b></p>
+<ol>
+<li><b>Very large files</b> — hundreds of MB, GB or TB; clusters store petabytes.</li>
+<li><b>Streaming data access</b> — built on <b>write-once, read-many-times</b>; reading the whole dataset quickly matters more than the latency of the first record.</li>
+<li><b>Commodity hardware</b> — runs on cheap hardware where node failure is common, and keeps working without noticeable interruption.</li>
+</ol>
+<p class="small">Not suited for: low-latency access (use HBase), lots of small files (NameNode memory), multiple writers / arbitrary modifications.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q26.</span><span class="qt">Differentiate NameNode and DataNode.</span><span class="mk m3">3M</span></div><div class="ans">
+<table class="t" style="margin:0">
+<tr><th style="width:22%">Point</th><th>NameNode</th><th>DataNode</th></tr>
+<tr><td>Role</td><td><b>Master</b> — manages the file system namespace</td><td><b>Worker</b> — the workhorse of the file system</td></tr>
+<tr><td>Stores</td><td>File tree and <b>metadata</b>; persisted as <b>namespace image + edit log</b></td><td>The actual <b>data blocks</b></td></tr>
+<tr><td>Work / failure</td><td>Tells where blocks are; its loss makes the file system unusable (SPOF)</td><td>Stores/retrieves blocks when told; sends <b>periodic block reports</b> to the NameNode</td></tr>
+</table>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q27.</span><span class="qt">What is HDFS Federation?</span><span class="mk m3">3M</span></div><div class="ans">
+<ol>
+<li>The NameNode keeps every file and block reference in memory, so on very large clusters <b>memory limits scaling</b>.</li>
+<li><b>HDFS Federation</b> (Hadoop 2.x) lets a cluster scale by <b>adding NameNodes, each managing a portion of the namespace</b> — e.g., one for <code>/user</code>, another for <code>/share</code>.</li>
+<li>Each NameNode manages a <b>namespace volume</b> (metadata + a <b>block pool</b>). Volumes are independent: NameNodes don't communicate, and one failing doesn't affect the others.</li>
+</ol>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q28.</span><span class="qt">Explain HDFS High Availability.</span><span class="mk m3">3M</span></div><div class="ans">
+<ol>
+<li><b>Problem:</b> the NameNode is a <b>single point of failure</b>; a cold restart (load namespace image, replay edit log, collect block reports to leave safe mode) can take <b>30+ minutes</b>.</li>
+<li><b>Solution:</b> a pair of NameNodes in <b>active–standby</b> configuration; if the active fails, the standby takes over without significant interruption.</li>
+<li><b>Changes needed:</b> a <b>shared edit log</b> on highly available storage; DataNodes send <b>block reports to both</b> NameNodes; clients handle <b>failover</b> transparently; the standby takes periodic checkpoints (replacing the Secondary NameNode).</li>
+</ol>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q29.</span><span class="qt">Differentiate the Fair Scheduler and the Capacity Scheduler.</span><span class="mk m3">3M</span></div><div class="ans">
+<table class="t" style="margin:0">
+<tr><th style="width:22%">Point</th><th>Fair Scheduler</th><th>Capacity Scheduler</th></tr>
+<tr><td>Goal</td><td>Give <b>every user a fair share</b> of the cluster over time</td><td>Share capacity between <b>queues with fixed capacities</b></td></tr>
+<tr><td>Grouping</td><td>Jobs placed in <b>pools</b> (one per user by default)</td><td>Hierarchical <b>queues</b>; <b>FIFO (with priorities)</b> inside each queue</td></tr>
+<tr><td>Behaviour</td><td>Lone job gets whole cluster; short jobs finish while long ones run; <b>preemption</b> of over-share pools</td><td>Like a separate cluster per team/organisation; suited to strict capacity limits</td></tr>
+</table>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q30.</span><span class="qt">Explain the failure modes in classic MapReduce.</span><span class="mk m3">3M</span></div><div class="ans">
+<ol>
+<li><b>Task failure</b> — user code throws a runtime exception, or the child JVM exits suddenly; the TaskTracker marks the task attempt as failed and frees the slot (Streaming: non-zero exit code).</li>
+<li><b>TaskTracker failure</b> — it crashes or runs slowly and stops sending heartbeats; the JobTracker removes it from its pool. It can be <b>blacklisted</b> if more than four tasks of a job fail on it and its faults are well above the average.</li>
+<li><b>JobTracker failure</b> — the most serious: it is a <b>single point of failure</b> with no recovery mechanism, so the job fails (fixed in YARN).</li>
+</ol>
+</div></div>
+
+<div class="mhead pb" id="u2-5"><span class="mk m5">5 MARKS</span><b>Long answers</b><span class="note">Q31 – Q36</span><span class="marker">@@u2-5@@</span></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q31.</span><span class="qt">Explain how MapReduce finds the maximum temperature for each year, with a data-flow diagram.</span><span class="mk m5">5M</span></div><div class="ans">
+<p><b>MapReduce</b> breaks processing into two phases — <b>map</b> and <b>reduce</b> — each with <b>key–value pairs</b> as input and output; the programmer writes the map and reduce functions. The NCDC weather dataset is semi-structured and record-oriented (temperature stored as °C × 10, 9999 = missing).</p>
+{{fig:u2_flow|MapReduce logical data flow}}
+<ol>
+<li><b>Input:</b> each line is given to the mapper as (key = line offset, value = record).</li>
+<li><b>Map:</b> the mapper extracts the <b>year</b> and <b>air temperature</b>, filters out missing/bad readings and emits (year, temperature): (1950, 0), (1950, 22), (1950, −11), (1949, 111), (1949, 78).</li>
+<li><b>Shuffle &amp; sort:</b> the framework groups and sorts values by key: (1949, [111, 78]), (1950, [0, 22, −11]).</li>
+<li><b>Reduce:</b> the reducer iterates through each list and picks the maximum: (1949, 111), (1950, 22).</li>
+<li><b>Java:</b> <code>Mapper&lt;LongWritable, Text, Text, IntWritable&gt;</code>, <code>Reducer&lt;Text, IntWritable, Text, IntWritable&gt;</code>, and a <b>Driver</b> that sets input/output paths, mapper/reducer classes and output types, then calls <code>waitForCompletion()</code>. Output file: <code>part-r-00000</code>.</li>
+</ol>
+<span class="split">Marks split: definition 1 · diagram 1.5 · map/shuffle/reduce steps 2 · code/classes 0.5</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q32.</span><span class="qt">Explain the anatomy of a file read in HDFS.</span><span class="mk m5">5M</span></div><div class="ans">
+{{fig:u2_read|A client reading data from HDFS}}
+<ol>
+<li>The client opens the file by calling <code>open()</code> on the <b>FileSystem</b> object, an instance of <b>DistributedFileSystem</b>.</li>
+<li>DistributedFileSystem calls the <b>NameNode using RPC</b> to get the locations of the first few blocks; for each block, the NameNode returns the DataNodes holding a copy, <b>sorted by proximity to the client</b>. It returns an <b>FSDataInputStream</b> (wrapping a DFSInputStream).</li>
+<li>The client calls <code>read()</code>; DFSInputStream connects to the <b>closest DataNode</b> for the first block.</li>
+<li>Data is <b>streamed</b> from the DataNode to the client as it repeatedly calls read().</li>
+<li>At the end of a block, DFSInputStream closes the connection and finds the <b>best DataNode for the next block</b>, asking the NameNode for further block locations as needed.</li>
+<li>When finished, the client calls <code>close()</code>.</li>
+</ol>
+<p><b>Failure handling:</b> if a DataNode fails, the stream tries the <b>next closest</b> one and remembers the failed node; it verifies <b>checksums</b> and, on a corrupt block, reads another replica and <b>reports the corrupt block to the NameNode</b>. The client reads directly from DataNodes, so the NameNode is not a bottleneck.</p>
+<span class="split">Marks split: diagram 1.5 · six steps 3 · failure handling 0.5</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q33.</span><span class="qt">Explain the anatomy of a file write in HDFS.</span><span class="mk m5">5M</span></div><div class="ans">
+{{fig:u2_write|A client writing data to HDFS}}
+<ol>
+<li>The client creates the file by calling <code>create()</code> on <b>DistributedFileSystem</b>.</li>
+<li>DistributedFileSystem makes an <b>RPC call to the NameNode</b> to create a new file with no blocks. The NameNode checks that the file <b>doesn't already exist</b> and the client has <b>permission</b>; otherwise an <b>IOException</b> is thrown. An <b>FSDataOutputStream</b> is returned.</li>
+<li>As the client writes, <b>DFSOutputStream</b> splits data into <b>packets</b> placed in the <b>data queue</b>. The <b>DataStreamer</b> asks the NameNode to allocate new blocks on suitable DataNodes, which form a <b>pipeline</b> (three nodes for replication 3).</li>
+<li>The DataStreamer sends packets to the first DataNode, which stores and <b>forwards</b> them to the second, which forwards to the third.</li>
+<li>Packets wait in the <b>ack queue</b> and are removed only when <b>acknowledged by all DataNodes</b> in the pipeline.</li>
+<li>The client calls <code>close()</code>, which flushes remaining packets and waits for acknowledgements…</li>
+<li>…before telling the NameNode the file is <b>complete</b>.</li>
+</ol>
+<p><b>If a DataNode fails:</b> the pipeline is closed, ack-queue packets are put back at the front of the data queue, the current block on good nodes gets a <b>new identity</b> (so the partial block is deleted later), the failed node is removed and the <b>pipeline is rebuilt</b> from the remaining good DataNodes.</p>
+<span class="split">Marks split: diagram 1.5 · seven steps 3 · failure handling 0.5</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q34.</span><span class="qt">Explain how a MapReduce job runs in classic MapReduce (MapReduce 1).</span><span class="mk m5">5M</span></div><div class="ans">
+<p>Four independent entities: the <b>client</b> (submits the job), the <b>JobTracker</b> (coordinates the job run), the <b>TaskTrackers</b> (run the tasks) and the <b>distributed file system</b> (shares job files).</p>
+{{fig:u2_mr1|How Hadoop runs a MapReduce job using the classic framework}}
+<ol>
+<li><b>Job submission (1–4):</b> <code>submit()</code> creates a JobSubmitter, which asks the JobTracker for a <b>new job ID</b>, checks the <b>output specification</b> (error if the output directory exists), computes <b>input splits</b>, copies the <b>job JAR</b> (with high replication), configuration and splits to the shared file system, and calls <code>submitJob()</code>.</li>
+<li><b>Job initialisation (5–6):</b> the job goes into an internal queue; the scheduler creates an object to track it, retrieves the input splits and creates <b>one map task per split</b>; the number of reduce tasks comes from <code>mapred.reduce.tasks</code>.</li>
+<li><b>Task assignment (7):</b> TaskTrackers send periodic <b>heartbeats</b> saying they are alive and ready; the JobTracker allocates a task in the heartbeat reply.</li>
+<li><b>Task execution (8–10):</b> the TaskTracker localises the job JAR and distributed-cache files, creates a working directory, and a <b>TaskRunner launches a new JVM</b> to run each map or reduce task, so bugs in user code don't affect the TaskTracker.</li>
+</ol>
+<span class="split">Marks split: four entities 1 · diagram 1.5 · four phases 2.5</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q35.</span><span class="qt">Explain how a MapReduce job runs on YARN. How is it different from classic MapReduce?</span><span class="mk m5">5M</span></div><div class="ans">
+<p>YARN splits the JobTracker's work into a <b>ResourceManager</b> and a per-job <b>ApplicationMaster</b>. Five entities: <b>client</b>, <b>YARN ResourceManager</b> (allocates compute resources), <b>NodeManagers</b> (launch and monitor containers), <b>MRAppMaster</b> (coordinates the job's tasks) and the <b>distributed file system</b>.</p>
+{{fig:u2_yarn|How Hadoop runs a MapReduce job using YARN}}
+<ol>
+<li><b>Submission (1–4):</b> get a new <b>application ID</b> from the ResourceManager, check output, compute splits, copy resources to the shared FS, call <code>submitApplication()</code>.</li>
+<li><b>Initialisation (5a–7):</b> the scheduler allocates a container and the RM launches the <b>MRAppMaster</b> there via a NodeManager; the AM creates bookkeeping objects and retrieves the input splits.</li>
+<li><b>Task assignment (8):</b> the AM requests containers from the RM — <b>map tasks first</b>, reduce tasks after 5% of maps complete.</li>
+<li><b>Task execution (9a–11):</b> the AM asks the NodeManager to start the container; <b>YarnChild</b> localises the resources and runs the task.</li>
+</ol>
+<p><b>Difference:</b> MR1 has 4 entities and a JobTracker that does both scheduling and monitoring (bottleneck at ~4,000 nodes, single point of failure); YARN has 5 entities, separates resource management from job monitoring, uses flexible containers instead of fixed slots, and scales much further.</p>
+<span class="split">Marks split: entities 1 · diagram 1.5 · steps 1.5 · difference 1</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q36.</span><span class="qt">Explain shuffle and sort in MapReduce.</span><span class="mk m5">5M</span></div><div class="ans">
+<p>MapReduce guarantees that the <b>input to every reducer is sorted by key</b>. The process of performing this sort and <b>transferring map outputs to the reducers</b> is called the <b>shuffle</b> — the heart of MapReduce.</p>
+{{fig:u2_shuffle|Shuffle and sort in MapReduce}}
+<p><b>Map side:</b></p>
+<ol>
+<li>Each map task writes output to a <b>circular memory buffer of 100 MB</b>.</li>
+<li>When it reaches the threshold (<b>80%</b>), a background thread <b>spills</b> it to disk (round-robin into mapred.local.dir).</li>
+<li>Before writing, data is <b>partitioned</b> by the reducer it will go to; within each partition it is <b>sorted by key in memory</b> and the <b>combiner</b> (if any) runs.</li>
+<li>Spill files are <b>merged</b> into one partitioned, sorted output file (optionally compressed) and served to reducers over <b>HTTP</b>.</li>
+</ol>
+<p><b>Reduce side:</b></p>
+<ol>
+<li><b>Copy phase</b> — the reducer copies its partition from each map as soon as that map finishes, using <b>5 copier threads</b>.</li>
+<li><b>Sort (merge) phase</b> — map outputs are merged in rounds, keeping the sort order.</li>
+<li><b>Reduce phase</b> — the reduce function is called once per key; output is written to <b>HDFS</b>.</li>
+</ol>
+<span class="split">Marks split: definition 1 · diagram 1 · map side 1.5 · reduce side 1.5</span>
+</div></div>
+</section>

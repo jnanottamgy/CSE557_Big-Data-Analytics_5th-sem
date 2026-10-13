@@ -1,0 +1,187 @@
+
+<!-- ================= UNIT 1 ================= -->
+<section class="ch1">
+<div class="chapter-open" id="u1"><p class="marker">@@u1@@</p>
+  <div class="bg"></div><div class="bg2"></div>
+  <div class="num">Unit 1</div>
+  <h1>Big Data &amp; Big Data Analytics</h1>
+  <div class="learn story"><span class="st-h">Most-tested areas</span>Types of digital data · techniques for unstructured data · Big Data definition and Vs · BI vs Big Data · what BDA is · classification of analytics · data scientist · SMP/MPP · shared nothing · CAP theorem.</div>
+</div>
+
+<div class="mhead" id="u1-2"><span class="mk m2">2 MARKS</span><b>Short answers</b><span class="note">Q1 – Q6</span><span class="marker">@@u1-2@@</span></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q1.</span><span class="qt">Define Big Data.</span><span class="mk m2">2M</span></div><div class="ans">
+<p>According to Gartner, <b>"Big Data is high-volume, high-velocity and high-variety information assets that demand cost-effective, innovative forms of information processing for enhanced insight and decision making."</b> In short, it is data that is big in <b>volume, velocity and variety</b> — beyond what traditional systems can store and process.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q2.</span><span class="qt">Why is an email placed in the "unstructured" category?</span><span class="src">★ from slides</span><span class="mk m2">2M</span></div><div class="ans">
+<p>The <b>body of an email</b> is free-form text that follows <b>no data model</b> — it can contain sentences, slang, links, images and attachments in any order — so it cannot be stored in rows and columns or queried easily by a program. Hence it is unstructured. (Only its header — To, From, Date, Subject — has some structure, which is why email is sometimes called semi-structured.)</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q3.</span><span class="qt">What is semi-structured data? Give two examples.</span><span class="mk m2">2M</span></div><div class="ans">
+<p>Semi-structured data <b>does not conform to a data model but has some structure</b>; it uses <b>tags / label–value pairs</b> to separate elements, so it is called <b>self-describing</b>. Examples: <b>XML</b> (used by SOAP web services) and <b>JSON</b> (used by REST services, stored natively by MongoDB). HTML and emails are other examples.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q4.</span><span class="qt">Expand and explain ACID.</span><span class="mk m2">2M</span></div><div class="ans">
+<p>ACID are the properties of a transaction supported by an RDBMS: <b>Atomicity</b> — the transaction happens fully or not at all; <b>Consistency</b> — the database moves from one valid state to another; <b>Isolation</b> — each transaction runs as if it were the only one; <b>Durability</b> — once committed, changes are permanent even after a crash.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q5.</span><span class="qt">Differentiate veracity, volatility and variability.</span><span class="mk m2">2M</span></div><div class="ans">
+<p><b>Veracity</b> — trustworthiness of data (noise, bias, abnormality); <b>Volatility</b> — how long data remains valid and useful (decides storage duration); <b>Variability</b> — data flow is inconsistent, with sudden peaks the system must handle. These are characteristics of data that are <b>not</b> definitional traits of Big Data.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q6.</span><span class="qt">State the CAP theorem.</span><span class="mk m2">2M</span></div><div class="ans">
+<p>The CAP (Brewer's) theorem states that in a <b>distributed system</b> it is <b>impossible to provide Consistency, Availability and Partition tolerance at the same time</b> — at most two can be guaranteed. Consistency: every read gets the latest write; Availability: every request gets a response; Partition tolerance: the system works despite network failures.</p>
+</div></div>
+
+<div class="mhead" id="u1-3"><span class="mk m3">3 MARKS</span><b>Medium answers</b><span class="note">Q7 – Q12</span><span class="marker">@@u1-3@@</span></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q7.</span><span class="qt">Explain the 3 Vs of Big Data.</span><span class="mk m3">3M</span></div><div class="ans">
+<ol>
+<li><b>Volume</b> — the huge <b>amount</b> of data, growing from GB/TB to PB, EB and ZB, coming from internal sources (databases, archives) and external ones (web, social media, sensors).</li>
+<li><b>Velocity</b> — the <b>speed</b> at which data is generated and processed: batch → periodic → near real time → real time (e.g., fraud check at card swipe).</li>
+<li><b>Variety</b> — the many <b>types</b> of data: structured (RDBMS), semi-structured (XML, JSON) and unstructured (text, images, audio, video).</li>
+</ol>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q8.</span><span class="qt">Differentiate traditional Business Intelligence (BI) and Big Data.</span><span class="mk m3">3M</span></div><div class="ans">
+<table class="t" style="margin:0">
+<tr><th style="width:22%">Point</th><th>Traditional BI</th><th>Big Data</th></tr>
+<tr><td>Storage &amp; scaling</td><td>All data in a <b>central server</b>; scales <b>vertically</b></td><td>Data in a <b>distributed file system</b>; scales <b>horizontally</b></td></tr>
+<tr><td>Analysis mode</td><td>Data analysed <b>offline</b></td><td>Analysed in <b>real time and offline</b></td></tr>
+<tr><td>Data &amp; processing</td><td><b>Structured</b> data; data is taken to the processing functions</td><td><b>Variety</b> of data; processing functions are taken to the data</td></tr>
+</table>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q9.</span><span class="qt">A book is issued from the library. What details about the book can be placed in an RDBMS table?</span><span class="src">★ from slides</span><span class="mk m3">3M</span></div><div class="ans">
+<p>Structured details go into related tables:</p>
+<ul>
+<li><b>Book</b>(<u>BookID</u> PK, Title, Author, Publisher, ISBN, Edition, YearOfPublication, Category)</li>
+<li><b>Member</b>(<u>MemberID</u> PK, Name, Department, Phone)</li>
+<li><b>Issue</b>(<u>IssueID</u> PK, BookID FK, MemberID FK, IssueDate, DueDate, ReturnDate, Fine)</li>
+</ul>
+<p>Constraints: BookID UNIQUE and NOT NULL, DueDate &gt; IssueDate, Fine ≥ 0. The tables are related through BookID and MemberID.</p>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q10.</span><span class="qt">Differentiate SMP and MPP.</span><span class="mk m3">3M</span></div><div class="ans">
+<table class="t" style="margin:0">
+<tr><th style="width:22%">Feature</th><th>SMP (Symmetric Multiprocessor)</th><th>MPP (Massively Parallel Processing)</th></tr>
+<tr><td>Memory &amp; OS</td><td>Identical processors share <b>one common main memory</b> and a <b>single OS</b></td><td>Each processor has its <b>own memory and own OS</b></td></tr>
+<tr><td>Coupling</td><td><b>Tightly coupled</b>; caches connected by a system bus</td><td>Loosely coupled; communicate by <b>messaging</b></td></tr>
+<tr><td>Programming</td><td>Easier</td><td>Harder — program must be divided into communicating segments</td></tr>
+</table>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q11.</span><span class="qt">What is a shared nothing architecture? State its advantages.</span><span class="mk m3">3M</span></div><div class="ans">
+<p>Of the three multiprocessor architectures — shared memory, shared disk and shared nothing — <b>shared nothing</b> is the one where <b>neither memory nor disk is shared</b>: each node has its own processor, memory and disk and communicates over the network (Hadoop uses it). Advantages:</p>
+<ol>
+<li><b>Fault isolation</b> — a fault in one node is confined to that node and exposed only through messages (or their absence).</li>
+<li><b>Scalability</b> — with a shared disk, nodes must synchronise and take turns, which limits how many can be added; with nothing shared there is no central bottleneck, so nodes can be added freely.</li>
+</ol>
+</div></div>
+
+<div class="qa short"><div class="qh"><span class="qn">Q12.</span><span class="qt">Explain any three challenges with Big Data.</span><span class="mk m3">3M</span></div><div class="ans">
+<ol>
+<li><b>Huge growth of data</b> — data grows exponentially, making it hard to separate useful data from noise.</li>
+<li><b>Data retention</b> — deciding how long to store data; some stays useful for long-term decisions, some becomes irrelevant quickly.</li>
+<li><b>Capture, storage, processing &amp; security</b> — traditional databases cannot capture, store, search, transfer and secure data that is very large, fast and varied.</li>
+</ol>
+<p class="small">Others you may write: cloud computing &amp; virtualisation · lack of skilled professionals · data visualisation.</p>
+</div></div>
+
+<div class="mhead pb" id="u1-5"><span class="mk m5">5 MARKS</span><b>Long answers</b><span class="note">Q13 – Q18</span><span class="marker">@@u1-5@@</span></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q13.</span><span class="qt">List and explain the classification of digital data with examples.</span><span class="src">★ from slides</span><span class="mk m5">5M</span></div><div class="ans">
+<p>Digital data is classified into <b>three types</b>:</p>
+{{fig:u1_three|Classification of digital data}}
+<ol>
+<li><b>Structured data</b> — data in an <b>organised form (rows and columns)</b> that is easily used by a program; relationships exist between entities. Stored in RDBMS (Oracle, MySQL, SQL Server, DB2), MS Excel, MS Access. Easy to insert/update/delete, secure, indexed, scalable and supports ACID transactions. <i>Example:</i> an Employee table (EmpNo, Name, DeptNo).</li>
+<li><b>Semi-structured data</b> — does <b>not conform to a data model but has some structure</b>; uses tags to separate semantic elements and build hierarchies; no separation of data and schema; <b>self-describing</b>. <i>Examples:</i> XML, JSON, HTML, email.</li>
+<li><b>Unstructured data</b> — does <b>not conform to any data model</b> and cannot be easily used by a program; <b>80–90%</b> of an organisation's data. Machine-generated (satellite images, CCTV, radar) or human-generated (emails, documents, chats, social media). <i>Examples:</i> images, videos, audio, memos, body of an email.</li>
+</ol>
+<p><b>Comparison:</b> moving from structured → semi-structured → unstructured, <b>flexibility and scalability increase</b>, while robustness, transaction support and query power decrease.</p>
+<span class="split">Marks split: diagram 1 · three types with definition + example 3 · comparison 1</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q14.</span><span class="qt">Explain the techniques used to find patterns in or interpret unstructured data.</span><span class="src">★ from slides</span><span class="mk m5">5M</span></div><div class="ans">
+{{fig:u1_tech|Techniques for dealing with unstructured data}}
+<ol>
+<li><b>Data mining</b> — discovering useful patterns in large data ("knowledge discovery in databases"), using statistics, AI, ML and databases. Algorithms: <b>association rule mining</b> (bread buyers also buy butter), <b>regression</b> (predict marks from study hours), <b>collaborative filtering</b> (recommend what similar people like).</li>
+<li><b>Text analytics / text mining</b> — patterns from text such as emails, blogs and reviews: text categorisation, clustering, <b>sentiment analysis</b>, concept/entity extraction.</li>
+<li><b>Natural Language Processing (NLP)</b> — enabling computers to understand human language (translation, chatbots, spam detection).</li>
+<li><b>Noisy text analytics</b> — extracting information from messy text with spelling mistakes, abbreviations and slang ("u coming tmrw??") — chats, SMS, call-centre notes.</li>
+<li><b>Manual tagging with metadata</b> — a person adds tags (data about data) so the content can be organised and searched (Sports, Cricket, India).</li>
+<li><b>Part-of-speech (POS) tagging</b> — marking the grammatical role of each word ("Rahul–noun plays–verb cricket–noun").</li>
+<li><b>UIMA</b> (Unstructured Information Management Architecture) — an <b>open-source platform by IBM</b> for real-time content analytics; identifies entities such as organisations and locations.</li>
+</ol>
+<span class="split">Marks split: diagram 1 · any 6–7 techniques explained 4</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q15.</span><span class="qt">What is Big Data Analytics? Explain with a neat diagram.</span><span class="mk m5">5M</span></div><div class="ans">
+<p><b>Big Data Analytics</b> is the process of examining large and varied data to uncover patterns, trends and insights that help an organisation make <b>better and faster decisions</b> (large data → analyse → patterns → decisions). Example: Amazon analyses past purchases and browsing history to recommend products.</p>
+{{fig:u1_bda|What is Big Data Analytics?}}
+<ol>
+<li><b>Technology-enabled analytics</b> — tools from IBM, Tableau, SAS, R and WPS process huge data.</li>
+<li><b>Richer, deeper insights</b> — into customers, partners and operations: what customers buy and what else can be sold to them.</li>
+<li><b>Competitive edge</b> — quicker, better decisions than competitors.</li>
+<li><b>A tight handshake between three communities</b> — IT (infrastructure), data scientists (analysis) and business users (decisions).</li>
+<li><b>Working with datasets whose volume and variety exceed</b> traditional databases.</li>
+<li><b>Moving code to data</b> — the small program is sent to where the huge data is stored, instead of moving terabytes to the program; also time-sensitive decisions in near real time.</li>
+</ol>
+<span class="split">Marks split: definition 1 · diagram 1 · 5–6 points 3</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q16.</span><span class="qt">Explain the classification of analytics (Analytics 1.0, 2.0 and 3.0).</span><span class="mk m5">5M</span></div><div class="ans">
+<p>There are two schools of thought. <b>First:</b> basic analytics (reporting on historical data), operationalised analytics (woven into business processes), advanced analytics (forecasting with predictive and prescriptive models), monetised analytics (earns direct revenue). <b>Second:</b> Analytics 1.0, 2.0 and 3.0:</p>
+{{fig:u1_stairs|Descriptive → diagnostic → predictive → prescriptive: hindsight → insight → foresight}}
+<table class="t">
+<tr><th style="width:15%"></th><th>Analytics 1.0</th><th>Analytics 2.0</th><th>Analytics 3.0</th></tr>
+<tr><td>Era</td><td>Mid-1950s – 2009</td><td>2005 – 2012</td><td>2012 – present</td></tr>
+<tr><td>Type</td><td>Descriptive (what happened?)</td><td>Descriptive + predictive (what will happen?)</td><td>Descriptive + predictive + prescriptive (what should we do?)</td></tr>
+<tr><td>Data</td><td>Small, structured, internal; data warehouses, ERP, CRM</td><td>Big, mostly unstructured, often external; Hadoop clusters</td><td>Blend of big and traditional data, internal + external</td></tr>
+<tr><td>Technology</td><td>Relational databases</td><td>Database appliances, Hadoop, SQL-to-Hadoop</td><td>In-memory, in-database, machine learning, agile methods</td></tr>
+<tr><td>Example</td><td>"Sales fell last month"</td><td>"Sales may rise next month"</td><td>"Increase stock next month"</td></tr>
+</table>
+<span class="split">Marks split: first school 1 · diagram 1 · 1.0/2.0/3.0 explained 3</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q17.</span><span class="qt">Explain the CAP theorem with an example.</span><span class="mk m5">5M</span></div><div class="ans">
+<p>The <b>CAP theorem</b> (Brewer's theorem) states that in a distributed computing environment it is impossible to provide all three guarantees — <b>Consistency, Availability and Partition tolerance</b> — simultaneously; at best two can be achieved.</p>
+<div class="two" style="grid-template-columns:1.1fr .9fr">
+<div>
+<ul>
+<li><b>Consistency</b> — every read fetches the last write.</li>
+<li><b>Availability</b> — reads and writes always succeed; every non-failing node responds in reasonable time.</li>
+<li><b>Partition tolerance</b> — the system keeps functioning when a network partition occurs.</li>
+</ul>
+<p><b>Example:</b> a coordinator updates your 3:00 PM training with administrator Raju. You ask administrator Rahul, whose copy wasn't updated: "no training". Two answers for the same data = <b>inconsistent</b>. Forcing them to sync before every reply makes users wait (less <b>available</b>); if they can't talk at all, the system must still work (<b>partition tolerance</b>).</p>
+</div>
+{{fig:u1_cap|Databases and CAP}}
+</div>
+<p><b>Combinations:</b> <b>CA</b> — traditional RDBMS (MySQL, PostgreSQL) · <b>CP</b> — HBase, MongoDB, Redis, MemcacheDB, BigTable · <b>AP</b> — Riak, Cassandra, CouchDB, Dynamo. Choose C for bank balances, A for social feeds.</p>
+<span class="split">Marks split: statement 1 · C, A, P 1.5 · diagram 1 · example + combinations 1.5</span>
+</div></div>
+
+<div class="qa"><div class="qh"><span class="qn">Q18.</span><span class="qt">What is data science? Explain the skills and responsibilities of a data scientist.</span><span class="mk m5">5M</span></div><div class="ans">
+<p><b>Data science</b> is the science of <b>extracting knowledge from data</b> — finding hidden patterns using mathematics, statistics, IT, machine learning and pattern recognition. A <b>data scientist</b> is the person who applies it to solve real-world problems.</p>
+<div class="two" style="grid-template-columns:.8fr 1.2fr">
+{{fig:u1_venn|A data scientist combines three skill sets}}
+<div>
+<p><b>Skills:</b></p>
+<ul>
+<li><b>Business acumen</b> — domain understanding, business strategy, problem solving, communication, presentation, inquisitiveness.</li>
+<li><b>Technology expertise</b> — RDBMS, NoSQL, programming (Python, Java), data warehousing, data mining, visualisation tools.</li>
+<li><b>Mathematics expertise</b> — statistics, algorithms, machine learning, pattern recognition, NLP.</li>
+</ul>
+</div>
+</div>
+<p><b>Responsibilities:</b></p>
+<ol>
+<li><b>Data management</b> — prepare and integrate large, varied datasets (clean errors, remove duplicates, handle missing values).</li>
+<li><b>Analytical techniques</b> — apply models and algorithms to find relationships, trends and patterns.</li>
+<li><b>Business / domain expertise</b> — give results real-world context ("low attendance → early mentoring").</li>
+<li><b>Communication &amp; presentation</b> — explain findings clearly to stakeholders through charts and simple language.</li>
+</ol>
+<span class="split">Marks split: definition 1 · diagram/skills 2 · four responsibilities 2</span>
+</div></div>
+</section>
